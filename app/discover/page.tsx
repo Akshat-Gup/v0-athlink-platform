@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { SimpleCalendar } from "@/components/ui/simple-calendar"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Search, Heart, Star, CalendarIcon, Users, Filter, Sparkles, User, Trophy, Building } from "lucide-react"
+import { Search, Heart, Star, CalendarIcon, Users, Filter, Sparkles, User, Trophy, Building, Plus } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
@@ -235,6 +235,108 @@ export default function DiscoverPage() {
     },
   ]
 
+  const aiReports = [
+    {
+      id: 100,
+      title: "",
+      subtitle: "",
+      date: "",
+      readTime: "",
+      image: "",
+      tags: [],
+      summary: "",
+      isCreateCard: true,
+    },
+    {
+      id: 101,
+      title: "Sarah Chen Performance Analysis",
+      subtitle: "Tennis talent ROI and engagement metrics Q1 2024",
+      date: "March 2024",
+      readTime: "5 min read",
+      image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
+      tags: ["Performance", "Tennis", "ROI"],
+      summary: "Comprehensive analysis of Sarah Chen's sponsorship performance, social media engagement, and tournament results.",
+      isCreateCard: false,
+    },
+    {
+      id: 102,
+      title: "YouTube Creator Sponsorship Trends",
+      subtitle: "Gaming and lifestyle influencers market analysis",
+      date: "February 2024",
+      readTime: "8 min read",
+      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=300&fit=crop",
+      tags: ["YouTube", "Gaming", "Trends"],
+      summary: "Market trends for gaming and lifestyle YouTube creators, including average sponsorship rates and engagement metrics.",
+      isCreateCard: false,
+    },
+    {
+      id: 103,
+      title: "Basketball Athletes ROI Report",
+      subtitle: "NCAA and professional basketball sponsorship performance",
+      date: "January 2024",
+      readTime: "7 min read",
+      image: "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?w=400&h=300&fit=crop",
+      tags: ["Basketball", "NCAA", "Sponsorship"],
+      summary: "Analysis of basketball talent sponsorship returns, comparing NCAA players with professional athletes.",
+      isCreateCard: false,
+    },
+    {
+      id: 104,
+      title: "TikTok Creators Market Report",
+      subtitle: "Short-form content creators and brand partnerships",
+      date: "December 2023",
+      readTime: "6 min read",
+      image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop",
+      tags: ["TikTok", "Social Media", "Brands"],
+      summary: "Comprehensive report on TikTok creator sponsorship rates, engagement metrics, and successful brand partnerships.",
+      isCreateCard: false,
+    },
+    {
+      id: 105,
+      title: "Swimming Championship Talent Analysis",
+      subtitle: "Performance metrics and sponsorship potential",
+      date: "November 2023",
+      readTime: "9 min read",
+      image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
+      tags: ["Swimming", "Championships", "Analytics"],
+      summary: "Deep dive into swimming talent performance data, sponsorship opportunities, and market positioning.",
+      isCreateCard: false,
+    },
+    {
+      id: 106,
+      title: "Instagram Fitness Influencers",
+      subtitle: "Health and wellness creator sponsorship landscape",
+      date: "October 2023",
+      readTime: "8 min read",
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      tags: ["Instagram", "Fitness", "Wellness"],
+      summary: "Analysis of fitness and wellness Instagram influencers, their sponsorship rates, and audience demographics.",
+      isCreateCard: false,
+    },
+    {
+      id: 107,
+      title: "Cycling Team Performance Review",
+      subtitle: "Team sponsorship effectiveness and media coverage",
+      date: "September 2023",
+      readTime: "10 min read",
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+      tags: ["Cycling", "Team", "Media"],
+      summary: "Performance review of cycling team sponsorships, media reach, and return on investment analysis.",
+      isCreateCard: false,
+    },
+    {
+      id: 108,
+      title: "Twitch Streamers Sponsorship Study",
+      subtitle: "Gaming streamers and brand collaboration insights",
+      date: "August 2023",
+      readTime: "7 min read",
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop",
+      tags: ["Twitch", "Gaming", "Streaming"],
+      summary: "Detailed study of Twitch streamer sponsorship deals, viewer engagement, and brand collaboration success rates.",
+      isCreateCard: false,
+    },
+  ]
+
   const getFilteredItems = () => {
     let filtered = allItems
 
@@ -290,6 +392,9 @@ export default function DiscoverPage() {
   }
 
   const getSectionTitle = () => {
+    if (searchMode === "ai") {
+      return "Past AI Industry Reports"
+    }
     switch (activeTab) {
       case "talents":
         return "Popular talents in Los Angeles"
@@ -645,78 +750,151 @@ export default function DiscoverPage() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-semibold text-gray-900">{getSectionTitle()}</h2>
             <div className="flex items-center gap-4">
-              <Link href={`/discover/${activeTab}`}>
-                <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                  Show all
-                </Button>
-              </Link>
+              {searchMode !== "ai" && (
+                <Link href={`/discover/${activeTab}`}>
+                  <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                    Show all
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredItems.slice(0, 8).map((item, index) => (
-              <Card
-                key={item.id}
-                className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="relative mb-4 -mx-4 -mt-4">
-                  <Image
-                    src={item.image || "/placeholder.svg"}
-                    alt={item.name}
-                    width={400}
-                    height={300}
-                    className="w-full h-48 object-cover rounded-t-lg"
-                  />
-                  {!selectedTalentType && (
-                    <Badge className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-white">
-                      {item.talentType}
-                    </Badge>
+          {searchMode === "ai" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {aiReports.map((report, index) => (
+                <Card
+                  key={report.id}
+                  className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-6 animate-in fade-in slide-in-from-bottom-4"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  {report.isCreateCard ? (
+                    <>
+                      <div className="relative mb-4 -mx-6 -mt-6">
+                        <div className="w-full h-48 bg-gray-50 rounded-t-lg flex items-center justify-center">
+                          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+                            <Plus className="h-8 w-8 text-gray-600" />
+                          </div>
+                        </div>
+                      </div>
+                      <CardContent className="p-0 px-6 flex flex-col justify-between" style={{ minHeight: '180px' }}>
+                        <div className="text-center flex-1 flex flex-col justify-center">
+                          <p className="text-gray-600 text-sm leading-relaxed">
+                            Use our AI to create custom reports on talent performance, sponsorship ROI, and market trends.
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm" className="w-full">
+                          Create Report
+                        </Button>
+                      </CardContent>
+                    </>
+                  ) : (
+                    <>
+                      <div className="relative mb-4 -mx-6 -mt-6">
+                        <Image
+                          src={report.image}
+                          alt={report.title}
+                          width={400}
+                          height={300}
+                          className="w-full h-48 object-cover rounded-t-lg"
+                        />
+                        <div className="absolute top-3 left-3 flex gap-2">
+                          {report.tags.slice(0, 2).map((tag) => (
+                            <Badge key={tag} className="bg-white/90 text-gray-900 hover:bg-white text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <CardContent className="p-0 px-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-gray-500">{report.date}</span>
+                          <span className="text-sm text-gray-500">{report.readTime}</span>
+                        </div>
+                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{report.title}</h3>
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{report.subtitle}</p>
+                        <p className="text-gray-500 text-xs mb-4 line-clamp-3">{report.summary}</p>
+                        <Button variant="outline" size="sm" className="w-full">
+                          Read Report
+                        </Button>
+                      </CardContent>
+                    </>
                   )}
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8"
-                    onClick={(e) => toggleFavorite(item.id, e)}
-                  >
-                    <Heart
-                      className={`h-4 w-4 ${
-                        favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
-                      }`}
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {filteredItems.slice(0, 8).map((item, index) => (
+                <Card
+                  key={item.id}
+                  className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="relative mb-4 -mx-4 -mt-4">
+                    <Image
+                      src={item.image || "/placeholder.svg"}
+                      alt={item.name}
+                      width={400}
+                      height={300}
+                      className="w-full h-48 object-cover rounded-t-lg"
                     />
-                  </Button>
-                </div>
-                <Link href={`/profile/${item.id}`}>
-                  <CardContent className="p-0 px-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 fill-current text-gray-900" />
-                        <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
-                      </div>
-                    </div>
-                    <p className="text-gray-600 text-sm mb-1">
-                      {item.sport} in {item.location}
-                    </p>
-                    <p className="text-gray-600 text-sm mb-3">{item.achievements}</p>
-
-                    {item.currentFunding && item.goalFunding ? (
-                      renderProgressBar(item.currentFunding, item.goalFunding)
-                    ) : (
-                      <div className="flex items-baseline">
-                        <span className="font-semibold text-gray-900">{item.price}</span>
-                        <span className="text-gray-600 text-sm ml-1">{item.period}</span>
-                      </div>
+                    {!selectedTalentType && (
+                      <Badge className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-white">
+                        {item.talentType}
+                      </Badge>
                     )}
-                  </CardContent>
-                </Link>
-              </Card>
-            ))}
-          </div>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8"
+                      onClick={(e) => toggleFavorite(item.id, e)}
+                    >
+                      <Heart
+                        className={`h-4 w-4 ${
+                          favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+                        }`}
+                      />
+                    </Button>
+                  </div>
+                  <Link href={`/profile/${item.id}`}>
+                    <CardContent className="p-0 px-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 fill-current text-gray-900" />
+                          <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-1">
+                        {item.sport} in {item.location}
+                      </p>
+                      <p className="text-gray-600 text-sm mb-3">{item.achievements}</p>
+
+                      {item.currentFunding && item.goalFunding ? (
+                        <div className="mb-4">
+                          {renderProgressBar(item.currentFunding, item.goalFunding)}
+                        </div>
+                      ) : (
+                        <div className="flex items-baseline mb-4">
+                          <span className="font-semibold text-gray-900">{item.price}</span>
+                          <span className="text-gray-600 text-sm ml-1">{item.period}</span>
+                        </div>
+                      )}
+                      
+                      <Button variant="outline" size="sm" className="w-full">
+                        View Profile
+                      </Button>
+                    </CardContent>
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Up and Coming Section */}
-        {activeTab === "talents" && (
+        {activeTab === "talents" && searchMode !== "ai" && (
           <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-gray-900">Up and Coming</h2>
@@ -770,7 +948,12 @@ export default function DiscoverPage() {
                         {item.sport} in {item.location}
                       </p>
                       <p className="text-gray-600 text-sm mb-3">{item.achievements}</p>
-                      {renderProgressBar(item.currentFunding, item.goalFunding)}
+                      <div className="mb-4">
+                        {renderProgressBar(item.currentFunding, item.goalFunding)}
+                      </div>
+                      <Button variant="outline" size="sm" className="w-full">
+                        View Profile
+                      </Button>
                     </CardContent>
                   </Link>
                 </Card>
