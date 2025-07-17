@@ -1,0 +1,713 @@
+"use client"
+
+import type React from "react"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { Progress } from "@/components/ui/progress"
+import {
+  Search,
+  Heart,
+  Star,
+  CalendarIcon,
+  Users,
+  Filter,
+  Sparkles,
+  ChevronDown,
+  User,
+  Trophy,
+  Building,
+} from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useState, useEffect } from "react"
+import { format } from "date-fns"
+
+export default function DiscoverPage() {
+  const [activeTab, setActiveTab] = useState("talents")
+  const [searchMode, setSearchMode] = useState("filter") // "filter", "search", or "ai"
+  const [showFavorites, setShowFavorites] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
+  const [showJoinModal, setShowJoinModal] = useState(false)
+  const [favorites, setFavorites] = useState<number[]>([])
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [aiQuery, setAiQuery] = useState("")
+  const [date, setDate] = useState<Date>()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  const allItems = [
+    // Talents
+    {
+      id: 1,
+      name: "Sarah Chen",
+      sport: "Tennis",
+      location: "Los Angeles, CA",
+      rating: 4.95,
+      currentFunding: 2500,
+      goalFunding: 5000,
+      image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
+      achievements: "Olympic Qualifier",
+      category: "talent",
+      keywords: ["tennis", "olympic", "professional", "los angeles"],
+    },
+    {
+      id: 2,
+      name: "Marcus Johnson",
+      sport: "Basketball",
+      location: "Chicago, IL",
+      rating: 4.87,
+      currentFunding: 3200,
+      goalFunding: 8000,
+      image: "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?w=400&h=300&fit=crop",
+      achievements: "NCAA Champion",
+      category: "talent",
+      keywords: ["basketball", "ncaa", "champion", "chicago"],
+    },
+    {
+      id: 5,
+      name: "Alex Rodriguez",
+      sport: "Soccer",
+      location: "Austin, TX",
+      rating: 4.94,
+      currentFunding: 2800,
+      goalFunding: 6000,
+      image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=300&fit=crop",
+      achievements: "MLS Rising Star",
+      category: "talent",
+      keywords: ["soccer", "mls", "rising star", "austin"],
+    },
+    {
+      id: 9,
+      name: "Emma Wilson",
+      sport: "Swimming",
+      location: "Miami, FL",
+      rating: 4.91,
+      currentFunding: 1800,
+      goalFunding: 4500,
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      achievements: "State Champion",
+      category: "talent",
+      keywords: ["swimming", "state", "champion", "miami"],
+    },
+    {
+      id: 10,
+      name: "Jake Thompson",
+      sport: "Track & Field",
+      location: "Portland, OR",
+      rating: 4.88,
+      currentFunding: 3500,
+      goalFunding: 7000,
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      achievements: "National Qualifier",
+      category: "talent",
+      keywords: ["track", "field", "national", "portland"],
+    },
+    {
+      id: 11,
+      name: "Sofia Martinez",
+      sport: "Gymnastics",
+      location: "Denver, CO",
+      rating: 4.96,
+      currentFunding: 4200,
+      goalFunding: 8500,
+      image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
+      achievements: "World Championship Qualifier",
+      category: "talent",
+      keywords: ["gymnastics", "world", "championship", "denver"],
+    },
+    // Teams
+    {
+      id: 3,
+      name: "Elite Runners Club",
+      sport: "Track & Field",
+      location: "New York, NY",
+      rating: 4.92,
+      price: "$5,000",
+      period: "per event",
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      achievements: "Team of 12 Athletes",
+      category: "team",
+      keywords: ["running", "track", "team", "new york"],
+    },
+    {
+      id: 6,
+      name: "Cycling Team Pro",
+      sport: "Cycling",
+      location: "Denver, CO",
+      rating: 4.91,
+      currentFunding: 4200,
+      goalFunding: 10000,
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
+      achievements: "Tour de France Qualifiers",
+      category: "team",
+      keywords: ["cycling", "tour de france", "team", "denver"],
+    },
+    {
+      id: 12,
+      name: "Thunder Basketball Squad",
+      sport: "Basketball",
+      location: "Oklahoma City, OK",
+      rating: 4.89,
+      price: "$8,000",
+      period: "per season",
+      image: "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?w=400&h=300&fit=crop",
+      achievements: "Regional Champions",
+      category: "team",
+      keywords: ["basketball", "squad", "regional", "oklahoma"],
+    },
+    {
+      id: 13,
+      name: "Coastal Volleyball Club",
+      sport: "Volleyball",
+      location: "San Diego, CA",
+      rating: 4.93,
+      price: "$6,500",
+      period: "per tournament",
+      image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=300&fit=crop",
+      achievements: "National Tournament Finalists",
+      category: "team",
+      keywords: ["volleyball", "coastal", "tournament", "san diego"],
+    },
+    // Events
+    {
+      id: 4,
+      name: "Swimming Championships",
+      sport: "Swimming",
+      location: "Miami, FL",
+      rating: 4.88,
+      price: "$8,500",
+      period: "per event",
+      image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
+      achievements: "National Event",
+      category: "event",
+      keywords: ["swimming", "championships", "national", "miami"],
+    },
+    {
+      id: 7,
+      name: "Winter Sports Expo",
+      sport: "Multi-Sport",
+      location: "Aspen, CO",
+      rating: 4.96,
+      price: "$12,000",
+      period: "per event",
+      image: "https://images.unsplash.com/photo-1551524164-6cf2ac531fb4?w=400&h=300&fit=crop",
+      achievements: "3-Day Event",
+      category: "event",
+      keywords: ["winter", "sports", "expo", "aspen"],
+    },
+    {
+      id: 8,
+      name: "Beach Volleyball Tournament",
+      sport: "Volleyball",
+      location: "San Diego, CA",
+      rating: 4.89,
+      price: "$6,500",
+      period: "per event",
+      image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=300&fit=crop",
+      achievements: "Professional League",
+      category: "event",
+      keywords: ["beach", "volleyball", "tournament", "san diego"],
+    },
+    {
+      id: 14,
+      name: "Marathon Challenge",
+      sport: "Running",
+      location: "Boston, MA",
+      rating: 4.94,
+      price: "$15,000",
+      period: "per event",
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      achievements: "International Marathon",
+      category: "event",
+      keywords: ["marathon", "challenge", "running", "boston"],
+    },
+    {
+      id: 15,
+      name: "Tennis Open Championship",
+      sport: "Tennis",
+      location: "New York, NY",
+      rating: 4.97,
+      price: "$20,000",
+      period: "per event",
+      image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
+      achievements: "Grand Slam Qualifier",
+      category: "event",
+      keywords: ["tennis", "open", "championship", "grand slam"],
+    },
+  ]
+
+  const getFilteredItems = () => {
+    let filtered = allItems
+
+    // Filter by active tab
+    if (activeTab !== "all") {
+      filtered = filtered.filter((item) => item.category === activeTab.slice(0, -1))
+    }
+
+    // Apply search query
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.sport.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.achievements.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.keywords?.some((keyword) => keyword.toLowerCase().includes(searchQuery.toLowerCase())),
+      )
+    }
+
+    // Apply AI query
+    if (aiQuery.trim()) {
+      filtered = filtered.filter(
+        (item) =>
+          item.name.toLowerCase().includes(aiQuery.toLowerCase()) ||
+          item.sport.toLowerCase().includes(aiQuery.toLowerCase()) ||
+          item.location.toLowerCase().includes(aiQuery.toLowerCase()) ||
+          item.achievements.toLowerCase().includes(aiQuery.toLowerCase()) ||
+          item.keywords?.some((keyword) => keyword.toLowerCase().includes(aiQuery.toLowerCase())),
+      )
+    }
+
+    return filtered
+  }
+
+  const toggleFavorite = (id: number, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setFavorites((prev) => (prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]))
+  }
+
+  const renderProgressBar = (current: number, goal: number) => {
+    const percentage = (current / goal) * 100
+    return (
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="font-semibold text-gray-900">${current.toLocaleString()}</span>
+          <span className="text-gray-600">of ${goal.toLocaleString()}</span>
+        </div>
+        <Progress value={percentage} className="h-2" />
+        <p className="text-xs text-gray-600">in campaign</p>
+      </div>
+    )
+  }
+
+  const getSectionTitle = () => {
+    switch (activeTab) {
+      case "talents":
+        return "Popular talents in Los Angeles"
+      case "events":
+        return "Available events next month"
+      case "teams":
+        return "Top teams looking for sponsors"
+      default:
+        return "All Items"
+    }
+  }
+
+  const filteredItems = getFilteredItems()
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Floating Header Islands */}
+      <header className="fixed top-4 left-0 right-0 z-50 px-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          {/* Logo Island */}
+          <div className="bg-white rounded-full shadow-lg border border-gray-200 p-2">
+            <div className="bg-gray-100 rounded-full p-2">
+              <Link href="/landing">
+                <Image src="/athlink-logo.png" alt="Athlink" width={28} height={28} />
+              </Link>
+            </div>
+          </div>
+
+          {/* Navigation Tabs Island */}
+          <div className="bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
+            <nav className="flex items-center space-x-1">
+              <button
+                onClick={() => setActiveTab("talents")}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  activeTab === "talents"
+                    ? "bg-gray-100 text-gray-900"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <Users className="h-4 w-4" />
+                <span>Talents</span>
+              </button>
+              <button
+                onClick={() => setActiveTab("events")}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  activeTab === "events"
+                    ? "bg-gray-100 text-gray-900"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <CalendarIcon className="h-4 w-4" />
+                <span>Events</span>
+              </button>
+              <button
+                onClick={() => setActiveTab("teams")}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  activeTab === "teams"
+                    ? "bg-gray-100 text-gray-900"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <Users className="h-4 w-4" />
+                <span>Teams</span>
+              </button>
+            </nav>
+          </div>
+
+          {/* User Actions Island */}
+          <div className="bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
+            <div className="flex items-center space-x-2">
+              <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" className="text-sm font-medium px-4">
+                    Join Athlink
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="text-center text-xl mb-6">Join Athlink</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-3 gap-4">
+                      <Button variant="outline" className="flex flex-col items-center p-6 h-auto bg-transparent">
+                        <User className="h-8 w-8 mb-2" />
+                        <span className="text-sm">Talent</span>
+                      </Button>
+                      <Button variant="outline" className="flex flex-col items-center p-6 h-auto bg-transparent">
+                        <CalendarIcon className="h-8 w-8 mb-2" />
+                        <span className="text-sm">Event Leader</span>
+                      </Button>
+                      <Button variant="outline" className="flex flex-col items-center p-6 h-auto bg-transparent">
+                        <Trophy className="h-8 w-8 mb-2" />
+                        <span className="text-sm">Team Leader</span>
+                      </Button>
+                    </div>
+                    <div className="border-t pt-4">
+                      <Button
+                        variant="outline"
+                        className="w-full flex items-center justify-center p-6 h-auto bg-transparent"
+                      >
+                        <Building className="h-8 w-8 mr-3" />
+                        <span>Sponsor</span>
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <Sheet open={showFavorites} onOpenChange={setShowFavorites}>
+                <SheetTrigger asChild>
+                  <Button size="icon" variant="ghost" className="rounded-full">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left">
+                  <SheetHeader>
+                    <SheetTitle>Your Favorites</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    {favorites.length === 0 ? (
+                      <p className="text-gray-600">No favorites saved yet.</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {allItems
+                          .filter((item) => favorites.includes(item.id))
+                          .map((item) => (
+                            <div key={item.id} className="flex items-center space-x-3 p-2 border rounded">
+                              <Image
+                                src={item.image || "/placeholder.svg"}
+                                alt={item.name}
+                                width={40}
+                                height={40}
+                                className="rounded"
+                              />
+                              <div>
+                                <p className="font-medium text-sm">{item.name}</p>
+                                <p className="text-xs text-gray-600">{item.sport}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Search Bar */}
+      {!isScrolled && (
+        <div className="pt-24 pb-6 bg-white border-b border-gray-200">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="flex items-center justify-center">
+              {/* Main Search Bar */}
+              <div className="flex-1 max-w-4xl relative">
+                <div className="flex bg-white border-2 border-gray-300 rounded-full shadow-lg h-16 items-center">
+                  {searchMode === "ai" ? (
+                    <div className="flex-1 px-6 py-4">
+                      <Input
+                        placeholder="Find with AI"
+                        value={aiQuery}
+                        onChange={(e) => setAiQuery(e.target.value)}
+                        className="border-0 p-0 text-sm placeholder-gray-500 focus-visible:ring-0 h-auto"
+                      />
+                    </div>
+                  ) : searchMode === "search" ? (
+                    <div className="flex-1 px-6 py-4">
+                      <Input
+                        placeholder="Search by keyword..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="border-0 p-0 text-sm placeholder-gray-500 focus-visible:ring-0 h-auto"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
+                        <div>
+                          <div className="text-xs font-semibold text-gray-900 mb-1">Type of talent</div>
+                          <Select>
+                            <SelectTrigger className="border-0 p-0 h-auto focus:ring-0">
+                              <SelectValue placeholder="Select type..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="athlete">Athlete</SelectItem>
+                              <SelectItem value="creator">Creator</SelectItem>
+                              <SelectItem value="influencer">Influencer</SelectItem>
+                              <SelectItem value="artist">Artist</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
+                        <div>
+                          <div className="text-xs font-semibold text-gray-900 mb-1">Fit</div>
+                          <Select>
+                            <SelectTrigger className="border-0 p-0 h-auto focus:ring-0">
+                              <SelectValue placeholder="Select fit..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="top-talent">Top Talent</SelectItem>
+                              <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
+                        <div>
+                          <div className="text-xs font-semibold text-gray-900 mb-1">Requirements</div>
+                          <Dialog open={showFilters} onOpenChange={setShowFilters}>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent">
+                                Add filters
+                                <ChevronDown className="h-4 w-4 ml-1" />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Filters</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div>
+                                  <h3 className="font-medium mb-2">Sport</h3>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    {["Tennis", "Basketball", "Soccer", "Swimming", "Track & Field", "Cycling"].map(
+                                      (sport) => (
+                                        <Button key={sport} variant="outline" size="sm">
+                                          {sport}
+                                        </Button>
+                                      ),
+                                    )}
+                                  </div>
+                                </div>
+                                <div>
+                                  <h3 className="font-medium mb-2">Experience Level</h3>
+                                  <div className="space-y-2">
+                                    {["Professional", "Semi-Professional", "Amateur", "College"].map((level) => (
+                                      <Button key={level} variant="outline" size="sm" className="mr-2 bg-transparent">
+                                        {level}
+                                      </Button>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div>
+                                  <h3 className="font-medium mb-2">Budget Range</h3>
+                                  <div className="space-y-2">
+                                    {["$1K - $5K", "$5K - $10K", "$10K - $25K", "$25K+"].map((range) => (
+                                      <Button key={range} variant="outline" size="sm" className="mr-2 bg-transparent">
+                                        {range}
+                                      </Button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                      </div>
+                      <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
+                        <div>
+                          <div className="text-xs font-semibold text-gray-900 mb-1">Duration</div>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button variant="ghost" className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent">
+                                {date ? format(date, "PPP") : "Pick a date"}
+                                <CalendarIcon className="h-4 w-4 ml-1" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <div className="px-2 py-2 flex items-center">
+                    <div className="bg-gray-100 rounded-full p-1 flex">
+                      <Button
+                        size="sm"
+                        onClick={() => setSearchMode("filter")}
+                        className={`rounded-full px-3 h-10 ${
+                          searchMode === "filter"
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/25 animate-shimmer"
+                            : "bg-transparent text-gray-600 hover:bg-gray-200"
+                        }`}
+                      >
+                        <Filter className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => setSearchMode("search")}
+                        className={`rounded-full px-3 h-10 ${
+                          searchMode === "search"
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/25 animate-shimmer"
+                            : "bg-transparent text-gray-600 hover:bg-gray-200"
+                        }`}
+                      >
+                        <Search className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => setSearchMode("ai")}
+                        className={`rounded-full px-3 h-10 ${
+                          searchMode === "ai"
+                            ? "bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/25 animate-shimmer"
+                            : "bg-transparent text-gray-600 hover:bg-gray-200"
+                        }`}
+                      >
+                        <Sparkles className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ${isScrolled ? "pt-24" : ""}`}>
+        {/* Dynamic Section */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900">{getSectionTitle()}</h2>
+            <div className="flex items-center gap-4">
+              <Link href={`/discover/${activeTab}`}>
+                <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                  Show all
+                </Button>
+              </Link>
+              <Dialog open={showFilters} onOpenChange={setShowFilters}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2 bg-transparent">
+                    <Filter className="h-4 w-4" />
+                    Filters
+                  </Button>
+                </DialogTrigger>
+              </Dialog>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredItems.slice(0, 8).map((item, index) => (
+              <Card
+                key={item.id}
+                className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="relative mb-4 -mx-4 -mt-4">
+                  <Image
+                    src={item.image || "/placeholder.svg"}
+                    alt={item.name}
+                    width={400}
+                    height={300}
+                    className="w-full h-48 object-cover rounded-t-lg"
+                  />
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8"
+                    onClick={(e) => toggleFavorite(item.id, e)}
+                  >
+                    <Heart
+                      className={`h-4 w-4 ${
+                        favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+                      }`}
+                    />
+                  </Button>
+                </div>
+                <Link href={`/profile/${item.id}`}>
+                  <CardContent className="p-0 px-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 fill-current text-gray-900" />
+                        <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-600 text-sm mb-1">
+                      {item.sport} in {item.location}
+                    </p>
+                    <p className="text-gray-600 text-sm mb-3">{item.achievements}</p>
+
+                    {item.currentFunding && item.goalFunding ? (
+                      renderProgressBar(item.currentFunding, item.goalFunding)
+                    ) : (
+                      <div className="flex items-baseline">
+                        <span className="font-semibold text-gray-900">{item.price}</span>
+                        <span className="text-gray-600 text-sm ml-1">{item.period}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Link>
+              </Card>
+            ))}
+          </div>
+        </section>
+      </main>
+    </div>
+  )
+}
