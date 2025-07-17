@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { Progress } from "@/components/ui/progress"
+import { Badge } from "@/components/ui/badge"
 import {
   Search,
   Heart,
@@ -39,7 +40,11 @@ export default function DiscoverPage() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [aiQuery, setAiQuery] = useState("")
-  const [date, setDate] = useState<Date>()
+  const [selectedTalentType, setSelectedTalentType] = useState("")
+  const [selectedFit, setSelectedFit] = useState("")
+  const [selectedSport, setSelectedSport] = useState("")
+  const [selectedExperience, setSelectedExperience] = useState("")
+  const [selectedBudget, setSelectedBudget] = useState("")
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
 
@@ -64,6 +69,7 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
       achievements: "Olympic Qualifier",
       category: "talent",
+      talentType: "Athlete",
       keywords: ["tennis", "olympic", "professional", "los angeles"],
     },
     {
@@ -77,6 +83,7 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?w=400&h=300&fit=crop",
       achievements: "NCAA Champion",
       category: "talent",
+      talentType: "Athlete",
       keywords: ["basketball", "ncaa", "champion", "chicago"],
     },
     {
@@ -90,6 +97,7 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=300&fit=crop",
       achievements: "MLS Rising Star",
       category: "talent",
+      talentType: "Athlete",
       keywords: ["soccer", "mls", "rising star", "austin"],
     },
     {
@@ -103,6 +111,7 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       achievements: "State Champion",
       category: "talent",
+      talentType: "Athlete",
       keywords: ["swimming", "state", "champion", "miami"],
     },
     {
@@ -116,6 +125,7 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       achievements: "National Qualifier",
       category: "talent",
+      talentType: "Athlete",
       keywords: ["track", "field", "national", "portland"],
     },
     {
@@ -129,7 +139,36 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
       achievements: "World Championship Qualifier",
       category: "talent",
+      talentType: "Athlete",
       keywords: ["gymnastics", "world", "championship", "denver"],
+    },
+    {
+      id: 16,
+      name: "Maya Patel",
+      sport: "Content Creation",
+      location: "San Francisco, CA",
+      rating: 4.89,
+      currentFunding: 1500,
+      goalFunding: 3000,
+      image: "https://images.unsplash.com/photo-1494790108755-2616b332c1c2?w=400&h=300&fit=crop",
+      achievements: "100K Followers",
+      category: "talent",
+      talentType: "Creator",
+      keywords: ["content", "creator", "social media", "san francisco"],
+    },
+    {
+      id: 17,
+      name: "David Kim",
+      sport: "Photography",
+      location: "New York, NY",
+      rating: 4.92,
+      currentFunding: 2200,
+      goalFunding: 4000,
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+      achievements: "Award-Winning Photographer",
+      category: "talent",
+      talentType: "Creator",
+      keywords: ["photography", "art", "visual", "new york"],
     },
     // Teams
     {
@@ -143,6 +182,7 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       achievements: "Team of 12 Athletes",
       category: "team",
+      talentType: "Team",
       keywords: ["running", "track", "team", "new york"],
     },
     {
@@ -156,33 +196,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
       achievements: "Tour de France Qualifiers",
       category: "team",
+      talentType: "Team",
       keywords: ["cycling", "tour de france", "team", "denver"],
-    },
-    {
-      id: 12,
-      name: "Thunder Basketball Squad",
-      sport: "Basketball",
-      location: "Oklahoma City, OK",
-      rating: 4.89,
-      price: "$8,000",
-      period: "per season",
-      image: "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?w=400&h=300&fit=crop",
-      achievements: "Regional Champions",
-      category: "team",
-      keywords: ["basketball", "squad", "regional", "oklahoma"],
-    },
-    {
-      id: 13,
-      name: "Coastal Volleyball Club",
-      sport: "Volleyball",
-      location: "San Diego, CA",
-      rating: 4.93,
-      price: "$6,500",
-      period: "per tournament",
-      image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=300&fit=crop",
-      achievements: "National Tournament Finalists",
-      category: "team",
-      keywords: ["volleyball", "coastal", "tournament", "san diego"],
     },
     // Events
     {
@@ -196,59 +211,39 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
       achievements: "National Event",
       category: "event",
+      talentType: "Event",
       keywords: ["swimming", "championships", "national", "miami"],
     },
+  ]
+
+  const upAndComingItems = [
     {
-      id: 7,
-      name: "Winter Sports Expo",
-      sport: "Multi-Sport",
-      location: "Aspen, CO",
-      rating: 4.96,
-      price: "$12,000",
-      period: "per event",
-      image: "https://images.unsplash.com/photo-1551524164-6cf2ac531fb4?w=400&h=300&fit=crop",
-      achievements: "3-Day Event",
-      category: "event",
-      keywords: ["winter", "sports", "expo", "aspen"],
-    },
-    {
-      id: 8,
-      name: "Beach Volleyball Tournament",
-      sport: "Volleyball",
-      location: "San Diego, CA",
-      rating: 4.89,
-      price: "$6,500",
-      period: "per event",
-      image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=300&fit=crop",
-      achievements: "Professional League",
-      category: "event",
-      keywords: ["beach", "volleyball", "tournament", "san diego"],
-    },
-    {
-      id: 14,
-      name: "Marathon Challenge",
-      sport: "Running",
-      location: "Boston, MA",
-      rating: 4.94,
-      price: "$15,000",
-      period: "per event",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
-      achievements: "International Marathon",
-      category: "event",
-      keywords: ["marathon", "challenge", "running", "boston"],
-    },
-    {
-      id: 15,
-      name: "Tennis Open Championship",
+      id: 18,
+      name: "Riley Johnson",
       sport: "Tennis",
-      location: "New York, NY",
-      rating: 4.97,
-      price: "$20,000",
-      period: "per event",
+      location: "Phoenix, AZ",
+      rating: 4.76,
+      currentFunding: 800,
+      goalFunding: 2500,
       image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
-      achievements: "Grand Slam Qualifier",
-      category: "event",
-      keywords: ["tennis", "open", "championship", "grand slam"],
+      achievements: "Junior Champion",
+      category: "talent",
+      talentType: "Athlete",
+      keywords: ["tennis", "junior", "rising", "phoenix"],
+    },
+    {
+      id: 19,
+      name: "Carlos Mendez",
+      sport: "Boxing",
+      location: "Las Vegas, NV",
+      rating: 4.82,
+      currentFunding: 1200,
+      goalFunding: 3500,
+      image: "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?w=400&h=300&fit=crop",
+      achievements: "Amateur Champion",
+      category: "talent",
+      talentType: "Athlete",
+      keywords: ["boxing", "amateur", "rising", "las vegas"],
     },
   ]
 
@@ -302,7 +297,6 @@ export default function DiscoverPage() {
           <span className="text-gray-600">of ${goal.toLocaleString()}</span>
         </div>
         <Progress value={percentage} className="h-2" />
-        <p className="text-xs text-gray-600">in campaign</p>
       </div>
     )
   }
@@ -330,12 +324,12 @@ export default function DiscoverPage() {
           {/* Logo Island */}
           <div className="bg-white rounded-full shadow-lg border border-gray-200 p-2 h-12 w-12 flex items-center justify-center">
             <Link href="/landing">
-              <Image src="/athlink-logo.png" alt="Athlink" width={24} height={24} />
+              <Image src="/athlink-logo.png" alt="Athlink" width={20} height={20} />
             </Link>
           </div>
 
-          {/* Navigation Tabs Island */}
-          <div className="bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
+          {/* Navigation Tabs Island - Centered */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
             <nav className="flex items-center space-x-1">
               <button
                 onClick={() => setActiveTab("talents")}
@@ -376,6 +370,11 @@ export default function DiscoverPage() {
           {/* User Actions Island */}
           <div className="bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
             <div className="flex items-center space-x-2">
+              {isScrolled && (
+                <Button size="icon" variant="ghost" className="rounded-full">
+                  <Search className="h-4 w-4" />
+                </Button>
+              )}
               <Button variant="ghost" className="text-sm font-medium px-4">
                 Sign In
               </Button>
@@ -398,7 +397,7 @@ export default function DiscoverPage() {
                         <h3 className="text-lg font-medium">Talent</h3>
                       </div>
                     </div>
-                    <div className="border-4 border-black rounded-2xl p-8 cursor-pointer">
+                    <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
                       <div className="flex flex-col items-center text-center space-y-4">
                         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
                           <CalendarIcon className="h-10 w-10 text-gray-600" />
@@ -439,11 +438,11 @@ export default function DiscoverPage() {
                 </SheetTrigger>
                 <SheetContent side="left">
                   <SheetHeader>
-                    <SheetTitle>Your Favorites</SheetTitle>
+                    <SheetTitle>Your Watchlist</SheetTitle>
                   </SheetHeader>
                   <div className="mt-6">
                     {favorites.length === 0 ? (
-                      <p className="text-gray-600">No favorites saved yet.</p>
+                      <p className="text-gray-600">No items in your watchlist yet.</p>
                     ) : (
                       <div className="space-y-4">
                         {allItems
@@ -502,12 +501,11 @@ export default function DiscoverPage() {
                   ) : (
                     <>
                       <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
-                        <div>
+                        <div className="w-full">
                           <div className="text-xs font-semibold text-gray-900 mb-1">Type of talent</div>
-                          <Select>
-                            <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 flex items-center justify-between w-full">
+                          <Select value={selectedTalentType} onValueChange={setSelectedTalentType}>
+                            <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left">
                               <SelectValue placeholder="Select type..." />
-                              <ChevronDown className="h-4 w-4 ml-2 flex-shrink-0" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="athlete">Athlete</SelectItem>
@@ -519,69 +517,18 @@ export default function DiscoverPage() {
                         </div>
                       </div>
                       <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
-                        <div>
+                        <div className="w-full">
                           <div className="text-xs font-semibold text-gray-900 mb-1">Fit</div>
-                          <Select>
-                            <SelectTrigger className="border-0 p-0 h-auto focus:ring-0">
+                          <Select value={selectedFit} onValueChange={setSelectedFit}>
+                            <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left">
                               <SelectValue placeholder="Select fit..." />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="top-talent">Top Talent</SelectItem>
+                              <SelectItem value="up-and-coming">Up and Coming</SelectItem>
                               <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
                             </SelectContent>
                           </Select>
-                        </div>
-                      </div>
-                      <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
-                        <div>
-                          <div className="text-xs font-semibold text-gray-900 mb-1">Requirements</div>
-                          <Dialog open={showFilters} onOpenChange={setShowFilters}>
-                            <DialogTrigger asChild>
-                              <Button variant="ghost" className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent">
-                                Add filters
-                                <ChevronDown className="h-4 w-4 ml-1" />
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Filters</DialogTitle>
-                              </DialogHeader>
-                              <div className="space-y-4">
-                                <div>
-                                  <h3 className="font-medium mb-2">Sport</h3>
-                                  <div className="grid grid-cols-2 gap-2">
-                                    {["Tennis", "Basketball", "Soccer", "Swimming", "Track & Field", "Cycling"].map(
-                                      (sport) => (
-                                        <Button key={sport} variant="outline" size="sm">
-                                          {sport}
-                                        </Button>
-                                      ),
-                                    )}
-                                  </div>
-                                </div>
-                                <div>
-                                  <h3 className="font-medium mb-2">Experience Level</h3>
-                                  <div className="space-y-2">
-                                    {["Professional", "Semi-Professional", "Amateur", "College"].map((level) => (
-                                      <Button key={level} variant="outline" size="sm" className="mr-2 bg-transparent">
-                                        {level}
-                                      </Button>
-                                    ))}
-                                  </div>
-                                </div>
-                                <div>
-                                  <h3 className="font-medium mb-2">Budget Range</h3>
-                                  <div className="space-y-2">
-                                    {["$1K - $5K", "$5K - $10K", "$10K - $25K", "$25K+"].map((range) => (
-                                      <Button key={range} variant="outline" size="sm" className="mr-2 bg-transparent">
-                                        {range}
-                                      </Button>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            </DialogContent>
-                          </Dialog>
                         </div>
                       </div>
                       <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
@@ -592,7 +539,7 @@ export default function DiscoverPage() {
                               <PopoverTrigger asChild>
                                 <Button
                                   variant="ghost"
-                                  className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent"
+                                  className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent text-left"
                                 >
                                   {startDate ? format(startDate, "MMM dd") : "Start"}
                                 </Button>
@@ -606,7 +553,7 @@ export default function DiscoverPage() {
                               <PopoverTrigger asChild>
                                 <Button
                                   variant="ghost"
-                                  className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent"
+                                  className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent text-left"
                                 >
                                   {endDate ? format(endDate, "MMM dd") : "End"}
                                 </Button>
@@ -658,6 +605,48 @@ export default function DiscoverPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Filter Buttons Below Search Bar */}
+                <div className="flex items-center justify-center space-x-4 mt-4">
+                  {selectedTalentType === "athlete" && (
+                    <Select value={selectedSport} onValueChange={setSelectedSport}>
+                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm">
+                        <SelectValue placeholder="Sport" />
+                        <ChevronDown className="h-4 w-4 ml-1" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="tennis">Tennis</SelectItem>
+                        <SelectItem value="basketball">Basketball</SelectItem>
+                        <SelectItem value="soccer">Soccer</SelectItem>
+                        <SelectItem value="swimming">Swimming</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                  <Select value={selectedExperience} onValueChange={setSelectedExperience}>
+                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm">
+                      <SelectValue placeholder="Experience Level" />
+                      <ChevronDown className="h-4 w-4 ml-1" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="professional">Professional</SelectItem>
+                      <SelectItem value="semi-professional">Semi-Professional</SelectItem>
+                      <SelectItem value="amateur">Amateur</SelectItem>
+                      <SelectItem value="college">College</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={selectedBudget} onValueChange={setSelectedBudget}>
+                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm">
+                      <SelectValue placeholder="Budget Range" />
+                      <ChevronDown className="h-4 w-4 ml-1" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1k-5k">$1K - $5K</SelectItem>
+                      <SelectItem value="5k-10k">$5K - $10K</SelectItem>
+                      <SelectItem value="10k-25k">$10K - $25K</SelectItem>
+                      <SelectItem value="25k+">$25K+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </div>
@@ -666,7 +655,7 @@ export default function DiscoverPage() {
 
       {/* Main Content */}
       <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ${isScrolled ? "pt-24" : ""}`}>
-        {/* Dynamic Section */}
+        {/* Popular Section */}
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-semibold text-gray-900">{getSectionTitle()}</h2>
@@ -676,14 +665,6 @@ export default function DiscoverPage() {
                   Show all
                 </Button>
               </Link>
-              <Dialog open={showFilters} onOpenChange={setShowFilters}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2 bg-transparent">
-                    <Filter className="h-4 w-4" />
-                    Filters
-                  </Button>
-                </DialogTrigger>
-              </Dialog>
             </div>
           </div>
 
@@ -702,6 +683,11 @@ export default function DiscoverPage() {
                     height={300}
                     className="w-full h-48 object-cover rounded-t-lg"
                   />
+                  {!selectedTalentType && (
+                    <Badge className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-white">
+                      {item.talentType}
+                    </Badge>
+                  )}
                   <Button
                     size="icon"
                     variant="ghost"
@@ -743,6 +729,70 @@ export default function DiscoverPage() {
             ))}
           </div>
         </section>
+
+        {/* Up and Coming Section */}
+        {activeTab === "talents" && (
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900">Up and Coming</h2>
+              <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                Show all
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {upAndComingItems.map((item, index) => (
+                <Card
+                  key={item.id}
+                  className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4"
+                >
+                  <div className="relative mb-4 -mx-4 -mt-4">
+                    <Image
+                      src={item.image || "/placeholder.svg"}
+                      alt={item.name}
+                      width={400}
+                      height={300}
+                      className="w-full h-48 object-cover rounded-t-lg"
+                    />
+                    {!selectedTalentType && (
+                      <Badge className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-white">
+                        {item.talentType}
+                      </Badge>
+                    )}
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8"
+                      onClick={(e) => toggleFavorite(item.id, e)}
+                    >
+                      <Heart
+                        className={`h-4 w-4 ${
+                          favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+                        }`}
+                      />
+                    </Button>
+                  </div>
+                  <Link href={`/profile/${item.id}`}>
+                    <CardContent className="p-0 px-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 fill-current text-gray-900" />
+                          <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-1">
+                        {item.sport} in {item.location}
+                      </p>
+                      <p className="text-gray-600 text-sm mb-3">{item.achievements}</p>
+                      {renderProgressBar(item.currentFunding, item.goalFunding)}
+                    </CardContent>
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   )
