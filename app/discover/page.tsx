@@ -9,22 +9,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
+import { SimpleCalendar } from "@/components/ui/simple-calendar"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import {
-  Search,
-  Heart,
-  Star,
-  CalendarIcon,
-  Users,
-  Filter,
-  Sparkles,
-  ChevronDown,
-  User,
-  Trophy,
-  Building,
-} from "lucide-react"
+import { Search, Heart, Star, CalendarIcon, Users, Filter, Sparkles, User, Trophy, Building } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
@@ -545,7 +533,7 @@ export default function DiscoverPage() {
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0">
-                                <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+                                <SimpleCalendar selected={startDate} onSelect={setStartDate} />
                               </PopoverContent>
                             </Popover>
                             <span className="text-gray-400">-</span>
@@ -559,7 +547,7 @@ export default function DiscoverPage() {
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0">
-                                <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
+                                <SimpleCalendar selected={endDate} onSelect={setEndDate} />
                               </PopoverContent>
                             </Popover>
                           </div>
@@ -607,12 +595,11 @@ export default function DiscoverPage() {
                 </div>
 
                 {/* Filter Buttons Below Search Bar */}
-                <div className="flex items-center justify-center space-x-4 mt-4">
+                <div className="flex items-center justify-center space-x-3 mt-4">
                   {selectedTalentType === "athlete" && (
                     <Select value={selectedSport} onValueChange={setSelectedSport}>
-                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm">
+                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0">
                         <SelectValue placeholder="Sport" />
-                        <ChevronDown className="h-4 w-4 ml-1" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="tennis">Tennis</SelectItem>
@@ -623,9 +610,8 @@ export default function DiscoverPage() {
                     </Select>
                   )}
                   <Select value={selectedExperience} onValueChange={setSelectedExperience}>
-                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm">
+                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0">
                       <SelectValue placeholder="Experience Level" />
-                      <ChevronDown className="h-4 w-4 ml-1" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="professional">Professional</SelectItem>
@@ -635,9 +621,8 @@ export default function DiscoverPage() {
                     </SelectContent>
                   </Select>
                   <Select value={selectedBudget} onValueChange={setSelectedBudget}>
-                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm">
+                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0">
                       <SelectValue placeholder="Budget Range" />
-                      <ChevronDown className="h-4 w-4 ml-1" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1k-5k">$1K - $5K</SelectItem>

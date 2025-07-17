@@ -236,8 +236,8 @@ export default function ProfilePage({ params }: PageProps) {
         </div>
 
         {/* Profile Info */}
-        <div className="flex items-center justify-between mb-8 px-8">
-          <div className="flex items-center gap-6">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center">
             <Image
               src={profile.image || "/placeholder.svg"}
               alt={profile.name}
@@ -245,7 +245,7 @@ export default function ProfilePage({ params }: PageProps) {
               height={120}
               className="rounded-full border-4 border-white object-cover -mt-16"
             />
-            <div>
+            <div className="ml-6">
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
                 <div className="flex items-center gap-2">
