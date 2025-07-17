@@ -40,6 +40,8 @@ export default function DiscoverPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [aiQuery, setAiQuery] = useState("")
   const [date, setDate] = useState<Date>()
+  const [startDate, setStartDate] = useState<Date>()
+  const [endDate, setEndDate] = useState<Date>()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -326,12 +328,10 @@ export default function DiscoverPage() {
       <header className="fixed top-4 left-0 right-0 z-50 px-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* Logo Island */}
-          <div className="bg-white rounded-full shadow-lg border border-gray-200 p-2">
-            <div className="bg-gray-100 rounded-full p-2">
-              <Link href="/landing">
-                <Image src="/athlink-logo.png" alt="Athlink" width={28} height={28} />
-              </Link>
-            </div>
+          <div className="bg-white rounded-full shadow-lg border border-gray-200 p-2 h-12 w-12 flex items-center justify-center">
+            <Link href="/landing">
+              <Image src="/athlink-logo.png" alt="Athlink" width={24} height={24} />
+            </Link>
           </div>
 
           {/* Navigation Tabs Island */}
@@ -376,40 +376,57 @@ export default function DiscoverPage() {
           {/* User Actions Island */}
           <div className="bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
             <div className="flex items-center space-x-2">
+              <Button variant="ghost" className="text-sm font-medium px-4">
+                Sign In
+              </Button>
               <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
                 <DialogTrigger asChild>
                   <Button variant="ghost" className="text-sm font-medium px-4">
                     Join Athlink
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle className="text-center text-xl mb-6">Join Athlink</DialogTitle>
+                <DialogContent className="max-w-4xl p-8">
+                  <DialogHeader className="text-center mb-8">
+                    <DialogTitle className="text-2xl font-semibold">What would you like to join as?</DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-3 gap-4">
-                      <Button variant="outline" className="flex flex-col items-center p-6 h-auto bg-transparent">
-                        <User className="h-8 w-8 mb-2" />
-                        <span className="text-sm">Talent</span>
-                      </Button>
-                      <Button variant="outline" className="flex flex-col items-center p-6 h-auto bg-transparent">
-                        <CalendarIcon className="h-8 w-8 mb-2" />
-                        <span className="text-sm">Event Leader</span>
-                      </Button>
-                      <Button variant="outline" className="flex flex-col items-center p-6 h-auto bg-transparent">
-                        <Trophy className="h-8 w-8 mb-2" />
-                        <span className="text-sm">Team Leader</span>
-                      </Button>
+                  <div className="grid grid-cols-3 gap-6 mb-8">
+                    <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                          <User className="h-10 w-10 text-gray-600" />
+                        </div>
+                        <h3 className="text-lg font-medium">Talent</h3>
+                      </div>
                     </div>
-                    <div className="border-t pt-4">
-                      <Button
-                        variant="outline"
-                        className="w-full flex items-center justify-center p-6 h-auto bg-transparent"
-                      >
-                        <Building className="h-8 w-8 mr-3" />
-                        <span>Sponsor</span>
-                      </Button>
+                    <div className="border-4 border-black rounded-2xl p-8 cursor-pointer">
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                          <CalendarIcon className="h-10 w-10 text-gray-600" />
+                        </div>
+                        <h3 className="text-lg font-medium">Event Leader</h3>
+                      </div>
                     </div>
+                    <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Trophy className="h-10 w-10 text-gray-600" />
+                        </div>
+                        <h3 className="text-lg font-medium">Team Leader</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="border-t pt-6">
+                    <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
+                      <div className="flex flex-col items-center text-center space-y-4">
+                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Building className="h-10 w-10 text-gray-600" />
+                        </div>
+                        <h3 className="text-lg font-medium">Sponsor</h3>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-end mt-8">
+                    <Button className="bg-black text-white hover:bg-gray-800 px-8 py-2 rounded-lg">Next</Button>
                   </div>
                 </DialogContent>
               </Dialog>
@@ -488,8 +505,9 @@ export default function DiscoverPage() {
                         <div>
                           <div className="text-xs font-semibold text-gray-900 mb-1">Type of talent</div>
                           <Select>
-                            <SelectTrigger className="border-0 p-0 h-auto focus:ring-0">
+                            <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 flex items-center justify-between w-full">
                               <SelectValue placeholder="Select type..." />
+                              <ChevronDown className="h-4 w-4 ml-2 flex-shrink-0" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="athlete">Athlete</SelectItem>
@@ -567,19 +585,37 @@ export default function DiscoverPage() {
                         </div>
                       </div>
                       <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
-                        <div>
+                        <div className="w-full">
                           <div className="text-xs font-semibold text-gray-900 mb-1">Duration</div>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <Button variant="ghost" className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent">
-                                {date ? format(date, "PPP") : "Pick a date"}
-                                <CalendarIcon className="h-4 w-4 ml-1" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                              <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-                            </PopoverContent>
-                          </Popover>
+                          <div className="flex items-center space-x-2">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent"
+                                >
+                                  {startDate ? format(startDate, "MMM dd") : "Start"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
+                              </PopoverContent>
+                            </Popover>
+                            <span className="text-gray-400">-</span>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  className="p-0 h-auto text-sm text-gray-500 hover:bg-transparent"
+                                >
+                                  {endDate ? format(endDate, "MMM dd") : "End"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
                         </div>
                       </div>
                     </>
