@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { AchievementsSection } from "@/components/custom/achievement-card"
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -315,7 +316,7 @@ export default function ProfilePage({ params }: PageProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="fixed top-10 left-2 sm:left-4 lg:left-6 xl:left-[max(1rem,calc((100vw-80rem)/2))] z-50 bg-white/90 hover:bg-white rounded-full shadow-lg backdrop-blur-sm"
+            className="fixed top-8 left-2 sm:left-4 lg:left-6 xl:left-[max(1rem,calc((100vw-80rem)/2))] z-50 bg-white/90 hover:bg-white rounded-full shadow-lg backdrop-blur-sm"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -552,6 +553,7 @@ export default function ProfilePage({ params }: PageProps) {
 
             {activeTab === "results" && (
               <>
+                <AchievementsSection />
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold mb-4">Upcoming Competitions</h3>
                   <div className="grid md:grid-cols-2 gap-4">
@@ -572,27 +574,34 @@ export default function ProfilePage({ params }: PageProps) {
                   </div>
                 </Card>
 
-                {Object.entries(profile.pastResults).map(([year, results]) => (
-                  <Card key={year} className="p-6">
-                    <h3 className="text-lg font-semibold mb-4">Past Results - {year}</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {results.map((result: any) => (
-                        <Card key={result.id} className="p-4">
-                          <Image
-                            src={result.image || "/placeholder.svg"}
-                            alt={result.tournament}
-                            width={300}
-                            height={200}
-                            className="w-full h-32 object-cover rounded-lg mb-3"
-                          />
-                          <h4 className="font-semibold">{result.tournament}</h4>
-                          <p className="text-sm text-gray-600">{result.date}</p>
-                          <Badge className="mt-2">{result.result}</Badge>
-                        </Card>
+                <Card className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Past Results</h3>
+                  <div className="space-y-8">
+                    {Object.entries(profile.pastResults)
+                      .sort((a, b) => Number(b[0]) - Number(a[0]))
+                      .map(([year, results]) => (
+                        <div key={year}>
+                          <h4 className="text-md font-semibold mb-2">{year}</h4>
+                          <div className="grid md:grid-cols-2 gap-4">
+                            {results.map((result: any) => (
+                              <div key={result.id} className="p-4 border rounded-xl bg-white flex flex-col">
+                                <Image
+                                  src={result.image || "/placeholder.svg"}
+                                  alt={result.tournament}
+                                  width={300}
+                                  height={200}
+                                  className="w-full h-32 object-cover rounded-lg mb-3"
+                                />
+                                <h4 className="font-semibold">{result.tournament}</h4>
+                                <p className="text-sm text-gray-600">{result.date}</p>
+                                <Badge className="mt-2">{result.result}</Badge>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
                       ))}
-                    </div>
-                  </Card>
-                ))}
+                  </div>
+                </Card>
               </>
             )}
 
