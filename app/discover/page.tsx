@@ -6,13 +6,26 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { SimpleCalendar } from "@/components/ui/simple-calendar"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Search, Heart, Star, CalendarIcon, Users, Filter, Sparkles, User, Trophy, Building, Plus } from "lucide-react"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import {
+  Search,
+  Heart,
+  Star,
+  CalendarIcon,
+  Users,
+  Filter,
+  Sparkles,
+  Plus,
+  Menu,
+  User,
+  Trophy,
+  Building,
+} from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useState, useEffect } from "react"
@@ -35,10 +48,13 @@ export default function DiscoverPage() {
   const [selectedBudget, setSelectedBudget] = useState("")
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
+  const [selectedRating, setSelectedRating] = useState("")
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100)
+      // Calculate when bottom of search bar hits top of screen
+      const searchBarHeight = 200 // Approximate height of search bar section
+      setIsScrolled(window.scrollY > searchBarHeight)
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
@@ -57,7 +73,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
       achievements: "Olympic Qualifier",
       category: "talent",
-      talentType: "Athlete",
+      talentType: "Professional Athlete",
+      tags: ["Professional", "Olympic Level", "Tennis"],
       keywords: ["tennis", "olympic", "professional", "los angeles"],
     },
     {
@@ -71,7 +88,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?w=400&h=300&fit=crop",
       achievements: "NCAA Champion",
       category: "talent",
-      talentType: "Athlete",
+      talentType: "College Athlete",
+      tags: ["College", "NCAA", "Basketball"],
       keywords: ["basketball", "ncaa", "champion", "chicago"],
     },
     {
@@ -85,7 +103,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=300&fit=crop",
       achievements: "MLS Rising Star",
       category: "talent",
-      talentType: "Athlete",
+      talentType: "Semi-Pro Athlete",
+      tags: ["Semi-Professional", "Rising Star", "Soccer"],
       keywords: ["soccer", "mls", "rising star", "austin"],
     },
     {
@@ -99,7 +118,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       achievements: "State Champion",
       category: "talent",
-      talentType: "Athlete",
+      talentType: "Amateur Athlete",
+      tags: ["Amateur", "State Level", "Swimming"],
       keywords: ["swimming", "state", "champion", "miami"],
     },
     {
@@ -113,7 +133,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       achievements: "National Qualifier",
       category: "talent",
-      talentType: "Athlete",
+      talentType: "Professional Athlete",
+      tags: ["Professional", "National Level", "Track & Field"],
       keywords: ["track", "field", "national", "portland"],
     },
     {
@@ -127,7 +148,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
       achievements: "World Championship Qualifier",
       category: "talent",
-      talentType: "Athlete",
+      talentType: "Elite Athlete",
+      tags: ["Elite", "World Level", "Gymnastics"],
       keywords: ["gymnastics", "world", "championship", "denver"],
     },
     {
@@ -141,7 +163,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1494790108755-2616b332c1c2?w=400&h=300&fit=crop",
       achievements: "100K Followers",
       category: "talent",
-      talentType: "Creator",
+      talentType: "Content Creator",
+      tags: ["Influencer", "Social Media", "Content"],
       keywords: ["content", "creator", "social media", "san francisco"],
     },
     {
@@ -155,7 +178,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
       achievements: "Award-Winning Photographer",
       category: "talent",
-      talentType: "Creator",
+      talentType: "Creative Professional",
+      tags: ["Creative", "Award Winner", "Photography"],
       keywords: ["photography", "art", "visual", "new york"],
     },
     // Teams
@@ -170,7 +194,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       achievements: "Team of 12 Athletes",
       category: "team",
-      talentType: "Team",
+      talentType: "Athletic Team",
+      tags: ["Team", "Professional", "Track & Field"],
       keywords: ["running", "track", "team", "new york"],
     },
     {
@@ -184,7 +209,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop",
       achievements: "Tour de France Qualifiers",
       category: "team",
-      talentType: "Team",
+      talentType: "Professional Team",
+      tags: ["Team", "Elite", "Cycling"],
       keywords: ["cycling", "tour de france", "team", "denver"],
     },
     // Events
@@ -199,7 +225,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=300&fit=crop",
       achievements: "National Event",
       category: "event",
-      talentType: "Event",
+      talentType: "Championship Event",
+      tags: ["Event", "National", "Swimming"],
       keywords: ["swimming", "championships", "national", "miami"],
     },
   ]
@@ -255,7 +282,8 @@ export default function DiscoverPage() {
       readTime: "5 min read",
       image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
       tags: ["Performance", "Tennis", "ROI"],
-      summary: "Comprehensive analysis of Sarah Chen's sponsorship performance, social media engagement, and tournament results.",
+      summary:
+        "Comprehensive analysis of Sarah Chen's sponsorship performance, social media engagement, and tournament results.",
       isCreateCard: false,
     },
     {
@@ -266,7 +294,8 @@ export default function DiscoverPage() {
       readTime: "8 min read",
       image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=300&fit=crop",
       tags: ["YouTube", "Gaming", "Trends"],
-      summary: "Market trends for gaming and lifestyle YouTube creators, including average sponsorship rates and engagement metrics.",
+      summary:
+        "Market trends for gaming and lifestyle YouTube creators, including average sponsorship rates and engagement metrics.",
       isCreateCard: false,
     },
     {
@@ -288,7 +317,8 @@ export default function DiscoverPage() {
       readTime: "6 min read",
       image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop",
       tags: ["TikTok", "Social Media", "Brands"],
-      summary: "Comprehensive report on TikTok creator sponsorship rates, engagement metrics, and successful brand partnerships.",
+      summary:
+        "Comprehensive report on TikTok creator sponsorship rates, engagement metrics, and successful brand partnerships.",
       isCreateCard: false,
     },
     {
@@ -310,7 +340,8 @@ export default function DiscoverPage() {
       readTime: "8 min read",
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       tags: ["Instagram", "Fitness", "Wellness"],
-      summary: "Analysis of fitness and wellness Instagram influencers, their sponsorship rates, and audience demographics.",
+      summary:
+        "Analysis of fitness and wellness Instagram influencers, their sponsorship rates, and audience demographics.",
       isCreateCard: false,
     },
     {
@@ -332,7 +363,8 @@ export default function DiscoverPage() {
       readTime: "7 min read",
       image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop",
       tags: ["Twitch", "Gaming", "Streaming"],
-      summary: "Detailed study of Twitch streamer sponsorship deals, viewer engagement, and brand collaboration success rates.",
+      summary:
+        "Detailed study of Twitch streamer sponsorship deals, viewer engagement, and brand collaboration success rates.",
       isCreateCard: false,
     },
   ]
@@ -430,10 +462,10 @@ export default function DiscoverPage() {
                   activeTab === "talents"
                     ? "bg-gray-100 text-gray-900"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
+                } md:space-x-2`}
               >
                 <Users className="h-4 w-4" />
-                <span>Talents</span>
+                <span className="hidden md:inline">Talents</span>
               </button>
               <button
                 onClick={() => setActiveTab("events")}
@@ -441,10 +473,10 @@ export default function DiscoverPage() {
                   activeTab === "events"
                     ? "bg-gray-100 text-gray-900"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
+                } md:space-x-2`}
               >
                 <CalendarIcon className="h-4 w-4" />
-                <span>Events</span>
+                <span className="hidden md:inline">Events</span>
               </button>
               <button
                 onClick={() => setActiveTab("teams")}
@@ -452,29 +484,66 @@ export default function DiscoverPage() {
                   activeTab === "teams"
                     ? "bg-gray-100 text-gray-900"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                }`}
+                } md:space-x-2`}
               >
                 <Users className="h-4 w-4" />
-                <span>Teams</span>
+                <span className="hidden md:inline">Teams</span>
               </button>
             </nav>
           </div>
 
-          {/* User Actions Island */}
-          <div className="bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
+          {/* User Actions Island - Desktop */}
+          <div className="hidden md:flex bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
             <div className="flex items-center space-x-2">
+              <Sheet open={showFavorites} onOpenChange={setShowFavorites}>
+                <SheetTrigger asChild>
+                  <Button size="icon" variant="ghost" className="rounded-full">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left">
+                  <SheetHeader>
+                    <SheetTitle>Your Watchlist</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    {favorites.length === 0 ? (
+                      <p className="text-gray-600">No items in your watchlist yet.</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {allItems
+                          .filter((item) => favorites.includes(item.id))
+                          .map((item) => (
+                            <div key={item.id} className="flex items-center space-x-3 p-2 border rounded">
+                              <Image
+                                src={item.image || "/placeholder.svg"}
+                                alt={item.name}
+                                width={40}
+                                height={40}
+                                className="rounded"
+                              />
+                              <div>
+                                <p className="font-medium text-sm">{item.name}</p>
+                                <p className="text-xs text-gray-600">{item.sport}</p>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
               {isScrolled && (
                 <Button size="icon" variant="ghost" className="rounded-full">
                   <Search className="h-4 w-4" />
                 </Button>
               )}
-              <Button variant="ghost" className="text-sm font-medium px-4">
+              <Button variant="ghost" className="text-sm font-medium px-4 text-gray-900 bg-white hover:bg-gray-50">
                 Sign In
               </Button>
               <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
                 <DialogTrigger asChild>
                   <Button variant="ghost" className="text-sm font-medium px-4">
-                    Join Athlink
+                    Join
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl p-8">
@@ -522,45 +591,123 @@ export default function DiscoverPage() {
                   </div>
                 </DialogContent>
               </Dialog>
-
-              <Sheet open={showFavorites} onOpenChange={setShowFavorites}>
-                <SheetTrigger asChild>
-                  <Button size="icon" variant="ghost" className="rounded-full">
-                    <Heart className="h-4 w-4" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left">
-                  <SheetHeader>
-                    <SheetTitle>Your Watchlist</SheetTitle>
-                  </SheetHeader>
-                  <div className="mt-6">
-                    {favorites.length === 0 ? (
-                      <p className="text-gray-600">No items in your watchlist yet.</p>
-                    ) : (
-                      <div className="space-y-4">
-                        {allItems
-                          .filter((item) => favorites.includes(item.id))
-                          .map((item) => (
-                            <div key={item.id} className="flex items-center space-x-3 p-2 border rounded">
-                              <Image
-                                src={item.image || "/placeholder.svg"}
-                                alt={item.name}
-                                width={40}
-                                height={40}
-                                className="rounded"
-                              />
-                              <div>
-                                <p className="font-medium text-sm">{item.name}</p>
-                                <p className="text-xs text-gray-600">{item.sport}</p>
-                              </div>
-                            </div>
-                          ))}
-                      </div>
-                    )}
-                  </div>
-                </SheetContent>
-              </Sheet>
             </div>
+          </div>
+
+          {/* Mobile Hamburger Menu */}
+          <div className="md:hidden bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button size="icon" variant="ghost" className="rounded-full">
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right">
+                <SheetHeader>
+                  <SheetTitle>Menu</SheetTitle>
+                </SheetHeader>
+                <div className="mt-6 space-y-4">
+                  <Sheet open={showFavorites} onOpenChange={setShowFavorites}>
+                    <SheetTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-start">
+                        <Heart className="h-4 w-4 mr-2" />
+                        Watchlist
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left">
+                      <SheetHeader>
+                        <SheetTitle>Your Watchlist</SheetTitle>
+                      </SheetHeader>
+                      <div className="mt-6">
+                        {favorites.length === 0 ? (
+                          <p className="text-gray-600">No items in your watchlist yet.</p>
+                        ) : (
+                          <div className="space-y-4">
+                            {allItems
+                              .filter((item) => favorites.includes(item.id))
+                              .map((item) => (
+                                <div key={item.id} className="flex items-center space-x-3 p-2 border rounded">
+                                  <Image
+                                    src={item.image || "/placeholder.svg"}
+                                    alt={item.name}
+                                    width={40}
+                                    height={40}
+                                    className="rounded"
+                                  />
+                                  <div>
+                                    <p className="font-medium text-sm">{item.name}</p>
+                                    <p className="text-xs text-gray-600">{item.sport}</p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+                    </SheetContent>
+                  </Sheet>
+                  {isScrolled && (
+                    <Button variant="ghost" className="w-full justify-start">
+                      <Search className="h-4 w-4 mr-2" />
+                      Search
+                    </Button>
+                  )}
+                  <Button variant="ghost" className="w-full justify-start text-gray-900 bg-white hover:bg-gray-50">
+                    Sign In
+                  </Button>
+                  <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-start">
+                        Join
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl p-8">
+                      <DialogHeader className="text-center mb-8">
+                        <DialogTitle className="text-2xl font-semibold">What would you like to join as?</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid grid-cols-3 gap-6 mb-8">
+                        <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
+                          <div className="flex flex-col items-center text-center space-y-4">
+                            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                              <User className="h-10 w-10 text-gray-600" />
+                            </div>
+                            <h3 className="text-lg font-medium">Talent</h3>
+                          </div>
+                        </div>
+                        <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
+                          <div className="flex flex-col items-center text-center space-y-4">
+                            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                              <CalendarIcon className="h-10 w-10 text-gray-600" />
+                            </div>
+                            <h3 className="text-lg font-medium">Event Leader</h3>
+                          </div>
+                        </div>
+                        <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
+                          <div className="flex flex-col items-center text-center space-y-4">
+                            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                              <Trophy className="h-10 w-10 text-gray-600" />
+                            </div>
+                            <h3 className="text-lg font-medium">Team Leader</h3>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="border-t pt-6">
+                        <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
+                          <div className="flex flex-col items-center text-center space-y-4">
+                            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                              <Building className="h-10 w-10 text-gray-600" />
+                            </div>
+                            <h3 className="text-lg font-medium">Sponsor</h3>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-end mt-8">
+                        <Button className="bg-black text-white hover:bg-gray-800 px-8 py-2 rounded-lg">Next</Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
@@ -595,23 +742,26 @@ export default function DiscoverPage() {
                     <>
                       <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
                         <div className="w-full">
-                          <div className="text-xs font-semibold text-gray-900 mb-1">Type of talent</div>
+                          <div className="text-xs font-semibold text-gray-500 mb-1">TYPE OF TALENT</div>
                           <Select value={selectedTalentType} onValueChange={setSelectedTalentType}>
                             <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left">
                               <SelectValue placeholder="Select type..." />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="athlete">Athlete</SelectItem>
-                              <SelectItem value="creator">Creator</SelectItem>
-                              <SelectItem value="influencer">Influencer</SelectItem>
-                              <SelectItem value="artist">Artist</SelectItem>
+                              <SelectItem value="professional-athlete">Professional Athlete</SelectItem>
+                              <SelectItem value="college-athlete">College Athlete</SelectItem>
+                              <SelectItem value="semi-pro-athlete">Semi-Pro Athlete</SelectItem>
+                              <SelectItem value="amateur-athlete">Amateur Athlete</SelectItem>
+                              <SelectItem value="elite-athlete">Elite Athlete</SelectItem>
+                              <SelectItem value="content-creator">Content Creator</SelectItem>
+                              <SelectItem value="creative-professional">Creative Professional</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
                       <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
                         <div className="w-full">
-                          <div className="text-xs font-semibold text-gray-900 mb-1">Fit</div>
+                          <div className="text-xs font-semibold text-gray-500 mb-1">FIT</div>
                           <Select value={selectedFit} onValueChange={setSelectedFit}>
                             <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left">
                               <SelectValue placeholder="Select fit..." />
@@ -626,7 +776,7 @@ export default function DiscoverPage() {
                       </div>
                       <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
                         <div className="w-full">
-                          <div className="text-xs font-semibold text-gray-900 mb-1">Duration</div>
+                          <div className="text-xs font-semibold text-gray-500 mb-1">DURATION</div>
                           <div className="flex items-center space-x-2">
                             <Popover>
                               <PopoverTrigger asChild>
@@ -736,6 +886,44 @@ export default function DiscoverPage() {
                       <SelectItem value="25k+">$25K+</SelectItem>
                     </SelectContent>
                   </Select>
+                  <Select value={selectedRating} onValueChange={setSelectedRating}>
+                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 flex items-center">
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 mr-1" />
+                        <SelectValue placeholder="Rating" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="5">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-yellow-400" />
+                          ))}
+                          <span className="ml-2">5.0</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="4">
+                        <div className="flex items-center">
+                          {[...Array(4)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-yellow-400" />
+                          ))}
+                          <Star className="h-3 w-3 text-gray-300" />
+                          <span className="ml-2">4.0+</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="3">
+                        <div className="flex items-center">
+                          {[...Array(3)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-yellow-400" />
+                          ))}
+                          {[...Array(2)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 text-gray-300" />
+                          ))}
+                          <span className="ml-2">3.0+</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -777,13 +965,14 @@ export default function DiscoverPage() {
                           </div>
                         </div>
                       </div>
-                      <CardContent className="p-0 px-6 flex flex-col justify-between" style={{ minHeight: '180px' }}>
+                      <CardContent className="p-0 px-6 flex flex-col justify-between" style={{ minHeight: "180px" }}>
                         <div className="text-center flex-1 flex flex-col justify-center">
                           <p className="text-gray-600 text-sm leading-relaxed">
-                            Use our AI to create custom reports on talent performance, sponsorship ROI, and market trends.
+                            Use our AI to create custom reports on talent performance, sponsorship ROI, and market
+                            trends.
                           </p>
                         </div>
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button variant="outline" size="sm" className="w-full bg-transparent">
                           Create Report
                         </Button>
                       </CardContent>
@@ -792,7 +981,7 @@ export default function DiscoverPage() {
                     <>
                       <div className="relative mb-4 -mx-6 -mt-6">
                         <Image
-                          src={report.image}
+                          src={report.image || "/placeholder.svg"}
                           alt={report.title}
                           width={400}
                           height={300}
@@ -814,7 +1003,7 @@ export default function DiscoverPage() {
                         <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{report.title}</h3>
                         <p className="text-gray-600 text-sm mb-3 line-clamp-2">{report.subtitle}</p>
                         <p className="text-gray-500 text-xs mb-4 line-clamp-3">{report.summary}</p>
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button variant="outline" size="sm" className="w-full bg-transparent">
                           Read Report
                         </Button>
                       </CardContent>
@@ -828,7 +1017,7 @@ export default function DiscoverPage() {
               {filteredItems.slice(0, 8).map((item, index) => (
                 <Card
                   key={item.id}
-                  className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4"
+                  className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="relative mb-4 -mx-4 -mt-4">
@@ -857,8 +1046,8 @@ export default function DiscoverPage() {
                       />
                     </Button>
                   </div>
-                  <Link href={`/profile/${item.id}`}>
-                    <CardContent className="p-0 px-4">
+                  <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                    <CardContent className="p-0 px-4 flex flex-col flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
                         <div className="flex items-center">
@@ -869,22 +1058,23 @@ export default function DiscoverPage() {
                       <p className="text-gray-600 text-sm mb-1">
                         {item.sport} in {item.location}
                       </p>
-                      <p className="text-gray-600 text-sm mb-3">{item.achievements}</p>
+                      <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
 
-                      {item.currentFunding && item.goalFunding ? (
-                        <div className="mb-4">
-                          {renderProgressBar(item.currentFunding, item.goalFunding)}
-                        </div>
-                      ) : (
-                        <div className="flex items-baseline mb-4">
-                          <span className="font-semibold text-gray-900">{item.price}</span>
-                          <span className="text-gray-600 text-sm ml-1">{item.period}</span>
-                        </div>
-                      )}
-                      
-                      <Button variant="outline" size="sm" className="w-full">
-                        View Profile
-                      </Button>
+                      {/* Fixed bottom section */}
+                      <div className="mt-auto">
+                        {item.currentFunding && item.goalFunding ? (
+                          <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
+                        ) : (
+                          <div className="flex items-baseline mb-4">
+                            <span className="font-semibold text-gray-900">{item.price}</span>
+                            <span className="text-gray-600 text-sm ml-1">{item.period}</span>
+                          </div>
+                        )}
+
+                        <Button variant="outline" size="sm" className="w-full bg-transparent">
+                          View Profile
+                        </Button>
+                      </div>
                     </CardContent>
                   </Link>
                 </Card>
@@ -907,7 +1097,7 @@ export default function DiscoverPage() {
               {upAndComingItems.map((item, index) => (
                 <Card
                   key={item.id}
-                  className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4"
+                  className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 flex flex-col h-full"
                 >
                   <div className="relative mb-4 -mx-4 -mt-4">
                     <Image
@@ -935,8 +1125,8 @@ export default function DiscoverPage() {
                       />
                     </Button>
                   </div>
-                  <Link href={`/profile/${item.id}`}>
-                    <CardContent className="p-0 px-4">
+                  <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                    <CardContent className="p-0 px-4 flex flex-col flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
                         <div className="flex items-center">
@@ -947,13 +1137,21 @@ export default function DiscoverPage() {
                       <p className="text-gray-600 text-sm mb-1">
                         {item.sport} in {item.location}
                       </p>
-                      <p className="text-gray-600 text-sm mb-3">{item.achievements}</p>
-                      <div className="mb-4">
-                        {renderProgressBar(item.currentFunding, item.goalFunding)}
+                      <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
+                      {/* Fixed bottom section */}
+                      <div className="mt-auto">
+                        {item.currentFunding && item.goalFunding ? (
+                          <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
+                        ) : (
+                          <div className="flex items-baseline mb-4">
+                            <span className="font-semibold text-gray-900">{item.price}</span>
+                            <span className="text-gray-600 text-sm ml-1">{item.period}</span>
+                          </div>
+                        )}
+                        <Button variant="outline" size="sm" className="w-full bg-transparent">
+                          View Profile
+                        </Button>
                       </div>
-                      <Button variant="outline" size="sm" className="w-full">
-                        View Profile
-                      </Button>
                     </CardContent>
                   </Link>
                 </Card>
