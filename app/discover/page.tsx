@@ -533,13 +533,21 @@ export default function DiscoverPage() {
 
           {/* Navigation Tabs Island - Centered */}
           <div className="absolute left-1/2 transform -translate-x-1/2 bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2">
-            <nav className="flex items-center space-x-1">
+            <nav className="flex items-center space-x-1 relative">
+              {/* Sliding background */}
+              <div
+                className={`absolute top-0 bottom-0 bg-gray-100 rounded-full transition-all duration-300 ease-in-out ${
+                  activeTab === "talents"
+                    ? "left-0 w-[calc(33.333%-0.125rem)]"
+                    : activeTab === "events"
+                      ? "left-[calc(33.333%+0.125rem)] w-[calc(33.333%-0.25rem)]"
+                      : "left-[calc(66.666%+0.125rem)] w-[calc(33.333%-0.125rem)]"
+                }`}
+              />
               <button
                 onClick={() => setActiveTab("talents")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeTab === "talents"
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm transition-all duration-300 ${
+                  activeTab === "talents" ? "text-black font-medium" : "text-gray-600 hover:text-gray-900 font-medium"
                 } md:space-x-2`}
               >
                 <Users className="h-4 w-4" />
@@ -547,10 +555,8 @@ export default function DiscoverPage() {
               </button>
               <button
                 onClick={() => setActiveTab("events")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeTab === "events"
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm transition-all duration-300 ${
+                  activeTab === "events" ? "text-black font-medium" : "text-gray-600 hover:text-gray-900 font-medium"
                 } md:space-x-2`}
               >
                 <CalendarIcon className="h-4 w-4" />
@@ -558,10 +564,8 @@ export default function DiscoverPage() {
               </button>
               <button
                 onClick={() => setActiveTab("teams")}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  activeTab === "teams"
-                    ? "bg-gray-100 text-gray-900"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm transition-all duration-300 ${
+                  activeTab === "teams" ? "text-black font-medium" : "text-gray-600 hover:text-gray-900 font-medium"
                 } md:space-x-2`}
               >
                 <Users className="h-4 w-4" />
@@ -942,7 +946,7 @@ export default function DiscoverPage() {
                   {selectedTalentType === "athlete" && (
                     <div className="relative">
                       <Select value={selectedSport} onValueChange={setSelectedSport}>
-                        <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 pr-8">
+                        <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 flex items-center">
                           <SelectValue placeholder="Sport" />
                         </SelectTrigger>
                         <SelectContent>
@@ -959,7 +963,7 @@ export default function DiscoverPage() {
                       {selectedSport && (
                         <button
                           onClick={() => setSelectedSport("")}
-                          className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 w-3 h-3 flex items-center justify-center"
+                          className="ml-2 text-gray-600 hover:text-gray-800 w-4 h-4 flex items-center justify-center text-sm"
                         >
                           ×
                         </button>
@@ -968,7 +972,7 @@ export default function DiscoverPage() {
                   )}
                   <div className="relative">
                     <Select value={selectedExperience} onValueChange={setSelectedExperience}>
-                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 pr-8">
+                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 flex items-center">
                         <SelectValue placeholder="Experience Level" />
                       </SelectTrigger>
                       <SelectContent>
@@ -981,24 +985,17 @@ export default function DiscoverPage() {
                     {selectedExperience && (
                       <button
                         onClick={() => setSelectedExperience("")}
-                        className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 w-3 h-3 flex items-center justify-center"
+                        className="ml-2 text-gray-600 hover:text-gray-800 w-4 h-4 flex items-center justify-center text-sm"
                       >
                         ×
                       </button>
                     )}
                   </div>
-                  <BudgetSlider
-                    min={0}
-                    max={100000}
-                    step={1000}
-                    defaultValue={selectedBudget}
-                    onChange={setSelectedBudget}
-                  />
                   <div className="relative">
                     <Select value={selectedRating} onValueChange={setSelectedRating}>
-                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 flex items-center pr-8">
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 mr-2 text-gray-600" />
+                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 flex items-center">
+                        <div className="flex items-center gap-2">
+                          <Star className="h-4 w-4 text-gray-600" />
                           <SelectValue placeholder="Rating" />
                         </div>
                       </SelectTrigger>
@@ -1062,12 +1059,19 @@ export default function DiscoverPage() {
                     {selectedRating && (
                       <button
                         onClick={() => setSelectedRating("")}
-                        className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 w-3 h-3 flex items-center justify-center"
+                        className="ml-2 text-gray-600 hover:text-gray-800 w-4 h-4 flex items-center justify-center text-sm"
                       >
                         ×
                       </button>
                     )}
                   </div>
+                  <BudgetSlider
+                    min={0}
+                    max={100000}
+                    step={1000}
+                    defaultValue={selectedBudget}
+                    onChange={setSelectedBudget}
+                  />
                   <LocationFilter value={selectedLocation} onChange={setSelectedLocation} />
                 </div>
               </div>
@@ -1252,11 +1256,9 @@ export default function DiscoverPage() {
                       height={300}
                       className="w-full h-48 object-cover rounded-t-lg"
                     />
-                    {!selectedTalentType && (
-                      <Badge className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-white">
-                        {item.talentType}
-                      </Badge>
-                    )}
+                    <Badge className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-white">
+                      {item.talentType}
+                    </Badge>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -1283,16 +1285,10 @@ export default function DiscoverPage() {
                         {item.sport} in {item.location}
                       </p>
                       <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
+
                       {/* Fixed bottom section */}
                       <div className="mt-auto">
-                        {item.currentFunding && item.goalFunding ? (
-                          <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
-                        ) : (
-                          <div className="flex items-baseline mb-4">
-                            <span className="font-semibold text-gray-900">{item.price}</span>
-                            <span className="text-gray-600 text-sm ml-1">{item.period}</span>
-                          </div>
-                        )}
+                        <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
                         <Button variant="outline" size="sm" className="w-full bg-transparent">
                           View Profile
                         </Button>

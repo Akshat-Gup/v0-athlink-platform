@@ -39,16 +39,16 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="relative">
+        <div className="relative flex items-center">
           <button
             type="button"
-            className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm font-normal w-auto min-w-0 focus:outline-none flex items-center justify-center shadow-none pr-8"
+            className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm font-normal w-auto min-w-0 focus:outline-none flex items-center justify-center shadow-none gap-2"
           >
             {value[0] !== min || value[1] !== max
               ? `$${value[0].toLocaleString()} - $${value[1].toLocaleString()}`
               : "Budget Range"}
             <svg
-              className={`ml-2 h-4 w-4 transition-transform ${open ? "rotate-180" : "rotate-0"}`}
+              className={`h-4 w-4 transition-transform text-gray-600 ${open ? "rotate-180" : "rotate-0"}`}
               viewBox="0 0 20 20"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +69,7 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
                 setValue([min, max])
                 onChange?.([min, max])
               }}
-              className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 w-3 h-3 flex items-center justify-center"
+              className="ml-2 text-gray-600 hover:text-gray-800 w-4 h-4 flex items-center justify-center text-sm"
             >
               ×
             </button>
