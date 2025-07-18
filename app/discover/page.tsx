@@ -71,8 +71,8 @@ export default function DiscoverPage() {
           } else {
             // Fallback to height calculation
             const searchBarHeight = 200
-            setIsScrolled(window.scrollY > searchBarHeight)
-          }
+      setIsScrolled(window.scrollY > searchBarHeight)
+    }
           ticking = false
         })
         ticking = true
@@ -908,7 +908,7 @@ export default function DiscoverPage() {
                   ) : searchMode === "search" ? (
                     <div className="flex-1 px-6 py-4 h-16 flex items-center">
                       <Input
-                        placeholder="Search by keyword..."
+                        placeholder="Search by keyword"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="border-0 p-0 text-sm placeholder-gray-500 focus-visible:ring-0 h-auto"
@@ -923,7 +923,7 @@ export default function DiscoverPage() {
                           </div>
                           <Select value={selectedTalentType} onValueChange={setSelectedTalentType}>
                             <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
-                              <SelectValue placeholder="Select type..." />
+                              <SelectValue placeholder="Select type" />
                             </SelectTrigger>
                             <SelectContent>
                               {activeTab === "events" ? (
@@ -940,9 +940,9 @@ export default function DiscoverPage() {
                                 </>
                               ) : (
                                 <>
-                                  <SelectItem value="athlete">Athlete</SelectItem>
-                                  <SelectItem value="content-creator">Content Creator</SelectItem>
-                                  <SelectItem value="creative-professional">Creative Professional</SelectItem>
+                              <SelectItem value="athlete">Athlete</SelectItem>
+                              <SelectItem value="content-creator">Content Creator</SelectItem>
+                              <SelectItem value="creative-professional">Creative Professional</SelectItem>
                                 </>
                               )}
                             </SelectContent>
@@ -952,22 +952,22 @@ export default function DiscoverPage() {
                       <div className="w-px h-10 bg-gray-200"></div>
                       {activeTab !== "events" && (
                         <>
-                          <div className="flex-1 px-6 py-4 h-16 flex items-center">
-                            <div className="w-full">
-                              <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
-                              <Select value={selectedFit} onValueChange={setSelectedFit}>
+                      <div className="flex-1 px-6 py-4 h-16 flex items-center">
+                        <div className="w-full">
+                          <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
+                          <Select value={selectedFit} onValueChange={setSelectedFit}>
                                 <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
-                                  <SelectValue placeholder="Select fit..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="top-talent">Top Talent</SelectItem>
-                                  <SelectItem value="up-and-coming">Up and Coming</SelectItem>
-                                  <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                          <div className="w-px h-10 bg-gray-200"></div>
+                                  <SelectValue placeholder="Select fit" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="top-talent">Top Talent</SelectItem>
+                              <SelectItem value="up-and-coming">Up and Coming</SelectItem>
+                              <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="w-px h-10 bg-gray-200"></div>
                         </>
                       )}
                       <div className="flex-1 px-6 py-4 h-16 flex items-center">
@@ -1072,23 +1072,23 @@ export default function DiscoverPage() {
                           <Target className="h-4 w-4 text-gray-600" />
                           <SelectValue placeholder="Sport" />
                         </div>
-                      </SelectTrigger>
-                      <SelectContent>
+                        </SelectTrigger>
+                        <SelectContent>
                         {selectedSport && (
                           <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
                             Clear selection
                           </SelectItem>
                         )}
-                        <SelectItem value="tennis">Tennis</SelectItem>
-                        <SelectItem value="basketball">Basketball</SelectItem>
-                        <SelectItem value="soccer">Soccer</SelectItem>
-                        <SelectItem value="swimming">Swimming</SelectItem>
-                        <SelectItem value="track-field">Track & Field</SelectItem>
-                        <SelectItem value="gymnastics">Gymnastics</SelectItem>
-                        <SelectItem value="boxing">Boxing</SelectItem>
-                        <SelectItem value="cycling">Cycling</SelectItem>
-                      </SelectContent>
-                    </Select>
+                          <SelectItem value="tennis">Tennis</SelectItem>
+                          <SelectItem value="basketball">Basketball</SelectItem>
+                          <SelectItem value="soccer">Soccer</SelectItem>
+                          <SelectItem value="swimming">Swimming</SelectItem>
+                          <SelectItem value="track-field">Track & Field</SelectItem>
+                          <SelectItem value="gymnastics">Gymnastics</SelectItem>
+                          <SelectItem value="boxing">Boxing</SelectItem>
+                          <SelectItem value="cycling">Cycling</SelectItem>
+                        </SelectContent>
+                      </Select>
                   )}
                   {selectedTalentType === "athlete" && selectedSport && getLeaguesForSport(selectedSport).length > 0 && (
                     <Select value={selectedLeague} onValueChange={(value) => value === "__clear__" ? setSelectedLeague("") : setSelectedLeague(value)}>
@@ -1096,7 +1096,7 @@ export default function DiscoverPage() {
                         <div className="flex items-center gap-2">
                           <Trophy className="h-4 w-4 text-gray-600" />
                           <SelectValue placeholder="League" />
-                        </div>
+                    </div>
                       </SelectTrigger>
                       <SelectContent>
                         {selectedLeague && (
@@ -1118,88 +1118,88 @@ export default function DiscoverPage() {
                         <Award className="h-4 w-4 text-gray-600" />
                         <SelectValue placeholder="Experience Level" />
                       </div>
-                    </SelectTrigger>
-                    <SelectContent>
+                      </SelectTrigger>
+                      <SelectContent>
                       {selectedExperience && (
                         <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
                           Clear selection
                         </SelectItem>
                       )}
-                      <SelectItem value="professional">Professional</SelectItem>
-                      <SelectItem value="semi-professional">Semi-Professional</SelectItem>
-                      <SelectItem value="amateur">Amateur</SelectItem>
-                      <SelectItem value="college">College</SelectItem>
-                    </SelectContent>
-                  </Select>
+                        <SelectItem value="professional">Professional</SelectItem>
+                        <SelectItem value="semi-professional">Semi-Professional</SelectItem>
+                        <SelectItem value="amateur">Amateur</SelectItem>
+                        <SelectItem value="college">College</SelectItem>
+                      </SelectContent>
+                    </Select>
                   <Select value={selectedRating} onValueChange={(value) => value === "__clear__" ? setSelectedRating("") : setSelectedRating(value)}>
                     <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
-                      <div className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-gray-600" />
-                        <SelectValue placeholder="Rating" />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
+                        <div className="flex items-center gap-2">
+                          <Star className="h-4 w-4 text-gray-600" />
+                          <SelectValue placeholder="Rating" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
                       {selectedRating && (
                         <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
                           Clear selection
                         </SelectItem>
                       )}
-                      <SelectItem value="5">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          <span className="ml-2">5.0+ Stars</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="4.5">
-                        <div className="flex items-center">
-                          {[...Array(4)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          <Star
-                            className="h-3 w-3 fill-current text-black mr-0.5"
-                            style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-                          />
-                          <span className="ml-2">4.5+ Stars</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="4">
-                        <div className="flex items-center">
-                          {[...Array(4)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                          <span className="ml-2">4.0+ Stars</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="3.5">
-                        <div className="flex items-center">
-                          {[...Array(3)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          <Star
-                            className="h-3 w-3 fill-current text-black mr-0.5"
-                            style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-                          />
-                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                          <span className="ml-2">3.5+ Stars</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="3">
-                        <div className="flex items-center">
-                          {[...Array(3)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          {[...Array(2)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 text-gray-300 mr-0.5" />
-                          ))}
-                          <span className="ml-2">3.0+ Stars</span>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                        <SelectItem value="5">
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            <span className="ml-2">5.0+ Stars</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="4.5">
+                          <div className="flex items-center">
+                            {[...Array(4)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            <Star
+                              className="h-3 w-3 fill-current text-black mr-0.5"
+                              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
+                            />
+                            <span className="ml-2">4.5+ Stars</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="4">
+                          <div className="flex items-center">
+                            {[...Array(4)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                            <span className="ml-2">4.0+ Stars</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="3.5">
+                          <div className="flex items-center">
+                            {[...Array(3)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            <Star
+                              className="h-3 w-3 fill-current text-black mr-0.5"
+                              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
+                            />
+                            <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                            <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                            <span className="ml-2">3.5+ Stars</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="3">
+                          <div className="flex items-center">
+                            {[...Array(3)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            {[...Array(2)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 text-gray-300 mr-0.5" />
+                            ))}
+                            <span className="ml-2">3.0+ Stars</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   <BudgetSlider
                     min={0}
                     max={100000}
@@ -1216,9 +1216,9 @@ export default function DiscoverPage() {
 
       {/* Search Overlay */}
       {showSearchOverlay && (
-        <div className="fixed top-0 left-0 right-0 z-40">
-          <div className="bg-white border-b border-gray-200 shadow-lg">
-            <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-lg">
+          <div>
+            <div className="max-w-6xl mx-auto px-4 py-6 pt-24">
               <div className="flex items-center justify-center">
                 {/* Main Search Bar */}
                 <div className="flex-1 max-w-4xl relative">
@@ -1235,7 +1235,7 @@ export default function DiscoverPage() {
                     ) : searchMode === "search" ? (
                       <div className="flex-1 px-6 py-4 h-16 flex items-center">
                         <Input
-                          placeholder="Search by keyword..."
+                          placeholder="Search by keyword"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           className="border-0 p-0 text-sm placeholder-gray-500 focus-visible:ring-0 h-auto"
@@ -1250,7 +1250,7 @@ export default function DiscoverPage() {
                             </div>
                             <Select value={selectedTalentType} onValueChange={setSelectedTalentType}>
                               <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
-                                <SelectValue placeholder="Select type..." />
+                                <SelectValue placeholder="Select type" />
                               </SelectTrigger>
                               <SelectContent>
                                 {activeTab === "events" ? (
@@ -1284,7 +1284,7 @@ export default function DiscoverPage() {
                                  <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
                                  <Select value={selectedFit} onValueChange={setSelectedFit}>
                                    <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
-                                     <SelectValue placeholder="Select fit..." />
+                                     <SelectValue placeholder="Select fit" />
                                    </SelectTrigger>
                                    <SelectContent>
                                      <SelectItem value="top-talent">Top Talent</SelectItem>
@@ -1337,7 +1337,7 @@ export default function DiscoverPage() {
                       <div className="bg-gray-100 rounded-full p-1 flex relative">
                         {/* Sliding shimmering background */}
                         <div
-                          className={`absolute top-1 bottom-1 bg-green-500 rounded-full transition-all duration-300 ease-in-out shadow-lg shadow-green-500/25 animate-shimmer ${
+                          className={`absolute top-1 bottom-1 bg-green-500 rounded-full transition-all duration-300 ease-in-out shadow-lg shadow-green-500/25 animate-shimmer pointer-events-none ${
                             searchMode === "filter"
                               ? "left-1 w-[calc(33.333%-0.125rem)]"
                               : searchMode === "search"
@@ -1348,7 +1348,7 @@ export default function DiscoverPage() {
                         <Button
                           size="sm"
                           onClick={() => setSearchMode("filter")}
-                          className={`relative z-10 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent ${
+                          className={`relative z-20 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent cursor-pointer ${
                             searchMode === "filter"
                               ? "text-white"
                               : "text-gray-600"
@@ -1359,7 +1359,7 @@ export default function DiscoverPage() {
                         <Button
                           size="sm"
                           onClick={() => setSearchMode("search")}
-                          className={`relative z-10 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent ${
+                          className={`relative z-20 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent cursor-pointer ${
                             searchMode === "search"
                               ? "text-white"
                               : "text-gray-600"
@@ -1370,7 +1370,7 @@ export default function DiscoverPage() {
                         <Button
                           size="sm"
                           onClick={() => setSearchMode("ai")}
-                          className={`relative z-10 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent ${
+                          className={`relative z-20 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent cursor-pointer ${
                             searchMode === "ai"
                               ? "text-white"
                               : "text-gray-600"
@@ -1384,7 +1384,7 @@ export default function DiscoverPage() {
                         size="icon" 
                         variant="ghost" 
                         onClick={() => setShowSearchOverlay(false)}
-                        className="rounded-full h-10 w-10 ml-2 bg-gray-100 hover:bg-gray-200"
+                        className="rounded-full h-10 w-10 ml-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
                       >
                         ×
                       </Button>
@@ -1432,7 +1432,7 @@ export default function DiscoverPage() {
                           <div className="flex items-center gap-2">
                             <Trophy className="h-4 w-4 text-gray-600" />
                             <SelectValue placeholder="League" />
-                          </div>
+                  </div>
                         </SelectTrigger>
                         <SelectContent>
                           {selectedLeague && (
@@ -1536,13 +1536,13 @@ export default function DiscoverPage() {
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                    <BudgetSlider
-                      min={0}
-                      max={100000}
-                      step={1000}
-                      onChange={setSelectedBudget}
-                    />
-                    <LocationFilter value={selectedLocation} onChange={setSelectedLocation} />
+                  <BudgetSlider
+                    min={0}
+                    max={100000}
+                    step={1000}
+                    onChange={setSelectedBudget}
+                  />
+                  <LocationFilter value={selectedLocation} onChange={setSelectedLocation} />
                   </div>
                 </div>
               </div>
@@ -1555,8 +1555,8 @@ export default function DiscoverPage() {
       <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ${isScrolled ? "pt-24" : ""}`}>
         {searchMode === "ai" ? (
           /* AI Reports Section */
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-6">
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-gray-900">Past AI Industry Reports</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1790,15 +1790,15 @@ export default function DiscoverPage() {
                               </div>
                             ) : null}
 
-                            <Button variant="outline" size="sm" className="w-full bg-transparent">
-                              View Profile
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Link>
-                    </Card>
-                  ))}
-                </div>
+                        <Button variant="outline" size="sm" className="w-full bg-transparent">
+                          View Profile
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Link>
+                </Card>
+              ))}
+            </div>
               </section>
             )}
 
@@ -1887,20 +1887,20 @@ export default function DiscoverPage() {
                     </Card>
                   ))}
                 </div>
-              </section>
+        </section>
             )}
 
-            {/* Up and Coming Section */}
+        {/* Up and Coming Section */}
             {shouldShowSection("up-and-coming") && (
-              <section className="mb-12">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-semibold text-gray-900">Up and Coming</h2>
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900">Up and Coming</h2>
                   <Link href={`/discover/${activeTab}`}>
-                    <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                      Show all
-                    </Button>
+              <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                Show all
+              </Button>
                   </Link>
-                </div>
+            </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {getItemsByFit("up-and-coming").slice(0, 8).map((item, index) => (
                     <Card
@@ -1989,21 +1989,21 @@ export default function DiscoverPage() {
                     </Button>
                   </Link>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                   {getItemsByFit("brand-ambassador").slice(0, 8).map((item, index) => (
-                    <Card
-                      key={item.id}
+                <Card
+                  key={item.id}
                       className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
                       style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <div className="relative mb-4 -mx-4 -mt-4">
-                        <Image
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          width={400}
-                          height={300}
-                          className="w-full h-48 object-cover rounded-t-lg"
-                        />
+                >
+                  <div className="relative mb-4 -mx-4 -mt-4">
+                    <Image
+                      src={item.image || "/placeholder.svg"}
+                      alt={item.name}
+                      width={400}
+                      height={300}
+                      className="w-full h-48 object-cover rounded-t-lg"
+                    />
                         {!selectedTalentType && (
                           <Badge 
                             className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
@@ -2013,40 +2013,40 @@ export default function DiscoverPage() {
                               setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, '-'))
                             }}
                           >
-                            {item.talentType}
-                          </Badge>
+                      {item.talentType}
+                    </Badge>
                         )}
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
-                          onClick={(e) => toggleFavorite(item.id, e)}
-                        >
-                          <Heart
-                            className={`h-4 w-4 transition-all ${
-                              favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
-                            }`}
-                          />
-                        </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
+                      onClick={(e) => toggleFavorite(item.id, e)}
+                    >
+                      <Heart
+                        className={`h-4 w-4 transition-all ${
+                          favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+                        }`}
+                      />
+                    </Button>
+                  </div>
+                  <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                    <CardContent className="p-0 px-4 flex flex-col flex-1">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 fill-current text-gray-900" />
+                          <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
+                        </div>
                       </div>
-                      <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
-                        <CardContent className="p-0 px-4 flex flex-col flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
-                            <div className="flex items-center">
-                              <Star className="h-4 w-4 fill-current text-gray-900" />
-                              <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
-                            </div>
-                          </div>
-                          <p className="text-gray-600 text-sm mb-1">
-                            {item.sport} in {item.location}
-                          </p>
-                          <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
+                      <p className="text-gray-600 text-sm mb-1">
+                        {item.sport} in {item.location}
+                      </p>
+                      <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
 
-                          {/* Fixed bottom section */}
-                          <div className="mt-auto">
+                      {/* Fixed bottom section */}
+                      <div className="mt-auto">
                             {item.currentFunding && item.goalFunding ? (
-                              <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
+                        <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
                             ) : 'price' in item && 'period' in item ? (
                               <div className="flex items-baseline mb-4">
                                 <span className="font-semibold text-gray-900">{(item as any).price}</span>
@@ -2054,16 +2054,16 @@ export default function DiscoverPage() {
                               </div>
                             ) : null}
 
-                            <Button variant="outline" size="sm" className="w-full bg-transparent">
-                              View Profile
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Link>
-                    </Card>
-                  ))}
-                </div>
-              </section>
+                        <Button variant="outline" size="sm" className="w-full bg-transparent">
+                          View Profile
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          </section>
             )}
 
 

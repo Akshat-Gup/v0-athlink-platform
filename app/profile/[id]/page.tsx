@@ -49,6 +49,8 @@ export default function ProfilePage({ params }: PageProps) {
   const [showYoutubeModal, setShowYoutubeModal] = useState(false)
   const [showInstagramModal, setShowInstagramModal] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
+  const [showAllDemographics, setShowAllDemographics] = useState(false)
+  const [showAllPerformanceStats, setShowAllPerformanceStats] = useState(false)
 
   // Mock data - in real app this would come from API
   const profile = {
@@ -154,41 +156,49 @@ export default function ProfilePage({ params }: PageProps) {
           id: 1,
           url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
           title: "Training Session",
+          category: "Training",
         },
         {
           id: 2,
           url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
           title: "Victory Celebration",
+          category: "Showcase",
         },
         {
           id: 3,
           url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
           title: "Championship Match",
+          category: "Showcase",
         },
         {
           id: 4,
           url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
           title: "Practice Court",
+          category: "Training",
         },
         {
           id: 5,
           url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
           title: "Awards Ceremony",
+          category: "Events",
         },
         {
           id: 6,
           url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
           title: "Team Photo",
+          category: "Behind the Scenes",
         },
         {
           id: 7,
           url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
           title: "Gym Training",
+          category: "Training",
         },
         {
           id: 8,
           url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
           title: "Media Interview",
+          category: "Behind the Scenes",
         },
       ],
       videos: [
@@ -196,26 +206,31 @@ export default function ProfilePage({ params }: PageProps) {
           id: 1,
           url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
           title: "Match Highlights",
+          category: "Competition",
         },
         {
           id: 2,
           url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
           title: "Training Montage",
+          category: "Training",
         },
         {
           id: 3,
           url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
           title: "Behind the Scenes",
+          category: "Behind the Scenes",
         },
         {
           id: 4,
           url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
           title: "Tournament Prep",
+          category: "Training",
         },
         {
           id: 5,
           url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
           title: "Victory Speech",
+          category: "Competition",
         },
       ],
       youtube: [
@@ -288,25 +303,33 @@ export default function ProfilePage({ params }: PageProps) {
     )
   }
 
-  const renderStatsGrid = (stats: any[], title: string) => (
-    <Card className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <Button variant="ghost" className="text-sm text-gray-600 hover:text-gray-900">
-          View All Stats →
-        </Button>
-      </div>
-      <div className="flex space-x-4 overflow-x-auto pb-2">
-        {stats.map((stat, index) => (
-          <div key={index} className="flex-shrink-0 bg-gray-50 rounded-2xl p-6 min-w-[140px] text-center">
-            <div className="text-2xl mb-2">{stat.icon}</div>
-            <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-            <div className="text-xs text-gray-600 uppercase tracking-wide">{stat.label}</div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  )
+  const renderStatsGrid = (stats: any[], title: string, showAll: boolean, setShowAll: (show: boolean) => void) => {
+    const displayStats = showAll ? stats : stats.slice(0, 4)
+    
+    return (
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">{title}</h3>
+          <Button 
+            variant="ghost" 
+            className="text-sm text-gray-600 hover:text-gray-900"
+            onClick={() => setShowAll(!showAll)}
+          >
+            {showAll ? "Show Less" : `View All ${stats.length} Stats`} →
+          </Button>
+        </div>
+        <div className="flex space-x-4 overflow-x-auto pb-2">
+          {displayStats.map((stat, index) => (
+            <div key={index} className="flex-shrink-0 bg-gray-50 rounded-2xl p-6 min-w-[140px] text-center">
+              <div className="text-2xl mb-2">{stat.icon}</div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
+              <div className="text-xs text-gray-600 uppercase tracking-wide">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-white pt-6">
@@ -316,7 +339,7 @@ export default function ProfilePage({ params }: PageProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="fixed top-8 left-2 sm:left-4 lg:left-6 xl:left-[max(1rem,calc((100vw-80rem)/2))] z-50 bg-white/90 hover:bg-white rounded-full shadow-lg backdrop-blur-sm"
+            className="fixed top-8 left-1 sm:left-2 lg:left-4 xl:left-[max(0.5rem,calc((100vw-80rem)/2-1rem))] z-50 bg-white hover:bg-gray-50 rounded-full shadow-lg"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -356,10 +379,17 @@ export default function ProfilePage({ params }: PageProps) {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{profile.country}</span>
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-lg">🎾</span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center bg-gray-100 rounded-full px-3 py-1 gap-2">
+                    <Image
+                      src={profile.image || "/placeholder.svg"}
+                      alt={profile.name}
+                      width={20}
+                      height={20}
+                      className="rounded-full object-cover"
+                    />
+                    <span className="text-sm">{profile.country}</span>
+                    <span className="text-sm">🎾</span>
                   </div>
                 </div>
               </div>
@@ -368,10 +398,10 @@ export default function ProfilePage({ params }: PageProps) {
                   <Star className="h-4 w-4 fill-current text-gray-900 mr-1" />
                   <span className="text-sm">{profile.rating}</span>
                 </div>
-                <div className="flex items-center">
+                <Link href={`/discover?location=${encodeURIComponent(profile.location)}`} className="flex items-center hover:text-green-600 transition-colors cursor-pointer">
                   <MapPin className="h-4 w-4 mr-1" />
                   <span className="text-sm">{profile.location}</span>
-                </div>
+                </Link>
                 <Badge variant="secondary">{profile.achievements}</Badge>
               </div>
             </div>
@@ -469,7 +499,7 @@ export default function ProfilePage({ params }: PageProps) {
                     }`}
                   >
                     <Users className="h-4 w-4" />
-                    <span>Overview</span>
+                    <span className="hidden sm:inline">Overview</span>
                   </button>
                   <button
                     onClick={() => setActiveTab("results")}
@@ -480,7 +510,7 @@ export default function ProfilePage({ params }: PageProps) {
                     }`}
                   >
                     <Trophy className="h-4 w-4" />
-                    <span>Results</span>
+                    <span className="hidden sm:inline">Results</span>
                   </button>
                   <button
                     onClick={() => setActiveTab("media")}
@@ -491,7 +521,7 @@ export default function ProfilePage({ params }: PageProps) {
                     }`}
                   >
                     <CalendarIcon className="h-4 w-4" />
-                    <span>Media</span>
+                    <span className="hidden sm:inline">Media</span>
                   </button>
                 </div>
               </div>
@@ -522,8 +552,8 @@ export default function ProfilePage({ params }: PageProps) {
                   </div>
                 </Card>
 
-                {renderStatsGrid(profile.demographics, "Demographics")}
-                {renderStatsGrid(profile.performanceStats, "Performance Stats")}
+                {renderStatsGrid(profile.demographics, "Demographics", showAllDemographics, setShowAllDemographics)}
+                {renderStatsGrid(profile.performanceStats, "Performance Stats", showAllPerformanceStats, setShowAllPerformanceStats)}
 
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold mb-4">Ranking Progress</h3>
@@ -547,6 +577,15 @@ export default function ProfilePage({ params }: PageProps) {
                       <Bar dataKey="wins" fill="#10b981" />
                     </BarChart>
                   </ResponsiveContainer>
+                </Card>
+
+                {/* Team Section */}
+                <Card className="p-6">
+                  <h3 className="text-lg font-semibold mb-4">Team</h3>
+                  <div className="text-gray-600 text-center py-8">
+                    <Users className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+                    <p className="text-sm">Team members will be displayed here</p>
+                  </div>
                 </Card>
               </>
             )}
@@ -626,21 +665,36 @@ export default function ProfilePage({ params }: PageProps) {
                       </div>
                     </Card>
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl">
+                  <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Photos</DialogTitle>
                     </DialogHeader>
-                    <div className="grid md:grid-cols-3 gap-4">
-                      {profile.mediaGallery.photos.map((photo) => (
-                        <Image
-                          key={photo.id}
-                          src={photo.url || "/placeholder.svg"}
-                          alt={photo.title}
-                          width={400}
-                          height={300}
-                          className="w-full h-48 object-cover rounded-lg"
-                        />
-                      ))}
+                    <div className="space-y-8">
+                      {["Training", "Showcase", "Events", "Behind the Scenes"].map(category => {
+                        const categoryPhotos = profile.mediaGallery.photos.filter(photo => photo.category === category)
+                        if (categoryPhotos.length === 0) return null
+                        
+                        return (
+                          <div key={category}>
+                            <h4 className="text-lg font-semibold mb-4">{category}</h4>
+                            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+                              {categoryPhotos.map((photo) => (
+                                <div key={photo.id} className="break-inside-avoid">
+                                  <Image
+                                    src={photo.url || "/placeholder.svg"}
+                                    alt={photo.title}
+                                    width={400}
+                                    height={300}
+                                    className="w-full rounded-lg object-cover"
+                                    style={{ height: 'auto' }}
+                                  />
+                                  <p className="text-sm text-gray-600 mt-2 px-1">{photo.title}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -668,25 +722,41 @@ export default function ProfilePage({ params }: PageProps) {
                       </div>
                     </Card>
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl">
+                  <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle>Videos</DialogTitle>
                     </DialogHeader>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {profile.mediaGallery.videos.map((video) => (
-                        <div key={video.id} className="relative">
-                          <Image
-                            src={video.url || "/placeholder.svg"}
-                            alt={video.title}
-                            width={400}
-                            height={300}
-                            className="w-full h-48 object-cover rounded-lg"
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Play className="h-12 w-12 text-white bg-black bg-opacity-50 rounded-full p-3" />
+                    <div className="space-y-8">
+                      {["Competition", "Training", "Behind the Scenes"].map(category => {
+                        const categoryVideos = profile.mediaGallery.videos.filter(video => video.category === category)
+                        if (categoryVideos.length === 0) return null
+                        
+                        return (
+                          <div key={category}>
+                            <h4 className="text-lg font-semibold mb-4">{category}</h4>
+                            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+                              {categoryVideos.map((video) => (
+                                <div key={video.id} className="break-inside-avoid">
+                                  <div className="relative">
+                                    <Image
+                                      src={video.url || "/placeholder.svg"}
+                                      alt={video.title}
+                                      width={400}
+                                      height={300}
+                                      className="w-full rounded-lg object-cover"
+                                      style={{ height: 'auto' }}
+                                    />
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                      <Play className="h-12 w-12 text-white bg-black bg-opacity-50 rounded-full p-3" />
+                                    </div>
+                                  </div>
+                                  <p className="text-sm text-gray-600 mt-2 px-1">{video.title}</p>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -783,19 +853,12 @@ export default function ProfilePage({ params }: PageProps) {
               </div>
             )}
 
-            {/* Team Section */}
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Team</h3>
-              <div className="text-gray-600 text-center py-8">
-                <Users className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                <p className="text-sm">Team members will be displayed here</p>
-              </div>
-            </Card>
+
           </div>
 
           {/* Scrollable Sticky Sidebar with Enhanced Shadows */}
           <div className="space-y-6 ml-8">
-            <div className="sticky top-6 space-y-6 max-h-[calc(100vh-3rem)] overflow-y-auto">
+            <div className="sticky top-6 space-y-6 max-h-[calc(100vh-3rem)] overflow-y-auto overflow-x-visible px-2 -mx-2">
               <Card className="p-6 shadow-xl border-0">
                 <h3 className="text-lg font-semibold mb-4">Campaign Progress</h3>
                 {renderProgressBar(profile.currentFunding, profile.goalFunding)}
