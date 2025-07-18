@@ -1,7 +1,8 @@
+"use client"
+
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Trophy, Medal, Award, Target, Clock, Calendar, MapPin, Star } from "lucide-react"
+import { Card } from "@/components/ui/card"
+import { Trophy, Medal, Award, Target, Star } from "lucide-react"
 
 interface Achievement {
   id: string
@@ -81,25 +82,25 @@ const mockAchievements: Achievement[] = [
 ]
 
 const getAchievementIcon = (iconType: string, type: string) => {
-  const iconProps = { className: "h-12 w-12" }
+  const base = "h-12 w-12"
 
   switch (iconType) {
     case "trophy":
-      return <Trophy {...iconProps} className="h-12 w-12 text-yellow-600" />
+      return <Trophy className={`${base} text-yellow-600`} />
     case "medal":
-      return <Medal {...iconProps} className="h-12 w-12 text-orange-600" />
+      return <Medal className={`${base} text-orange-600`} />
     case "award":
-      return <Award {...iconProps} className="h-12 w-12 text-purple-600" />
+      return <Award className={`${base} text-purple-600`} />
     case "target":
-      return <Target {...iconProps} className="h-12 w-12 text-green-600" />
+      return <Target className={`${base} text-green-600`} />
     case "star":
-      return <Star {...iconProps} className="h-12 w-12 text-blue-600" />
+      return <Star className={`${base} text-blue-600`} />
     default:
-      // Default icon based on type
-      if (type === "competition") return <Trophy {...iconProps} className="h-12 w-12 text-yellow-600" />
-      if (type === "award") return <Award {...iconProps} className="h-12 w-12 text-purple-600" />
-      if (type === "personal") return <Target {...iconProps} className="h-12 w-12 text-green-600" />
-      return <Medal {...iconProps} className="h-12 w-12 text-orange-600" />
+      // Fallback based on achievement type
+      if (type === "competition") return <Trophy className={`${base} text-yellow-600`} />
+      if (type === "award") return <Award className={`${base} text-purple-600`} />
+      if (type === "personal") return <Target className={`${base} text-green-600`} />
+      return <Medal className={`${base} text-orange-600`} />
   }
 }
 
@@ -120,7 +121,7 @@ const getTypeColor = (type: string) => {
 
 export function AchievementsSection() {
   const [showAll, setShowAll] = useState(false)
-  
+
   const displayedAchievements = showAll ? mockAchievements : mockAchievements.slice(0, 2)
 
   return (
@@ -133,32 +134,28 @@ export function AchievementsSection() {
             <div className="w-full h-32 bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
               {getAchievementIcon(achievement.icon || "", achievement.type)}
             </div>
-            
+
             {/* Title - Value */}
             <h4 className="font-semibold">
               {achievement.title} - {achievement.value}
             </h4>
-            
+
             {/* Event */}
-            {achievement.event && (
-              <p className="text-sm text-gray-600">{achievement.event}</p>
-            )}
-            
+            {achievement.event && <p className="text-sm text-gray-600">{achievement.event}</p>}
+
             {/* Date */}
-            {achievement.date && (
-              <p className="text-sm text-gray-600">{achievement.date}</p>
-            )}
+            {achievement.date && <p className="text-sm text-gray-600">{achievement.date}</p>}
           </Card>
         ))}
       </div>
 
       {/* View All Button */}
       <div className="mt-6 text-center">
-        <button 
+        <button
           onClick={() => setShowAll(!showAll)}
           className="text-sm text-green-600 hover:text-green-700 font-medium"
         >
-          {showAll ? 'Show Less ↑' : 'View All Achievements →'}
+          {showAll ? "Show Less ↑" : "View All Achievements →"}
         </button>
       </div>
     </Card>

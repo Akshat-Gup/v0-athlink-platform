@@ -63,6 +63,21 @@ export default function DiscoverPage() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    // Reset all filters when switching tabs
+    setSearchQuery("")
+    setAiQuery("")
+    setSelectedTalentType("")
+    setSelectedFit("")
+    setSelectedSport("")
+    setSelectedExperience("")
+    setSelectedBudget([0, 10000])
+    setSelectedLocation("")
+    setStartDate(undefined)
+    setEndDate(undefined)
+    setSelectedRating("")
+  }, [activeTab])
+
   const allItems = [
     // Talents
     {
@@ -925,104 +940,134 @@ export default function DiscoverPage() {
                 {/* Filter Buttons Below Search Bar */}
                 <div className="flex items-center justify-center space-x-3 mt-4">
                   {selectedTalentType === "athlete" && (
-                    <Select value={selectedSport} onValueChange={setSelectedSport}>
-                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0">
-                        <SelectValue placeholder="Sport" />
+                    <div className="relative">
+                      <Select value={selectedSport} onValueChange={setSelectedSport}>
+                        <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 pr-8">
+                          <SelectValue placeholder="Sport" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="tennis">Tennis</SelectItem>
+                          <SelectItem value="basketball">Basketball</SelectItem>
+                          <SelectItem value="soccer">Soccer</SelectItem>
+                          <SelectItem value="swimming">Swimming</SelectItem>
+                          <SelectItem value="track-field">Track & Field</SelectItem>
+                          <SelectItem value="gymnastics">Gymnastics</SelectItem>
+                          <SelectItem value="boxing">Boxing</SelectItem>
+                          <SelectItem value="cycling">Cycling</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {selectedSport && (
+                        <button
+                          onClick={() => setSelectedSport("")}
+                          className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 w-3 h-3 flex items-center justify-center"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  <div className="relative">
+                    <Select value={selectedExperience} onValueChange={setSelectedExperience}>
+                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 pr-8">
+                        <SelectValue placeholder="Experience Level" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="tennis">Tennis</SelectItem>
-                        <SelectItem value="basketball">Basketball</SelectItem>
-                        <SelectItem value="soccer">Soccer</SelectItem>
-                        <SelectItem value="swimming">Swimming</SelectItem>
-                        <SelectItem value="track-field">Track & Field</SelectItem>
-                        <SelectItem value="gymnastics">Gymnastics</SelectItem>
-                        <SelectItem value="boxing">Boxing</SelectItem>
-                        <SelectItem value="cycling">Cycling</SelectItem>
+                        <SelectItem value="professional">Professional</SelectItem>
+                        <SelectItem value="semi-professional">Semi-Professional</SelectItem>
+                        <SelectItem value="amateur">Amateur</SelectItem>
+                        <SelectItem value="college">College</SelectItem>
                       </SelectContent>
                     </Select>
-                  )}
-                  <Select value={selectedExperience} onValueChange={setSelectedExperience}>
-                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0">
-                      <SelectValue placeholder="Experience Level" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="professional">Professional</SelectItem>
-                      <SelectItem value="semi-professional">Semi-Professional</SelectItem>
-                      <SelectItem value="amateur">Amateur</SelectItem>
-                      <SelectItem value="college">College</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    {selectedExperience && (
+                      <button
+                        onClick={() => setSelectedExperience("")}
+                        className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 w-3 h-3 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
                   <BudgetSlider
                     min={0}
                     max={100000}
                     step={1000}
                     defaultValue={selectedBudget}
-                    onCommit={setSelectedBudget}
+                    onChange={setSelectedBudget}
                   />
-                  <Select value={selectedRating} onValueChange={setSelectedRating}>
-                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 flex items-center">
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 mr-1 text-gray-600" />
-                        <SelectValue placeholder="Rating" />
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5">
+                  <div className="relative">
+                    <Select value={selectedRating} onValueChange={setSelectedRating}>
+                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 flex items-center pr-8">
                         <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          <span className="ml-2">5.0+ Stars</span>
+                          <Star className="h-4 w-4 mr-2 text-gray-600" />
+                          <SelectValue placeholder="Rating" />
                         </div>
-                      </SelectItem>
-                      <SelectItem value="4.5">
-                        <div className="flex items-center">
-                          {[...Array(4)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          <Star
-                            className="h-3 w-3 fill-current text-black mr-0.5"
-                            style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-                          />
-                          <span className="ml-2">4.5+ Stars</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="4">
-                        <div className="flex items-center">
-                          {[...Array(4)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                          <span className="ml-2">4.0+ Stars</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="3.5">
-                        <div className="flex items-center">
-                          {[...Array(3)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          <Star
-                            className="h-3 w-3 fill-current text-black mr-0.5"
-                            style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-                          />
-                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                          <span className="ml-2">3.5+ Stars</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="3">
-                        <div className="flex items-center">
-                          {[...Array(3)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                          ))}
-                          {[...Array(2)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 text-gray-300 mr-0.5" />
-                          ))}
-                          <span className="ml-2">3.0+ Stars</span>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            <span className="ml-2">5.0+ Stars</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="4.5">
+                          <div className="flex items-center">
+                            {[...Array(4)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            <Star
+                              className="h-3 w-3 fill-current text-black mr-0.5"
+                              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
+                            />
+                            <span className="ml-2">4.5+ Stars</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="4">
+                          <div className="flex items-center">
+                            {[...Array(4)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                            <span className="ml-2">4.0+ Stars</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="3.5">
+                          <div className="flex items-center">
+                            {[...Array(3)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            <Star
+                              className="h-3 w-3 fill-current text-black mr-0.5"
+                              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
+                            />
+                            <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                            <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                            <span className="ml-2">3.5+ Stars</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="3">
+                          <div className="flex items-center">
+                            {[...Array(3)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                            ))}
+                            {[...Array(2)].map((_, i) => (
+                              <Star key={i} className="h-3 w-3 text-gray-300 mr-0.5" />
+                            ))}
+                            <span className="ml-2">3.0+ Stars</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {selectedRating && (
+                      <button
+                        onClick={() => setSelectedRating("")}
+                        className="absolute right-6 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 w-3 h-3 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
                   <LocationFilter value={selectedLocation} onChange={setSelectedLocation} />
                 </div>
               </div>
