@@ -315,7 +315,7 @@ export default function ProfilePage({ params }: PageProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="fixed top-10 left-2 sm:left-4 lg:left-6 xl:left-[max(1rem,calc((100vw-80rem)/2))] z-50 bg-white/90 hover:bg-white rounded-full shadow-lg backdrop-blur-sm"
+            className="fixed top-8 left-2 sm:left-4 lg:left-6 xl:left-[max(1rem,calc((100vw-80rem)/2))] z-50 bg-white/90 hover:bg-white rounded-full shadow-lg backdrop-blur-sm"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
