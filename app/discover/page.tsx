@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { BudgetSlider } from "@/components/custom/button-slider"
+import { LocationFilter } from "@/components/custom/location-filter"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { SimpleCalendar } from "@/components/ui/simple-calendar"
 import { Progress } from "@/components/ui/progress"
@@ -47,6 +48,7 @@ export default function DiscoverPage() {
   const [selectedSport, setSelectedSport] = useState("")
   const [selectedExperience, setSelectedExperience] = useState("")
   const [selectedBudget, setSelectedBudget] = useState<[number, number]>([0, 10000])
+  const [selectedLocation, setSelectedLocation] = useState("")
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
   const [selectedRating, setSelectedRating] = useState("")
@@ -74,7 +76,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
       achievements: "Olympic Qualifier",
       category: "talent",
-      talentType: "Professional Athlete",
+      talentType: "Athlete",
+      fit: "top-talent",
       tags: ["Professional", "Olympic Level", "Tennis"],
       keywords: ["tennis", "olympic", "professional", "los angeles"],
     },
@@ -89,7 +92,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?w=400&h=300&fit=crop",
       achievements: "NCAA Champion",
       category: "talent",
-      talentType: "College Athlete",
+      talentType: "Athlete",
+      fit: "top-talent",
       tags: ["College", "NCAA", "Basketball"],
       keywords: ["basketball", "ncaa", "champion", "chicago"],
     },
@@ -104,7 +108,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=300&fit=crop",
       achievements: "MLS Rising Star",
       category: "talent",
-      talentType: "Semi-Pro Athlete",
+      talentType: "Athlete",
+      fit: "up-and-coming",
       tags: ["Semi-Professional", "Rising Star", "Soccer"],
       keywords: ["soccer", "mls", "rising star", "austin"],
     },
@@ -119,7 +124,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       achievements: "State Champion",
       category: "talent",
-      talentType: "Amateur Athlete",
+      talentType: "Athlete",
+      fit: "up-and-coming",
       tags: ["Amateur", "State Level", "Swimming"],
       keywords: ["swimming", "state", "champion", "miami"],
     },
@@ -134,7 +140,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
       achievements: "National Qualifier",
       category: "talent",
-      talentType: "Professional Athlete",
+      talentType: "Athlete",
+      fit: "top-talent",
       tags: ["Professional", "National Level", "Track & Field"],
       keywords: ["track", "field", "national", "portland"],
     },
@@ -149,7 +156,8 @@ export default function DiscoverPage() {
       image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
       achievements: "World Championship Qualifier",
       category: "talent",
-      talentType: "Elite Athlete",
+      talentType: "Athlete",
+      fit: "top-talent",
       tags: ["Elite", "World Level", "Gymnastics"],
       keywords: ["gymnastics", "world", "championship", "denver"],
     },
@@ -165,6 +173,7 @@ export default function DiscoverPage() {
       achievements: "100K Followers",
       category: "talent",
       talentType: "Content Creator",
+      fit: "brand-ambassador",
       tags: ["Influencer", "Social Media", "Content"],
       keywords: ["content", "creator", "social media", "san francisco"],
     },
@@ -180,6 +189,7 @@ export default function DiscoverPage() {
       achievements: "Award-Winning Photographer",
       category: "talent",
       talentType: "Creative Professional",
+      fit: "brand-ambassador",
       tags: ["Creative", "Award Winner", "Photography"],
       keywords: ["photography", "art", "visual", "new york"],
     },
@@ -196,6 +206,7 @@ export default function DiscoverPage() {
       achievements: "Team of 12 Athletes",
       category: "team",
       talentType: "Athletic Team",
+      fit: "top-talent",
       tags: ["Team", "Professional", "Track & Field"],
       keywords: ["running", "track", "team", "new york"],
     },
@@ -211,6 +222,7 @@ export default function DiscoverPage() {
       achievements: "Tour de France Qualifiers",
       category: "team",
       talentType: "Professional Team",
+      fit: "top-talent",
       tags: ["Team", "Elite", "Cycling"],
       keywords: ["cycling", "tour de france", "team", "denver"],
     },
@@ -227,6 +239,7 @@ export default function DiscoverPage() {
       achievements: "National Event",
       category: "event",
       talentType: "Championship Event",
+      fit: "top-talent",
       tags: ["Event", "National", "Swimming"],
       keywords: ["swimming", "championships", "national", "miami"],
     },
@@ -245,6 +258,7 @@ export default function DiscoverPage() {
       achievements: "Junior Champion",
       category: "talent",
       talentType: "Athlete",
+      fit: "up-and-coming",
       keywords: ["tennis", "junior", "rising", "phoenix"],
     },
     {
@@ -259,6 +273,7 @@ export default function DiscoverPage() {
       achievements: "Amateur Champion",
       category: "talent",
       talentType: "Athlete",
+      fit: "up-and-coming",
       keywords: ["boxing", "amateur", "rising", "las vegas"],
     },
   ]
@@ -402,25 +417,51 @@ export default function DiscoverPage() {
       )
     }
 
-    if (selectedExperience) {
-      filtered = filtered.filter(
-        (item) =>
-          item.talentType &&
-          item.talentType.toLowerCase().includes(selectedExperience.toLowerCase())
-      );
+    // Apply talent type filter
+    if (selectedTalentType) {
+      filtered = filtered.filter((item) => item.talentType.toLowerCase().includes(selectedTalentType.toLowerCase()))
     }
 
+    // Apply fit filter
+    if (selectedFit) {
+      filtered = filtered.filter((item) => item.fit === selectedFit)
+    }
+
+    // Apply sport filter
+    if (selectedSport) {
+      filtered = filtered.filter((item) => item.sport.toLowerCase().includes(selectedSport.toLowerCase()))
+    }
+
+    // Apply experience level filter
+    if (selectedExperience) {
+      filtered = filtered.filter(
+        (item) => item.talentType && item.talentType.toLowerCase().includes(selectedExperience.toLowerCase()),
+      )
+    }
+
+    // Apply location filter
+    if (selectedLocation) {
+      filtered = filtered.filter((item) => item.location.toLowerCase().includes(selectedLocation.toLowerCase()))
+    }
+
+    // Apply rating filter
+    if (selectedRating) {
+      const minRating = Number.parseFloat(selectedRating)
+      filtered = filtered.filter((item) => item.rating >= minRating)
+    }
+
+    // Apply budget filter
     if (selectedBudget) {
       filtered = filtered.filter((item) => {
         // Use remaining funding (goalFunding - currentFunding) or price for budget filtering
-        let budget = 0;
+        let budget = 0
         if (typeof item.goalFunding === "number" && typeof item.currentFunding === "number") {
-          budget = item.goalFunding - item.currentFunding;
+          budget = item.goalFunding - item.currentFunding
         } else if (typeof item.price === "string") {
-          budget = Number(item.price.replace(/[^0-9.-]+/g, ""));
+          budget = Number(item.price.replace(/[^0-9.-]+/g, ""))
         }
-        return budget >= selectedBudget[0] && budget <= selectedBudget[1];
-      });
+        return budget >= selectedBudget[0] && budget <= selectedBudget[1]
+      })
     }
 
     return filtered
@@ -559,12 +600,18 @@ export default function DiscoverPage() {
                   <Search className="h-4 w-4" />
                 </Button>
               )}
-              <Button variant="ghost" className="text-sm font-medium px-4 text-gray-900 bg-white hover:bg-gray-50">
+              <Button
+                variant="ghost"
+                className="text-sm font-medium px-4 text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg shadow-green-500/25 animate-shimmer"
+              >
                 Sign In
               </Button>
               <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
                 <DialogTrigger asChild>
-                  <Button variant="ghost" className="text-sm font-medium px-4">
+                  <Button
+                    variant="ghost"
+                    className="text-sm font-medium px-4 text-gray-900 bg-white hover:bg-gray-50 rounded-full border border-gray-200"
+                  >
                     Join
                   </Button>
                 </DialogTrigger>
@@ -673,12 +720,18 @@ export default function DiscoverPage() {
                       Search
                     </Button>
                   )}
-                  <Button variant="ghost" className="w-full justify-start text-gray-900 bg-white hover:bg-gray-50">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg shadow-green-500/25 animate-shimmer"
+                  >
                     Sign In
                   </Button>
                   <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" className="w-full justify-start">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-gray-900 bg-white hover:bg-gray-50 rounded-full border border-gray-200"
+                      >
                         Join
                       </Button>
                     </DialogTrigger>
@@ -705,7 +758,7 @@ export default function DiscoverPage() {
                         </div>
                         <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
                           <div className="flex flex-col items-center text-center space-y-4">
-                            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+                            <div className="w-20 h-20 bg-gray-100 bg-gray-100 rounded-full flex items-center justify-center">
                               <Trophy className="h-10 w-10 text-gray-600" />
                             </div>
                             <h3 className="text-lg font-medium">Team Leader</h3>
@@ -743,7 +796,7 @@ export default function DiscoverPage() {
               <div className="flex-1 max-w-4xl relative">
                 <div className="flex bg-white border-2 border-gray-300 rounded-full shadow-lg h-16 items-center">
                   {searchMode === "ai" ? (
-                    <div className="flex-1 px-6 py-4">
+                    <div className="flex-1 px-6 py-4 h-16 flex items-center">
                       <Input
                         placeholder="Find with AI"
                         value={aiQuery}
@@ -752,7 +805,7 @@ export default function DiscoverPage() {
                       />
                     </div>
                   ) : searchMode === "search" ? (
-                    <div className="flex-1 px-6 py-4">
+                    <div className="flex-1 px-6 py-4 h-16 flex items-center">
                       <Input
                         placeholder="Search by keyword..."
                         value={searchQuery}
@@ -762,28 +815,25 @@ export default function DiscoverPage() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
+                      <div className="flex-1 px-6 py-4 h-16 flex items-center">
                         <div className="w-full">
-                          <div className="text-xs font-semibold text-gray-500 mb-1">TYPE OF TALENT</div>
+                          <div className="text-xs font-semibold text-gray-500 mb-1">Type of Talent</div>
                           <Select value={selectedTalentType} onValueChange={setSelectedTalentType}>
                             <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left">
                               <SelectValue placeholder="Select type..." />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="professional-athlete">Professional Athlete</SelectItem>
-                              <SelectItem value="college-athlete">College Athlete</SelectItem>
-                              <SelectItem value="semi-pro-athlete">Semi-Pro Athlete</SelectItem>
-                              <SelectItem value="amateur-athlete">Amateur Athlete</SelectItem>
-                              <SelectItem value="elite-athlete">Elite Athlete</SelectItem>
+                              <SelectItem value="athlete">Athlete</SelectItem>
                               <SelectItem value="content-creator">Content Creator</SelectItem>
                               <SelectItem value="creative-professional">Creative Professional</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
-                      <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
+                      <div className="w-px h-10 bg-gray-200"></div>
+                      <div className="flex-1 px-6 py-4 h-16 flex items-center">
                         <div className="w-full">
-                          <div className="text-xs font-semibold text-gray-500 mb-1">FIT</div>
+                          <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
                           <Select value={selectedFit} onValueChange={setSelectedFit}>
                             <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left">
                               <SelectValue placeholder="Select fit..." />
@@ -796,9 +846,10 @@ export default function DiscoverPage() {
                           </Select>
                         </div>
                       </div>
-                      <div className="flex-1 px-6 py-4 border-r border-gray-200 flex items-center">
+                      <div className="w-px h-10 bg-gray-200"></div>
+                      <div className="flex-1 px-6 py-4 h-16 flex items-center">
                         <div className="w-full">
-                          <div className="text-xs font-semibold text-gray-500 mb-1">DURATION</div>
+                          <div className="text-xs font-semibold text-gray-500 mb-1">Duration</div>
                           <div className="flex items-center space-x-2">
                             <Popover>
                               <PopoverTrigger asChild>
@@ -832,7 +883,7 @@ export default function DiscoverPage() {
                       </div>
                     </>
                   )}
-                  <div className="px-2 py-2 flex items-center">
+                  <div className="px-2 py-2 flex items-center h-16">
                     <div className="bg-gray-100 rounded-full p-1 flex">
                       <Button
                         size="sm"
@@ -883,6 +934,10 @@ export default function DiscoverPage() {
                         <SelectItem value="basketball">Basketball</SelectItem>
                         <SelectItem value="soccer">Soccer</SelectItem>
                         <SelectItem value="swimming">Swimming</SelectItem>
+                        <SelectItem value="track-field">Track & Field</SelectItem>
+                        <SelectItem value="gymnastics">Gymnastics</SelectItem>
+                        <SelectItem value="boxing">Boxing</SelectItem>
+                        <SelectItem value="cycling">Cycling</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
@@ -902,12 +957,12 @@ export default function DiscoverPage() {
                     max={100000}
                     step={1000}
                     defaultValue={selectedBudget}
-                    onChange={setSelectedBudget}
+                    onCommit={setSelectedBudget}
                   />
                   <Select value={selectedRating} onValueChange={setSelectedRating}>
                     <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 flex items-center">
                       <div className="flex items-center">
-                        <Star className="h-4 w-4 mr-1" />
+                        <Star className="h-4 w-4 mr-1 text-gray-600" />
                         <SelectValue placeholder="Rating" />
                       </div>
                     </SelectTrigger>
@@ -915,33 +970,60 @@ export default function DiscoverPage() {
                       <SelectItem value="5">
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-yellow-400" />
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
                           ))}
-                          <span className="ml-2">5.0</span>
+                          <span className="ml-2">5.0+ Stars</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="4.5">
+                        <div className="flex items-center">
+                          {[...Array(4)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                          ))}
+                          <Star
+                            className="h-3 w-3 fill-current text-black mr-0.5"
+                            style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
+                          />
+                          <span className="ml-2">4.5+ Stars</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="4">
                         <div className="flex items-center">
                           {[...Array(4)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-yellow-400" />
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
                           ))}
-                          <Star className="h-3 w-3 text-gray-300" />
-                          <span className="ml-2">4.0+</span>
+                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                          <span className="ml-2">4.0+ Stars</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="3.5">
+                        <div className="flex items-center">
+                          {[...Array(3)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                          ))}
+                          <Star
+                            className="h-3 w-3 fill-current text-black mr-0.5"
+                            style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
+                          />
+                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                          <span className="ml-2">3.5+ Stars</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="3">
                         <div className="flex items-center">
                           {[...Array(3)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-current text-yellow-400" />
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
                           ))}
                           {[...Array(2)].map((_, i) => (
-                            <Star key={i} className="h-3 w-3 text-gray-300" />
+                            <Star key={i} className="h-3 w-3 text-gray-300 mr-0.5" />
                           ))}
-                          <span className="ml-2">3.0+</span>
+                          <span className="ml-2">3.0+ Stars</span>
                         </div>
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                  <LocationFilter value={selectedLocation} onChange={setSelectedLocation} />
                 </div>
               </div>
             </div>
@@ -1054,11 +1136,11 @@ export default function DiscoverPage() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8"
+                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
                       onClick={(e) => toggleFavorite(item.id, e)}
                     >
                       <Heart
-                        className={`h-4 w-4 ${
+                        className={`h-4 w-4 transition-all ${
                           favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
                         }`}
                       />
@@ -1133,11 +1215,11 @@ export default function DiscoverPage() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8"
+                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
                       onClick={(e) => toggleFavorite(item.id, e)}
                     >
                       <Heart
-                        className={`h-4 w-4 ${
+                        className={`h-4 w-4 transition-all ${
                           favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
                         }`}
                       />
