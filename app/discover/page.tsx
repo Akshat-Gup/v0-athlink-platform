@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { BudgetSlider } from "@/components/custom/button-slider"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { SimpleCalendar } from "@/components/ui/simple-calendar"
 import { Progress } from "@/components/ui/progress"
@@ -45,7 +46,7 @@ export default function DiscoverPage() {
   const [selectedFit, setSelectedFit] = useState("")
   const [selectedSport, setSelectedSport] = useState("")
   const [selectedExperience, setSelectedExperience] = useState("")
-  const [selectedBudget, setSelectedBudget] = useState("")
+  const [selectedBudget, setSelectedBudget] = useState<[number, number]>([0, 10000])
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
   const [selectedRating, setSelectedRating] = useState("")
@@ -399,6 +400,27 @@ export default function DiscoverPage() {
           item.achievements.toLowerCase().includes(aiQuery.toLowerCase()) ||
           item.keywords?.some((keyword) => keyword.toLowerCase().includes(aiQuery.toLowerCase())),
       )
+    }
+
+    if (selectedExperience) {
+      filtered = filtered.filter(
+        (item) =>
+          item.talentType &&
+          item.talentType.toLowerCase().includes(selectedExperience.toLowerCase())
+      );
+    }
+
+    if (selectedBudget) {
+      filtered = filtered.filter((item) => {
+        // Use remaining funding (goalFunding - currentFunding) or price for budget filtering
+        let budget = 0;
+        if (typeof item.goalFunding === "number" && typeof item.currentFunding === "number") {
+          budget = item.goalFunding - item.currentFunding;
+        } else if (typeof item.price === "string") {
+          budget = Number(item.price.replace(/[^0-9.-]+/g, ""));
+        }
+        return budget >= selectedBudget[0] && budget <= selectedBudget[1];
+      });
     }
 
     return filtered
@@ -875,17 +897,13 @@ export default function DiscoverPage() {
                       <SelectItem value="college">College</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={selectedBudget} onValueChange={setSelectedBudget}>
-                    <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0">
-                      <SelectValue placeholder="Budget Range" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1k-5k">$1K - $5K</SelectItem>
-                      <SelectItem value="5k-10k">$5K - $10K</SelectItem>
-                      <SelectItem value="10k-25k">$10K - $25K</SelectItem>
-                      <SelectItem value="25k+">$25K+</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <BudgetSlider
+                    min={0}
+                    max={100000}
+                    step={1000}
+                    defaultValue={selectedBudget}
+                    onChange={setSelectedBudget}
+                  />
                   <Select value={selectedRating} onValueChange={setSelectedRating}>
                     <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 flex items-center">
                       <div className="flex items-center">
