@@ -4,6 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { DoubleSlider } from "@/components/custom/double-slider"
+import { ChevronDown, DollarSign } from "lucide-react"
 
 interface BudgetSliderProps {
   min?: number
@@ -17,11 +18,11 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
   min = 1000,
   max = 25000,
   step = 500,
-  defaultValue = [1000, 25000],
+  defaultValue,
   onChange,
 }) => {
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState<[number, number]>(defaultValue)
+  const [value, setValue] = useState<[number, number] | undefined>(defaultValue)
 
   const handleSliderChange = (val: number[]) => {
     if (val.length === 2) {
@@ -31,68 +32,43 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
   }
 
   const handleClear = () => {
-    setValue([min, max])
-    onChange?.([min, max])
+    setValue(undefined)
+    onChange?.(undefined as any)
     setOpen(false)
   }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className="relative flex items-center">
           <button
             type="button"
             className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm font-normal w-auto min-w-0 focus:outline-none flex items-center justify-center shadow-none gap-2"
           >
-            {value[0] !== min || value[1] !== max
+          <DollarSign className="h-4 w-4 text-gray-600" />
+            {value
               ? `$${value[0].toLocaleString()} - $${value[1].toLocaleString()}`
               : "Budget Range"}
-            <svg
-              className={`h-4 w-4 transition-transform text-gray-600 ${open ? "rotate-180" : "rotate-0"}`}
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6 8L10 12L14 8"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-          {(value[0] !== min || value[1] !== max) && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setValue([min, max])
-                onChange?.([min, max])
-              }}
-              className="ml-2 text-gray-600 hover:text-gray-800 w-4 h-4 flex items-center justify-center text-sm"
-            >
-              ×
+          <ChevronDown className={`h-4 w-4 opacity-50 transition-transform ${open ? "rotate-180" : "rotate-0"}`} />
             </button>
-          )}
-        </div>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-4 bg-white rounded-xl shadow-lg border mt-2 z-50">
-        <DoubleSlider min={min} max={max} step={step} value={value} onChange={handleSliderChange} className="w-full" />
+        <DoubleSlider min={min} max={max} step={step} value={value || [min, max]} onChange={handleSliderChange} className="w-full" />
         <div className="flex justify-between text-xs mt-2">
-          <span>${value[0].toLocaleString()}</span>
-          <span>${value[1].toLocaleString()}</span>
+          <span>${(value || [min, max])[0].toLocaleString()}</span>
+          <span>${(value || [min, max])[1].toLocaleString()}</span>
         </div>
         <div className="flex items-center justify-between mt-4 gap-2">
           <input
             type="number"
             min={min}
-            max={value[1]}
+            max={(value || [min, max])[1]}
             step={step}
-            value={value[0]}
+            value={(value || [min, max])[0]}
             onChange={(e) => {
-              const newMin = Math.max(min, Math.min(Number(e.target.value), value[1]))
-              setValue([newMin, value[1]])
-              onChange?.([newMin, value[1]])
+              const currentVal = value || [min, max]
+              const newMin = Math.max(min, Math.min(Number(e.target.value), currentVal[1]))
+              setValue([newMin, currentVal[1]])
+              onChange?.([newMin, currentVal[1]])
             }}
             className="border rounded px-2 py-1 w-20 text-sm"
             aria-label="Minimum budget"
@@ -100,19 +76,28 @@ export const BudgetSlider: React.FC<BudgetSliderProps> = ({
           <span className="mx-1">-</span>
           <input
             type="number"
-            min={value[0]}
+            min={(value || [min, max])[0]}
             max={max}
             step={step}
-            value={value[1]}
+            value={(value || [min, max])[1]}
             onChange={(e) => {
-              const newMax = Math.min(max, Math.max(Number(e.target.value), value[0]))
-              setValue([value[0], newMax])
-              onChange?.([value[0], newMax])
+              const currentVal = value || [min, max]
+              const newMax = Math.min(max, Math.max(Number(e.target.value), currentVal[0]))
+              setValue([currentVal[0], newMax])
+              onChange?.([currentVal[0], newMax])
             }}
             className="border rounded px-2 py-1 w-20 text-sm"
             aria-label="Maximum budget"
           />
         </div>
+        {value && (
+          <button
+            onClick={handleClear}
+            className="w-full mt-3 text-red-600 hover:text-red-700 hover:bg-red-50 py-2 px-3 rounded text-sm transition-colors"
+          >
+            Clear Budget Range
+          </button>
+        )}
       </PopoverContent>
     </Popover>
   )

@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MapPin, Search } from "lucide-react"
+import { MapPin, Search, ChevronDown } from "lucide-react"
 
 interface LocationFilterProps {
   value: string
@@ -185,7 +185,8 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({ value, onChange 
     setSearchQuery("")
   }
 
-  const handleClear = () => {
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation()
     onChange("")
     setOpen(false)
     setSearchQuery("")
@@ -201,32 +202,9 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({ value, onChange 
           >
             <MapPin className="h-4 w-4 text-gray-600" />
             {value || "Location"}
-            <svg
-              className={`h-4 w-4 transition-transform text-gray-600 ${open ? "rotate-180" : "rotate-0"}`}
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6 8L10 12L14 8"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ChevronDown className={`h-4 w-4 opacity-50 transition-transform ${open ? "rotate-180" : "rotate-0"}`} />
           </button>
-          {value && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                handleClear()
-              }}
-              className="ml-2 text-gray-600 hover:text-gray-800 w-4 h-4 flex items-center justify-center text-sm"
-            >
-              ×
-            </button>
-          )}
+
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0 bg-white rounded-xl shadow-lg border border-gray-200">
@@ -246,7 +224,7 @@ export const LocationFilter: React.FC<LocationFilterProps> = ({ value, onChange 
             {value && (
               <Button
                 variant="ghost"
-                onClick={handleClear}
+                onClick={() => handleClear(new MouseEvent('click') as any)}
                 className="w-full justify-start text-left text-red-600 hover:text-red-700 hover:bg-red-50 mb-1"
               >
                 Clear selection
