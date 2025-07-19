@@ -1,162 +1,87 @@
 "use client"
 
-import { useState } from "react"
 import { Card } from "@/components/ui/card"
-import { Trophy, Medal, Award, Target, Star } from "lucide-react"
-
-interface Achievement {
-  id: string
-  type: "competition" | "award" | "personal" | "record"
-  title: string
-  value: string
-  description?: string
-  event?: string
-  date?: string
-  location?: string
-  icon?: "trophy" | "medal" | "award" | "target" | "star"
-}
-
-const mockAchievements: Achievement[] = [
-  {
-    id: "1",
-    type: "competition",
-    title: "1st Place",
-    value: "Regional Swimming Championship",
-    description: "Freestyle 100m - Personal best time of 52.3 seconds",
-    event: "State Regional Championships 2024",
-    date: "March 2024",
-    location: "Austin, TX",
-    icon: "trophy",
-  },
-  {
-    id: "2",
-    type: "award",
-    title: "MVP Award",
-    value: "Team Captain & Most Valuable Player",
-    description: "Led team to district championship with outstanding leadership",
-    event: "High School Swimming Team",
-    date: "May 2024",
-    icon: "star",
-  },
-  {
-    id: "3",
-    type: "personal",
-    title: "Personal Best",
-    value: "52.3 seconds",
-    description: "Freestyle 100m - New personal record",
-    event: "Regional Championships",
-    date: "March 2024",
-    icon: "target",
-  },
-  {
-    id: "4",
-    type: "competition",
-    title: "2nd Place",
-    value: "State Championship",
-    description: "Butterfly 200m - Qualified for nationals",
-    event: "Texas State Swimming Championships",
-    date: "February 2024",
-    location: "Dallas, TX",
-    icon: "medal",
-  },
-  {
-    id: "5",
-    type: "record",
-    title: "School Record",
-    value: "Backstroke 50m - 26.8s",
-    description: "Broke 15-year-old school record by 0.3 seconds",
-    event: "Lincoln High School",
-    date: "January 2024",
-    icon: "award",
-  },
-  {
-    id: "6",
-    type: "award",
-    title: "Sportsmanship Award",
-    value: "Outstanding Character",
-    description: "Recognized for exemplary conduct and team spirit",
-    event: "District Swimming League",
-    date: "April 2024",
-    icon: "star",
-  },
-]
-
-const getAchievementIcon = (iconType: string, type: string) => {
-  const base = "h-12 w-12"
-
-  switch (iconType) {
-    case "trophy":
-      return <Trophy className={`${base} text-yellow-600`} />
-    case "medal":
-      return <Medal className={`${base} text-orange-600`} />
-    case "award":
-      return <Award className={`${base} text-purple-600`} />
-    case "target":
-      return <Target className={`${base} text-green-600`} />
-    case "star":
-      return <Star className={`${base} text-blue-600`} />
-    default:
-      // Fallback based on achievement type
-      if (type === "competition") return <Trophy className={`${base} text-yellow-600`} />
-      if (type === "award") return <Award className={`${base} text-purple-600`} />
-      if (type === "personal") return <Target className={`${base} text-green-600`} />
-      return <Medal className={`${base} text-orange-600`} />
-  }
-}
-
-const getTypeColor = (type: string) => {
-  switch (type) {
-    case "competition":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200"
-    case "award":
-      return "bg-purple-100 text-purple-800 border-purple-200"
-    case "personal":
-      return "bg-green-100 text-green-800 border-green-200"
-    case "record":
-      return "bg-red-100 text-red-800 border-red-200"
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-200"
-  }
-}
+import { Badge } from "@/components/ui/badge"
+import { Trophy, Medal, Award, Star } from "lucide-react"
 
 export function AchievementsSection() {
-  const [showAll, setShowAll] = useState(false)
+  const achievements = [
+    {
+      id: 1,
+      title: "Olympic Qualifier",
+      description: "Qualified for the 2024 Paris Olympics",
+      date: "March 2024",
+      type: "major",
+      icon: Trophy,
+    },
+    {
+      id: 2,
+      title: "National Champion",
+      description: "Won the National Tennis Championship",
+      date: "August 2023",
+      type: "championship",
+      icon: Medal,
+    },
+    {
+      id: 3,
+      title: "Rising Star Award",
+      description: "Recognized as the most promising young athlete",
+      date: "December 2023",
+      type: "recognition",
+      icon: Star,
+    },
+    {
+      id: 4,
+      title: "Tournament Winner",
+      description: "First place at the Regional Tennis Open",
+      date: "June 2023",
+      type: "tournament",
+      icon: Award,
+    },
+  ]
 
-  const displayedAchievements = showAll ? mockAchievements : mockAchievements.slice(0, 2)
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case "major":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+      case "championship":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      case "recognition":
+        return "bg-purple-100 text-purple-800 border-purple-200"
+      case "tournament":
+        return "bg-green-100 text-green-800 border-green-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
+    }
+  }
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 bg-white">
       <h3 className="text-lg font-semibold mb-4">Achievements</h3>
       <div className="grid md:grid-cols-2 gap-4">
-        {displayedAchievements.map((achievement) => (
-          <Card key={achievement.id} className="p-4">
-            {/* Icon as Image */}
-            <div className="w-full h-32 bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-              {getAchievementIcon(achievement.icon || "", achievement.type)}
+        {achievements.map((achievement) => {
+          const IconComponent = achievement.icon
+          return (
+            <div
+              key={achievement.id}
+              className="p-4 border border-gray-200 rounded-xl bg-white hover:shadow-md transition-shadow duration-200"
+            >
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gray-100 rounded-lg">
+                  <IconComponent className="h-5 w-5 text-gray-600" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className="font-semibold text-sm">{achievement.title}</h4>
+                    <Badge className={`text-xs ${getTypeColor(achievement.type)}`}>{achievement.type}</Badge>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-2">{achievement.description}</p>
+                  <p className="text-xs text-gray-500">{achievement.date}</p>
+                </div>
+              </div>
             </div>
-
-            {/* Title - Value */}
-            <h4 className="font-semibold">
-              {achievement.title} - {achievement.value}
-            </h4>
-
-            {/* Event */}
-            {achievement.event && <p className="text-sm text-gray-600">{achievement.event}</p>}
-
-            {/* Date */}
-            {achievement.date && <p className="text-sm text-gray-600">{achievement.date}</p>}
-          </Card>
-        ))}
-      </div>
-
-      {/* View All Button */}
-      <div className="mt-6 text-center">
-        <button
-          onClick={() => setShowAll(!showAll)}
-          className="text-sm text-green-600 hover:text-green-700 font-medium"
-        >
-          {showAll ? "Show Less ↑" : "View All Achievements →"}
-        </button>
+          )
+        })}
       </div>
     </Card>
   )
