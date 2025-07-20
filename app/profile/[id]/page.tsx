@@ -19,21 +19,22 @@ import {
   Youtube,
   Facebook,
   Target,
-  Play,
   ExternalLink,
   Share,
   Users,
   CalendarIcon,
   Copy,
-  LinkIcon,
   QrCode,
   MessageCircle,
+  Building,
+  Clock,
+  Award,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, BarChart, Bar } from "recharts"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { Tooltip, TooltipProvider } from "@/components/ui/tooltip"
 
 interface PageProps {
   params: {
@@ -53,243 +54,291 @@ export default function ProfilePage({ params }: PageProps) {
   const [showAllDemographics, setShowAllDemographics] = useState(false)
   const [showAllPerformanceStats, setShowAllPerformanceStats] = useState(false)
 
-  // Mock data - in real app this would come from API
-  const profile = {
-    id: Number.parseInt(id),
-    name: "Sarah Chen",
-    sport: "Tennis",
-    location: "Los Angeles, CA",
-    country: "🇺🇸",
-    team: "🎾",
-    rating: 4.95,
-    currentFunding: 2500,
-    goalFunding: 5000,
-    image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=400&fit=crop",
-    coverImage: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=1200&h=300&fit=crop",
-    achievements: "Olympic Qualifier",
-    category: "talent",
-    bio: "Professional tennis player with 8 years of competitive experience. Currently training for the upcoming Olympic qualifiers and seeking sponsorship to support my journey to represent my country at the highest level.",
-    stats: {
-      tournaments: 45,
-      wins: 32,
-      ranking: 15,
-    },
-    demographics: [
-      { label: "GENDER", value: "Female", icon: "👤" },
-      { label: "AGE", value: "24", icon: "📅" },
-      { label: "HEIGHT", value: "5'7\"", icon: "📏" },
-      { label: "WEIGHT", value: "130 lbs", icon: "⚖️" },
-      { label: "REACH", value: "2.1M", icon: "📱" },
-    ],
-    performanceStats: [
-      { label: "RANKING", value: "#15", icon: "🏆" },
-      { label: "WIN RATE", value: "71%", icon: "📊" },
-      { label: "TOURNAMENTS", value: "45", icon: "🎾" },
-      { label: "PRIZE MONEY", value: "$125K", icon: "💰" },
-      { label: "FOLLOWERS", value: "125K", icon: "👥" },
-    ],
-    socials: {
-      instagram: "@sarahchen_tennis",
-      twitter: "@sarahchen",
-      youtube: "Sarah Chen Tennis",
-      facebook: "Sarah Chen Official",
-    },
-    checkpoints: [
-      { amount: 1000, reward: "Social media shoutout + signed photo", unlocked: true },
-      { amount: 2500, reward: "Logo on training gear + monthly updates", unlocked: true },
-      { amount: 5000, reward: "Logo on competition outfit + VIP event access", unlocked: false },
-      { amount: 7500, reward: "Personal training session + exclusive content", unlocked: false },
-    ],
-    performanceData: [
-      { month: "Jan", ranking: 25, wins: 2 },
-      { month: "Feb", ranking: 22, wins: 3 },
-      { month: "Mar", ranking: 18, wins: 4 },
-      { month: "Apr", ranking: 15, wins: 5 },
-      { month: "May", ranking: 15, wins: 3 },
-      { month: "Jun", ranking: 12, wins: 6 },
-    ],
-    pastResults: {
-      2024: [
-        {
-          id: 1,
-          tournament: "US Open Qualifier",
-          date: "March 2024",
-          result: "Semifinalist",
-          image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=300&h=200&fit=crop",
+  // Mock data - in real app this would come from API based on ID and type
+  const getProfileData = (id: string) => {
+    const profileId = Number.parseInt(id)
+
+    // Team profiles
+    if (profileId === 3) {
+      return {
+        type: "team",
+        id: profileId,
+        name: "Elite Runners Club",
+        sport: "Track & Field",
+        location: "New York, NY",
+        country: "🇺🇸",
+        team: "🏃‍♂️",
+        rating: 4.92,
+        currentFunding: 15000,
+        goalFunding: 50000,
+        image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop",
+        coverImage: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=1200&h=300&fit=crop",
+        achievements: "12 Professional Athletes",
+        category: "team",
+        bio: "Elite Runners Club is a premier track and field team based in New York, featuring 12 professional athletes competing at national and international levels. We're seeking sponsorship to support our athletes' training, equipment, and competition expenses.",
+        stats: {
+          members: 12,
+          competitions: 25,
+          wins: 18,
         },
-        {
-          id: 2,
-          tournament: "Miami Open",
-          date: "February 2024",
-          result: "Quarter Finals",
-          image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=200&fit=crop",
+        teamType: "Professional",
+        founded: "2019",
+        members: [
+          {
+            id: 1,
+            name: "Sarah Chen",
+            sport: "400m Sprint",
+            image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=100&h=100&fit=crop",
+            achievements: "Olympic Qualifier",
+            role: "Captain",
+          },
+          {
+            id: 2,
+            name: "Marcus Johnson",
+            sport: "Long Jump",
+            image: "https://images.unsplash.com/photo-1546525848-3ce03ca516f6?w=100&h=100&fit=crop",
+            achievements: "National Champion",
+            role: "Member",
+          },
+          {
+            id: 3,
+            name: "Emma Wilson",
+            sport: "800m",
+            image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop",
+            achievements: "State Record Holder",
+            role: "Member",
+          },
+          {
+            id: 4,
+            name: "Jake Thompson",
+            sport: "Marathon",
+            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+            achievements: "Boston Qualifier",
+            role: "Member",
+          },
+        ],
+        upcomingEvents: [
+          {
+            id: 1,
+            name: "National Track Championships",
+            date: "August 2024",
+            location: "Eugene, OR",
+            participants: 8,
+          },
+          {
+            id: 2,
+            name: "Olympic Trials",
+            date: "September 2024",
+            location: "Los Angeles, CA",
+            participants: 4,
+          },
+        ],
+        sponsorshipPackages: [
+          {
+            name: "Bronze Sponsor",
+            price: "$5,000",
+            benefits: [
+              "Logo on team uniforms",
+              "Social media mentions",
+              "Event program listing",
+              "Quarterly progress reports",
+            ],
+          },
+          {
+            name: "Silver Sponsor",
+            price: "$15,000",
+            benefits: [
+              "All Bronze benefits",
+              "Logo on team equipment",
+              "VIP event access",
+              "Meet & greet opportunities",
+              "Custom content creation",
+            ],
+          },
+          {
+            name: "Gold Sponsor",
+            price: "$30,000",
+            benefits: [
+              "All Silver benefits",
+              "Title sponsor recognition",
+              "Exclusive training access",
+              "Athlete appearances",
+              "Co-branded marketing materials",
+            ],
+          },
+        ],
+      }
+    }
+
+    // Event profiles
+    if (profileId === 4) {
+      return {
+        type: "event",
+        id: profileId,
+        name: "Swimming Championships",
+        sport: "Swimming",
+        location: "Miami, FL",
+        country: "🇺🇸",
+        team: "🏊‍♀️",
+        rating: 4.88,
+        currentFunding: 25000,
+        goalFunding: 75000,
+        image: "https://images.unsplash.com/photo-1530549387789-4c1017266635?w=600&h=400&fit=crop",
+        coverImage: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=1200&h=300&fit=crop",
+        achievements: "National Championship Event",
+        category: "event",
+        bio: "The Swimming Championships is a premier national-level swimming competition featuring over 200 athletes from across the country. This three-day event showcases the best talent in competitive swimming and offers excellent sponsorship opportunities for brands looking to reach a dedicated sports audience.",
+        stats: {
+          participants: 200,
+          days: 3,
+          events: 32,
         },
-      ],
-      2023: [
-        {
-          id: 3,
-          tournament: "French Open Qualifier",
-          date: "June 2023",
-          result: "First Round",
-          image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=300&h=200&fit=crop",
-        },
-      ],
-    },
-    upcomingCompetitions: [
-      {
-        id: 1,
-        tournament: "Wimbledon Qualifier",
-        date: "August 2024",
-        location: "London, UK",
-        image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=300&h=200&fit=crop",
+        eventType: "Championship",
+        startDate: "July 15, 2024",
+        endDate: "July 17, 2024",
+        venue: "Miami Aquatic Center",
+        organizer: "USA Swimming Federation",
+        expectedAttendance: 5000,
+        participants: [
+          {
+            id: 1,
+            name: "Emma Wilson",
+            sport: "Freestyle",
+            image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop",
+            achievements: "State Champion",
+            events: ["100m Free", "200m Free"],
+          },
+          {
+            id: 2,
+            name: "Alex Rodriguez",
+            sport: "Butterfly",
+            image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=100&h=100&fit=crop",
+            achievements: "Regional Record Holder",
+            events: ["100m Fly", "200m Fly"],
+          },
+          {
+            id: 3,
+            name: "Sofia Martinez",
+            sport: "Backstroke",
+            image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=100&h=100&fit=crop",
+            achievements: "Junior National Champion",
+            events: ["100m Back", "200m Back"],
+          },
+        ],
+        schedule: [
+          {
+            day: "Day 1",
+            date: "July 15, 2024",
+            events: ["100m Freestyle Preliminaries", "200m Butterfly Preliminaries", "100m Backstroke Finals"],
+          },
+          {
+            day: "Day 2",
+            date: "July 16, 2024",
+            events: ["200m Freestyle Finals", "100m Breaststroke Preliminaries", "400m Individual Medley Finals"],
+          },
+          {
+            day: "Day 3",
+            date: "July 17, 2024",
+            events: ["50m Freestyle Finals", "200m Backstroke Finals", "4x100m Relay Finals"],
+          },
+        ],
+        sponsorshipPackages: [
+          {
+            name: "Event Sponsor",
+            price: "$10,000",
+            benefits: [
+              "Logo on event materials",
+              "PA announcements",
+              "Social media promotion",
+              "Event program advertisement",
+            ],
+          },
+          {
+            name: "Title Sponsor",
+            price: "$25,000",
+            benefits: [
+              "All Event Sponsor benefits",
+              "Event naming rights",
+              "VIP hospitality area",
+              "Live stream logo placement",
+              "Award ceremony recognition",
+            ],
+          },
+          {
+            name: "Presenting Sponsor",
+            price: "$50,000",
+            benefits: [
+              "All Title Sponsor benefits",
+              "Exclusive category rights",
+              "Custom activation space",
+              "Athlete meet & greets",
+              "Year-round marketing partnership",
+            ],
+          },
+        ],
+      }
+    }
+
+    // Default talent profile (existing)
+    return {
+      type: "talent",
+      id: profileId,
+      name: "Sarah Chen",
+      sport: "Tennis",
+      location: "Los Angeles, CA",
+      country: "🇺🇸",
+      team: "🎾",
+      rating: 4.95,
+      currentFunding: 2500,
+      goalFunding: 5000,
+      image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=400&fit=crop",
+      coverImage: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=1200&h=300&fit=crop",
+      achievements: "Olympic Qualifier",
+      category: "talent",
+      bio: "Professional tennis player with 8 years of competitive experience. Currently training for the upcoming Olympic qualifiers and seeking sponsorship to support my journey to represent my country at the highest level.",
+      stats: {
+        tournaments: 45,
+        wins: 32,
+        ranking: 15,
       },
-      {
-        id: 2,
-        tournament: "Olympic Trials",
-        date: "September 2024",
-        location: "Paris, France",
-        image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=200&fit=crop",
+      demographics: [
+        { label: "GENDER", value: "Female", icon: "👤" },
+        { label: "AGE", value: "24", icon: "📅" },
+        { label: "HEIGHT", value: "5'7\"", icon: "📏" },
+        { label: "WEIGHT", value: "130 lbs", icon: "⚖️" },
+        { label: "REACH", value: "2.1M", icon: "📱" },
+      ],
+      performanceStats: [
+        { label: "RANKING", value: "#15", icon: "🏆" },
+        { label: "WIN RATE", value: "71%", icon: "📊" },
+        { label: "TOURNAMENTS", value: "45", icon: "🎾" },
+        { label: "PRIZE MONEY", value: "$125K", icon: "💰" },
+        { label: "FOLLOWERS", value: "125K", icon: "👥" },
+      ],
+      socials: {
+        instagram: "@sarahchen_tennis",
+        twitter: "@sarahchen",
+        youtube: "Sarah Chen Tennis",
+        facebook: "Sarah Chen Official",
       },
-    ],
-    mediaGallery: {
-      photos: [
-        {
-          id: 1,
-          url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
-          title: "Training Session",
-          category: "Training",
-        },
-        {
-          id: 2,
-          url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
-          title: "Victory Celebration",
-          category: "Showcase",
-        },
-        {
-          id: 3,
-          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
-          title: "Championship Match",
-          category: "Showcase",
-        },
-        {
-          id: 4,
-          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
-          title: "Practice Court",
-          category: "Training",
-        },
-        {
-          id: 5,
-          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
-          title: "Awards Ceremony",
-          category: "Events",
-        },
-        {
-          id: 6,
-          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
-          title: "Team Photo",
-          category: "Behind the Scenes",
-        },
-        {
-          id: 7,
-          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
-          title: "Gym Training",
-          category: "Training",
-        },
-        {
-          id: 8,
-          url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
-          title: "Media Interview",
-          category: "Behind the Scenes",
-        },
+      checkpoints: [
+        { amount: 1000, reward: "Social media shoutout + signed photo", unlocked: true },
+        { amount: 2500, reward: "Logo on training gear + monthly updates", unlocked: true },
+        { amount: 5000, reward: "Logo on competition outfit + VIP event access", unlocked: false },
+        { amount: 7500, reward: "Personal training session + exclusive content", unlocked: false },
       ],
-      videos: [
-        {
-          id: 1,
-          url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
-          title: "Match Highlights",
-          category: "Competition",
-        },
-        {
-          id: 2,
-          url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
-          title: "Training Montage",
-          category: "Training",
-        },
-        {
-          id: 3,
-          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
-          title: "Behind the Scenes",
-          category: "Behind the Scenes",
-        },
-        {
-          id: 4,
-          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
-          title: "Tournament Prep",
-          category: "Training",
-        },
-        {
-          id: 5,
-          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
-          title: "Victory Speech",
-          category: "Competition",
-        },
+      performanceData: [
+        { month: "Jan", ranking: 25, wins: 2 },
+        { month: "Feb", ranking: 22, wins: 3 },
+        { month: "Mar", ranking: 18, wins: 4 },
+        { month: "Apr", ranking: 15, wins: 5 },
+        { month: "May", ranking: 15, wins: 3 },
+        { month: "Jun", ranking: 12, wins: 6 },
       ],
-      youtube: [
-        {
-          id: 1,
-          url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
-          title: "Training Routine",
-        },
-        {
-          id: 2,
-          url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
-          title: "Q&A Session",
-        },
-        {
-          id: 3,
-          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
-          title: "Day in My Life",
-        },
-        {
-          id: 4,
-          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
-          title: "Equipment Review",
-        },
-      ],
-      instagram: [
-        {
-          id: 1,
-          url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
-          title: "Behind the Scenes",
-        },
-        {
-          id: 2,
-          url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
-          title: "Morning Training",
-        },
-        {
-          id: 3,
-          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
-          title: "Competition Day",
-        },
-        {
-          id: 4,
-          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
-          title: "Recovery Session",
-        },
-        {
-          id: 5,
-          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
-          title: "Celebration",
-        },
-        {
-          id: 6,
-          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
-          title: "Team Building",
-        },
-      ],
-    },
+    }
   }
+
+  const profile = getProfileData(id)
 
   const renderProgressBar = (current: number, goal: number) => {
     const percentage = (current / goal) * 100
@@ -334,6 +383,307 @@ export default function ProfilePage({ params }: PageProps) {
       </Card>
     )
   }
+
+  const renderTalentProfile = () => (
+    <>
+      {activeTab === "overview" && (
+        <>
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">About</h3>
+            <p className="text-gray-600 text-sm sm:text-base">{profile.bio}</p>
+          </Card>
+
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Quick Facts</h3>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-green-500" />
+                <span className="text-sm">{profile.achievements}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-green-500" />
+                <span className="text-sm">8 years experience</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-green-500" />
+                <span className="text-sm">World Ranking #{profile.stats.ranking}</span>
+              </div>
+            </div>
+          </Card>
+
+          {renderStatsGrid(profile.demographics, "Demographics", showAllDemographics, setShowAllDemographics)}
+          {renderStatsGrid(
+            profile.performanceStats,
+            "Performance Stats",
+            showAllPerformanceStats,
+            setShowAllPerformanceStats,
+          )}
+
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Ranking Progress</h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={profile.performanceData}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Line type="monotone" dataKey="ranking" stroke="#10b981" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </>
+      )}
+
+      {activeTab === "results" && (
+        <>
+          <AchievementsSection />
+        </>
+      )}
+
+      {activeTab === "media" && (
+        <div className="space-y-4 sm:space-y-6">
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Media Gallery</h3>
+            <p className="text-gray-600">Media content will be displayed here</p>
+          </Card>
+        </div>
+      )}
+    </>
+  )
+
+  const renderTeamProfile = () => (
+    <>
+      {activeTab === "overview" && (
+        <>
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">About the Team</h3>
+            <p className="text-gray-600 text-sm sm:text-base">{profile.bio}</p>
+          </Card>
+
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Team Details</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">{profile.stats.members}</div>
+                <div className="text-sm text-gray-600">Athletes</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">{profile.stats.competitions}</div>
+                <div className="text-sm text-gray-600">Competitions</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">{profile.stats.wins}</div>
+                <div className="text-sm text-gray-600">Wins</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-900">{profile.founded}</div>
+                <div className="text-sm text-gray-600">Founded</div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Team Members</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {profile.members.map((member) => (
+                <div key={member.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                  <Image
+                    src={member.image || "/placeholder.svg"}
+                    alt={member.name}
+                    width={50}
+                    height={50}
+                    className="rounded-full object-cover"
+                  />
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-sm">{member.name}</h4>
+                    <p className="text-xs text-gray-600">{member.sport}</p>
+                    <p className="text-xs text-gray-500">{member.achievements}</p>
+                  </div>
+                  <Badge variant="outline" className="text-xs">
+                    {member.role}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Upcoming Events</h3>
+            <div className="space-y-3">
+              {profile.upcomingEvents.map((event) => (
+                <div key={event.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <h4 className="font-semibold text-sm">{event.name}</h4>
+                    <p className="text-xs text-gray-600">
+                      {event.date} • {event.location}
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="text-xs">
+                    {event.participants} athletes
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </>
+      )}
+
+      {activeTab === "results" && (
+        <>
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Team Achievements</h3>
+            <div className="space-y-4">
+              <div className="p-4 border border-gray-200 rounded-xl bg-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  <Badge variant="outline" className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200">
+                    Championship
+                  </Badge>
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">National Track Championships</h4>
+                <p className="text-sm text-gray-600">Team placed 2nd overall with 8 individual medals</p>
+              </div>
+              <div className="p-4 border border-gray-200 rounded-xl bg-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Award className="h-5 w-5 text-green-500" />
+                  <Badge variant="outline" className="text-xs bg-green-100 text-green-800 border-green-200">
+                    Recognition
+                  </Badge>
+                </div>
+                <h4 className="font-semibold text-gray-900 mb-2">Team of the Year Award</h4>
+                <p className="text-sm text-gray-600">Recognized for outstanding performance and sportsmanship</p>
+              </div>
+            </div>
+          </Card>
+        </>
+      )}
+
+      {activeTab === "media" && (
+        <div className="space-y-4 sm:space-y-6">
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Team Media</h3>
+            <p className="text-gray-600">Team photos and videos will be displayed here</p>
+          </Card>
+        </div>
+      )}
+    </>
+  )
+
+  const renderEventProfile = () => (
+    <>
+      {activeTab === "overview" && (
+        <>
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">About the Event</h3>
+            <p className="text-gray-600 text-sm sm:text-base">{profile.bio}</p>
+          </Card>
+
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Event Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <CalendarIcon className="h-4 w-4 text-green-500" />
+                  <span className="text-sm">
+                    {profile.startDate} - {profile.endDate}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-green-500" />
+                  <span className="text-sm">
+                    {profile.venue}, {profile.location}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Building className="h-4 w-4 text-green-500" />
+                  <span className="text-sm">Organized by {profile.organizer}</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{profile.stats.participants}</div>
+                  <div className="text-sm text-gray-600">Participants</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{profile.stats.days}</div>
+                  <div className="text-sm text-gray-600">Days</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{profile.stats.events}</div>
+                  <div className="text-sm text-gray-600">Events</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{profile.expectedAttendance.toLocaleString()}</div>
+                  <div className="text-sm text-gray-600">Expected Attendance</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Featured Participants</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {profile.participants.map((participant) => (
+                <div key={participant.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                  <Image
+                    src={participant.image || "/placeholder.svg"}
+                    alt={participant.name}
+                    width={50}
+                    height={50}
+                    className="rounded-full object-cover"
+                  />
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-sm">{participant.name}</h4>
+                    <p className="text-xs text-gray-600">{participant.sport}</p>
+                    <p className="text-xs text-gray-500">{participant.achievements}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Event Schedule</h3>
+            <div className="space-y-4">
+              {profile.schedule.map((day, index) => (
+                <div key={index} className="border rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Clock className="h-4 w-4 text-green-500" />
+                    <h4 className="font-semibold">{day.day}</h4>
+                    <span className="text-sm text-gray-600">({day.date})</span>
+                  </div>
+                  <div className="space-y-2">
+                    {day.events.map((event, eventIndex) => (
+                      <div key={eventIndex} className="text-sm text-gray-600 pl-6">
+                        • {event}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </>
+      )}
+
+      {activeTab === "results" && (
+        <>
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Event History</h3>
+            <p className="text-gray-600">Previous event results and highlights will be displayed here</p>
+          </Card>
+        </>
+      )}
+
+      {activeTab === "media" && (
+        <div className="space-y-4 sm:space-y-6">
+          <Card className="p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">Event Media</h3>
+            <p className="text-gray-600">Event photos and promotional materials will be displayed here</p>
+          </Card>
+        </div>
+      )}
+    </>
+  )
 
   return (
     <TooltipProvider>
@@ -391,6 +741,8 @@ export default function ProfilePage({ params }: PageProps) {
               <div>
                 <div className="flex items-center gap-2 sm:gap-3 mb-2">
                   <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{profile.name}</h1>
+                  {profile.type === "team" && <Users className="h-5 w-5 text-gray-600" />}
+                  {profile.type === "event" && <CalendarIcon className="h-5 w-5 text-gray-600" />}
                 </div>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-gray-600">
                   <div className="flex items-center">
@@ -448,32 +800,6 @@ export default function ProfilePage({ params }: PageProps) {
                         <Copy className="h-4 w-4 mr-2" />
                         Copy Link
                       </Button>
-                      <Button variant="outline" className="w-full justify-start bg-transparent">
-                        <LinkIcon className="h-4 w-4 mr-2" />
-                        Generate Short Link
-                      </Button>
-                      <div className="grid grid-cols-2 gap-3">
-                        <Button variant="outline" className="justify-start bg-transparent">
-                          <Twitter className="h-4 w-4 mr-2" />
-                          Twitter
-                        </Button>
-                        <Button variant="outline" className="justify-start bg-transparent">
-                          <Instagram className="h-4 w-4 mr-2" />
-                          Instagram
-                        </Button>
-                        <Button variant="outline" className="justify-start bg-transparent">
-                          <svg className="h-4 w-4 mr-2" fill="#0A66C2" viewBox="0 0 24 24">
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                          </svg>
-                          LinkedIn
-                        </Button>
-                        <Button variant="outline" className="justify-start bg-transparent">
-                          <svg className="h-4 w-4 mr-2" fill="#25D366" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.488" />
-                          </svg>
-                          WhatsApp
-                        </Button>
-                      </div>
                     </div>
                   </div>
                 </DialogContent>
@@ -484,7 +810,7 @@ export default function ProfilePage({ params }: PageProps) {
               </Button>
               <Button className="bg-green-500 hover:bg-green-600 animate-shimmer shadow-lg shadow-green-500/25 text-sm px-3 sm:px-4">
                 <Sparkles className="h-4 w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Analyse</span>
+                <span className="hidden sm:inline">Sponsor</span>
               </Button>
             </div>
           </div>
@@ -516,7 +842,7 @@ export default function ProfilePage({ params }: PageProps) {
                       }`}
                     >
                       <Trophy className="h-4 w-4 flex-shrink-0" />
-                      <span className="hidden sm:inline ml-2">Results</span>
+                      <span className="hidden sm:inline ml-2">{profile.type === "event" ? "History" : "Results"}</span>
                     </button>
                     <button
                       onClick={() => setActiveTab("media")}
@@ -531,411 +857,72 @@ export default function ProfilePage({ params }: PageProps) {
                 </div>
               </div>
 
-              {activeTab === "overview" && (
-                <>
-                  <Card className="p-4 sm:p-6">
-                    <h3 className="text-lg font-semibold mb-4">About</h3>
-                    <p className="text-gray-600 text-sm sm:text-base">{profile.bio}</p>
-                  </Card>
-
-                  <Card className="p-4 sm:p-6">
-                    <h3 className="text-lg font-semibold mb-4">Quick Facts</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Trophy className="h-4 w-4 text-green-500" />
-                        <span className="text-sm">{profile.achievements}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-green-500" />
-                        <span className="text-sm">8 years experience</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Target className="h-4 w-4 text-green-500" />
-                        <span className="text-sm">World Ranking #{profile.stats.ranking}</span>
-                      </div>
-                    </div>
-                  </Card>
-
-                  {renderStatsGrid(profile.demographics, "Demographics", showAllDemographics, setShowAllDemographics)}
-                  {renderStatsGrid(
-                    profile.performanceStats,
-                    "Performance Stats",
-                    showAllPerformanceStats,
-                    setShowAllPerformanceStats,
-                  )}
-
-                  <Card className="p-4 sm:p-6">
-                    <h3 className="text-lg font-semibold mb-4">Ranking Progress</h3>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <LineChart data={profile.performanceData}>
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="ranking" stroke="#10b981" strokeWidth={2} />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </Card>
-
-                  <Card className="p-4 sm:p-6">
-                    <h3 className="text-lg font-semibold mb-4">Monthly Wins</h3>
-                    <ResponsiveContainer width="100%" height={250}>
-                      <BarChart data={profile.performanceData}>
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="wins" fill="#10b981" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </Card>
-
-                  {/* Team Section */}
-                  <Card className="p-4 sm:p-6">
-                    <h3 className="text-lg font-semibold mb-4">Team</h3>
-                    <div className="text-gray-600 text-center py-8">
-                      <Users className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-                      <p className="text-sm">Team members will be displayed here</p>
-                    </div>
-                  </Card>
-                </>
-              )}
-
-              {activeTab === "results" && (
-                <>
-                  <AchievementsSection />
-                  <Card className="p-4 sm:p-6">
-                    <h3 className="text-lg font-semibold mb-4">Upcoming Competitions</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {profile.upcomingCompetitions.map((comp) => (
-                        <Card key={comp.id} className="p-4">
-                          <Image
-                            src={comp.image || "/placeholder.svg"}
-                            alt={comp.tournament}
-                            width={300}
-                            height={200}
-                            className="w-full h-32 object-cover rounded-lg mb-3"
-                          />
-                          <h4 className="font-semibold">{comp.tournament}</h4>
-                          <p className="text-sm text-gray-600">{comp.date}</p>
-                          <p className="text-sm text-gray-600">{comp.location}</p>
-                        </Card>
-                      ))}
-                    </div>
-                  </Card>
-
-                  <Card className="p-4 sm:p-6">
-                    <h3 className="text-lg font-semibold mb-4">Past Results</h3>
-                    <div className="space-y-8">
-                      {Object.entries(profile.pastResults)
-                        .sort((a, b) => Number(b[0]) - Number(a[0]))
-                        .map(([year, results]) => (
-                          <div key={year}>
-                            <h4 className="text-md font-semibold mb-2">{year}</h4>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              {results.map((result: any) => (
-                                <div key={result.id} className="p-4 border rounded-xl bg-white flex flex-col relative">
-                                  <Image
-                                    src={result.image || "/placeholder.svg"}
-                                    alt={result.tournament}
-                                    width={300}
-                                    height={200}
-                                    className="w-full h-32 object-cover rounded-lg mb-3"
-                                  />
-                                  <h4 className="font-semibold pr-12">{result.tournament}</h4>
-                                  <p className="text-sm text-gray-600">{result.date}</p>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div className="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center cursor-pointer transition-colors">
-                                        <Trophy className="h-5 w-5 text-gray-600" />
-                                      </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>{result.result}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  </Card>
-                </>
-              )}
-
-              {activeTab === "media" && (
-                <div className="space-y-4 sm:space-y-6">
-                  {/* Photos Row - Gallery Effect */}
-                  <Dialog open={showPhotosModal} onOpenChange={setShowPhotosModal}>
-                    <DialogTrigger asChild>
-                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                        <h3 className="text-lg font-semibold mb-4">Photos</h3>
-                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
-                          {profile.mediaGallery.photos.map((photo) => (
-                            <Image
-                              key={photo.id}
-                              src={photo.url || "/placeholder.svg"}
-                              alt={photo.title}
-                              width={200}
-                              height={150}
-                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-                            />
-                          ))}
-                        </div>
-                      </Card>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto mx-4">
-                      <DialogHeader>
-                        <DialogTitle>Photos</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-8">
-                        {["Training", "Showcase", "Events", "Behind the Scenes"].map((category) => {
-                          const categoryPhotos = profile.mediaGallery.photos.filter(
-                            (photo) => photo.category === category,
-                          )
-                          if (categoryPhotos.length === 0) return null
-
-                          return (
-                            <div key={category}>
-                              <h4 className="text-lg font-semibold mb-4">{category}</h4>
-                              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-                                {categoryPhotos.map((photo) => (
-                                  <div key={photo.id} className="break-inside-avoid">
-                                    <Image
-                                      src={photo.url || "/placeholder.svg"}
-                                      alt={photo.title}
-                                      width={400}
-                                      height={300}
-                                      className="w-full rounded-lg object-cover"
-                                      style={{ height: "auto" }}
-                                    />
-                                    <p className="text-sm text-gray-600 mt-2 px-1">{photo.title}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-
-                  {/* Videos Row - Gallery Effect */}
-                  <Dialog open={showVideosModal} onOpenChange={setShowVideosModal}>
-                    <DialogTrigger asChild>
-                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                        <h3 className="text-lg font-semibold mb-4">Videos</h3>
-                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
-                          {profile.mediaGallery.videos.map((video) => (
-                            <div key={video.id} className="relative flex-shrink-0">
-                              <Image
-                                src={video.url || "/placeholder.svg"}
-                                alt={video.title}
-                                width={200}
-                                height={150}
-                                className="w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-                              />
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <Play className="h-4 w-4 sm:h-6 sm:w-6 text-white bg-black bg-opacity-50 rounded-full p-1" />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </Card>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto mx-4">
-                      <DialogHeader>
-                        <DialogTitle>Videos</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-8">
-                        {["Competition", "Training", "Behind the Scenes"].map((category) => {
-                          const categoryVideos = profile.mediaGallery.videos.filter(
-                            (video) => video.category === category,
-                          )
-                          if (categoryVideos.length === 0) return null
-
-                          return (
-                            <div key={category}>
-                              <h4 className="text-lg font-semibold mb-4">{category}</h4>
-                              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-                                {categoryVideos.map((video) => (
-                                  <div key={video.id} className="break-inside-avoid">
-                                    <div className="relative">
-                                      <Image
-                                        src={video.url || "/placeholder.svg"}
-                                        alt={video.title}
-                                        width={400}
-                                        height={300}
-                                        className="w-full rounded-lg object-cover"
-                                        style={{ height: "auto" }}
-                                      />
-                                      <div className="absolute inset-0 flex items-center justify-center">
-                                        <Play className="h-12 w-12 text-white bg-black bg-opacity-50 rounded-full p-3" />
-                                      </div>
-                                    </div>
-                                    <p className="text-sm text-gray-600 mt-2 px-1">{video.title}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-
-                  {/* YouTube Row - Gallery Effect */}
-                  <Dialog open={showYoutubeModal} onOpenChange={setShowYoutubeModal}>
-                    <DialogTrigger asChild>
-                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                        <div className="flex items-center gap-2 mb-4">
-                          <Youtube className="h-5 w-5 text-red-500" />
-                          <h3 className="text-lg font-semibold">YouTube</h3>
-                        </div>
-                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
-                          {profile.mediaGallery.youtube.map((video) => (
-                            <div key={video.id} className="relative flex-shrink-0">
-                              <Image
-                                src={video.url || "/placeholder.svg"}
-                                alt={video.title}
-                                width={200}
-                                height={150}
-                                className="w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-                              />
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <Youtube className="h-4 w-4 sm:h-6 sm:w-6 text-red-500 bg-white rounded-full p-1" />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </Card>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl mx-4">
-                      <DialogHeader>
-                        <DialogTitle>YouTube Videos</DialogTitle>
-                      </DialogHeader>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {profile.mediaGallery.youtube.map((video) => (
-                          <div key={video.id} className="relative">
-                            <Image
-                              src={video.url || "/placeholder.svg"}
-                              alt={video.title}
-                              width={400}
-                              height={300}
-                              className="w-full h-48 object-cover rounded-lg"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <Youtube className="h-12 w-12 text-red-500 bg-white rounded-full p-3" />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-
-                  {/* Instagram Row - Gallery Effect */}
-                  <Dialog open={showInstagramModal} onOpenChange={setShowInstagramModal}>
-                    <DialogTrigger asChild>
-                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                        <div className="flex items-center gap-2 mb-4">
-                          <Instagram className="h-5 w-5 text-pink-500" />
-                          <h3 className="text-lg font-semibold">Instagram</h3>
-                        </div>
-                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
-                          {profile.mediaGallery.instagram.map((post) => (
-                            <Image
-                              key={post.id}
-                              src={post.url || "/placeholder.svg"}
-                              alt={post.title}
-                              width={200}
-                              height={150}
-                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
-                            />
-                          ))}
-                        </div>
-                      </Card>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl mx-4">
-                      <DialogHeader>
-                        <DialogTitle>Instagram Posts</DialogTitle>
-                      </DialogHeader>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        {profile.mediaGallery.instagram.map((post) => (
-                          <Image
-                            key={post.id}
-                            src={post.url || "/placeholder.svg"}
-                            alt={post.title}
-                            width={400}
-                            height={300}
-                            className="w-full h-32 sm:h-48 object-cover rounded-lg"
-                          />
-                        ))}
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              )}
+              {/* Render content based on profile type */}
+              {profile.type === "talent" && renderTalentProfile()}
+              {profile.type === "team" && renderTeamProfile()}
+              {profile.type === "event" && renderEventProfile()}
             </div>
 
             {/* Scrollable Sticky Sidebar - Hidden on Mobile */}
             <div className="hidden lg:block space-y-6 ml-8">
               <div className="sticky top-6 space-y-6 max-h-[calc(100vh-3rem)] overflow-y-auto overflow-x-visible px-2 -mx-2">
                 <Card className="p-6 shadow-xl border-0">
-                  <h3 className="text-lg font-semibold mb-4">Campaign Progress</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    {profile.type === "event" ? "Event Funding" : "Sponsorship Progress"}
+                  </h3>
                   {renderProgressBar(profile.currentFunding, profile.goalFunding)}
 
                   <div className="mt-6 space-y-3">
-                    <h4 className="font-medium text-sm">Sponsorship Checkpoints</h4>
-                    {profile.checkpoints.map((checkpoint, index) => (
+                    <h4 className="font-medium text-sm">Sponsorship Packages</h4>
+                    {profile.sponsorshipPackages?.map((pkg, index) => (
                       <div
                         key={index}
-                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                          checkpoint.unlocked
-                            ? "bg-green-50 border-green-200"
-                            : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                        }`}
+                        className="p-3 rounded-lg border cursor-pointer transition-colors hover:bg-gray-50"
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-sm">${checkpoint.amount.toLocaleString()}</span>
-                          {checkpoint.unlocked && <Badge className="bg-green-500">Unlocked</Badge>}
+                          <span className="font-medium text-sm">{pkg.name}</span>
+                          <span className="font-bold text-green-600">{pkg.price}</span>
                         </div>
-                        <p className="text-xs text-gray-600">{checkpoint.reward}</p>
+                        <div className="text-xs text-gray-600">
+                          {pkg.benefits.slice(0, 2).map((benefit, i) => (
+                            <div key={i}>• {benefit}</div>
+                          ))}
+                          {pkg.benefits.length > 2 && (
+                            <div className="text-gray-500">+ {pkg.benefits.length - 2} more benefits</div>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
 
                   <Dialog open={showSponsorModal} onOpenChange={setShowSponsorModal}>
                     <DialogTrigger asChild>
-                      <Button className="w-full mt-4 bg-green-500 hover:bg-green-600">Support Campaign</Button>
+                      <Button className="w-full mt-4 bg-green-500 hover:bg-green-600">
+                        {profile.type === "event" ? "Sponsor Event" : "Sponsor Now"}
+                      </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl">
+                    <DialogContent className="max-w-4xl mx-4">
                       <DialogHeader>
                         <DialogTitle>Sponsorship Packages</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <Card className="p-4 border-2 border-green-500">
-                            <h4 className="font-semibold mb-2">Bronze Package</h4>
-                            <p className="text-2xl font-bold text-green-500 mb-2">$1,000</p>
-                            <ul className="text-sm space-y-1">
-                              <li>• Social media mentions</li>
-                              <li>• Signed merchandise</li>
-                              <li>• Monthly updates</li>
-                            </ul>
-                          </Card>
-                          <Card className="p-4 border-2">
-                            <h4 className="font-semibold mb-2">Silver Package</h4>
-                            <p className="text-2xl font-bold mb-2">$2,500</p>
-                            <ul className="text-sm space-y-1">
-                              <li>• Logo on training gear</li>
-                              <li>• Event invitations</li>
-                              <li>• Exclusive content</li>
-                            </ul>
-                          </Card>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {profile.sponsorshipPackages?.map((pkg, index) => (
+                            <Card key={index} className="p-4 border-2 hover:border-green-500 transition-colors">
+                              <h4 className="font-semibold mb-2">{pkg.name}</h4>
+                              <p className="text-2xl font-bold text-green-500 mb-4">{pkg.price}</p>
+                              <ul className="text-sm space-y-1">
+                                {pkg.benefits.map((benefit, i) => (
+                                  <li key={i}>• {benefit}</li>
+                                ))}
+                              </ul>
+                              <Button className="w-full mt-4 bg-green-500 hover:bg-green-600">Select Package</Button>
+                            </Card>
+                          ))}
                         </div>
                         <div className="flex gap-4">
-                          <Button className="flex-1 bg-green-500 hover:bg-green-600">Choose Package</Button>
                           <Button variant="outline" className="flex-1 bg-transparent">
-                            Custom Negotiation
+                            Custom Package
                           </Button>
                         </div>
                       </div>
@@ -943,39 +930,41 @@ export default function ProfilePage({ params }: PageProps) {
                   </Dialog>
                 </Card>
 
-                <Card className="p-6 shadow-lg">
-                  <h3 className="text-lg font-semibold mb-4">Social Media</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Instagram className="h-4 w-4 text-pink-500" />
-                        <span className="text-sm">{profile.socials.instagram}</span>
+                {profile.type === "talent" && profile.socials && (
+                  <Card className="p-6 shadow-lg">
+                    <h3 className="text-lg font-semibold mb-4">Social Media</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Instagram className="h-4 w-4 text-pink-500" />
+                          <span className="text-sm">{profile.socials.instagram}</span>
+                        </div>
+                        <ExternalLink className="h-4 w-4 text-gray-400" />
                       </div>
-                      <ExternalLink className="h-4 w-4 text-gray-400" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Twitter className="h-4 w-4 text-blue-500" />
-                        <span className="text-sm">{profile.socials.twitter}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Twitter className="h-4 w-4 text-blue-500" />
+                          <span className="text-sm">{profile.socials.twitter}</span>
+                        </div>
+                        <ExternalLink className="h-4 w-4 text-gray-400" />
                       </div>
-                      <ExternalLink className="h-4 w-4 text-gray-400" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Youtube className="h-4 w-4 text-red-500" />
-                        <span className="text-sm">{profile.socials.youtube}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Youtube className="h-4 w-4 text-red-500" />
+                          <span className="text-sm">{profile.socials.youtube}</span>
+                        </div>
+                        <ExternalLink className="h-4 w-4 text-gray-400" />
                       </div>
-                      <ExternalLink className="h-4 w-4 text-gray-400" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Facebook className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm">{profile.socials.facebook}</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Facebook className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm">{profile.socials.facebook}</span>
+                        </div>
+                        <ExternalLink className="h-4 w-4 text-gray-400" />
                       </div>
-                      <ExternalLink className="h-4 w-4 text-gray-400" />
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                )}
               </div>
             </div>
           </div>
@@ -983,26 +972,29 @@ export default function ProfilePage({ params }: PageProps) {
           {/* Mobile Sidebar - Bottom Sheet Style */}
           <div className="lg:hidden mt-6">
             <Card className="p-4 shadow-xl border-0">
-              <h3 className="text-lg font-semibold mb-4">Campaign Progress</h3>
+              <h3 className="text-lg font-semibold mb-4">
+                {profile.type === "event" ? "Event Funding" : "Sponsorship Progress"}
+              </h3>
               {renderProgressBar(profile.currentFunding, profile.goalFunding)}
 
               <div className="mt-6 space-y-3">
-                <h4 className="font-medium text-sm">Sponsorship Checkpoints</h4>
+                <h4 className="font-medium text-sm">Sponsorship Packages</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {profile.checkpoints.map((checkpoint, index) => (
+                  {profile.sponsorshipPackages?.slice(0, 2).map((pkg, index) => (
                     <div
                       key={index}
-                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                        checkpoint.unlocked
-                          ? "bg-green-50 border-green-200"
-                          : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                      }`}
+                      className="p-3 rounded-lg border cursor-pointer transition-colors hover:bg-gray-50"
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-medium text-sm">${checkpoint.amount.toLocaleString()}</span>
-                        {checkpoint.unlocked && <Badge className="bg-green-500 text-xs">Unlocked</Badge>}
+                        <span className="font-medium text-sm">{pkg.name}</span>
+                        <span className="font-bold text-green-600 text-xs">{pkg.price}</span>
                       </div>
-                      <p className="text-xs text-gray-600">{checkpoint.reward}</p>
+                      <div className="text-xs text-gray-600">
+                        {pkg.benefits.slice(0, 1).map((benefit, i) => (
+                          <div key={i}>• {benefit}</div>
+                        ))}
+                        <div className="text-gray-500">+ {pkg.benefits.length - 1} more</div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1010,7 +1002,9 @@ export default function ProfilePage({ params }: PageProps) {
 
               <Dialog open={showSponsorModal} onOpenChange={setShowSponsorModal}>
                 <DialogTrigger asChild>
-                  <Button className="w-full mt-4 bg-green-500 hover:bg-green-600">Support Campaign</Button>
+                  <Button className="w-full mt-4 bg-green-500 hover:bg-green-600">
+                    {profile.type === "event" ? "Sponsor Event" : "Sponsor Now"}
+                  </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl mx-4">
                   <DialogHeader>
@@ -1018,56 +1012,27 @@ export default function ProfilePage({ params }: PageProps) {
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Card className="p-4 border-2 border-green-500">
-                        <h4 className="font-semibold mb-2">Bronze Package</h4>
-                        <p className="text-2xl font-bold text-green-500 mb-2">$1,000</p>
-                        <ul className="text-sm space-y-1">
-                          <li>• Social media mentions</li>
-                          <li>• Signed merchandise</li>
-                          <li>• Monthly updates</li>
-                        </ul>
-                      </Card>
-                      <Card className="p-4 border-2">
-                        <h4 className="font-semibold mb-2">Silver Package</h4>
-                        <p className="text-2xl font-bold mb-2">$2,500</p>
-                        <ul className="text-sm space-y-1">
-                          <li>• Logo on training gear</li>
-                          <li>• Event invitations</li>
-                          <li>• Exclusive content</li>
-                        </ul>
-                      </Card>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                      <Button className="flex-1 bg-green-500 hover:bg-green-600">Choose Package</Button>
-                      <Button variant="outline" className="flex-1 bg-transparent">
-                        Custom Negotiation
-                      </Button>
+                      {profile.sponsorshipPackages?.map((pkg, index) => (
+                        <Card key={index} className="p-4 border-2 hover:border-green-500 transition-colors">
+                          <h4 className="font-semibold mb-2">{pkg.name}</h4>
+                          <p className="text-xl font-bold text-green-500 mb-3">{pkg.price}</p>
+                          <ul className="text-xs space-y-1">
+                            {pkg.benefits.slice(0, 3).map((benefit, i) => (
+                              <li key={i}>• {benefit}</li>
+                            ))}
+                            {pkg.benefits.length > 3 && (
+                              <li className="text-gray-500">+ {pkg.benefits.length - 3} more</li>
+                            )}
+                          </ul>
+                          <Button className="w-full mt-3 bg-green-500 hover:bg-green-600 text-xs">
+                            Select Package
+                          </Button>
+                        </Card>
+                      ))}
                     </div>
                   </div>
                 </DialogContent>
               </Dialog>
-            </Card>
-
-            <Card className="p-4 shadow-lg mt-4">
-              <h3 className="text-lg font-semibold mb-4">Social Media</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-center gap-2">
-                  <Instagram className="h-4 w-4 text-pink-500" />
-                  <span className="text-xs truncate">{profile.socials.instagram}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Twitter className="h-4 w-4 text-blue-500" />
-                  <span className="text-xs truncate">{profile.socials.twitter}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Youtube className="h-4 w-4 text-red-500" />
-                  <span className="text-xs truncate">{profile.socials.youtube}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Facebook className="h-4 w-4 text-blue-600" />
-                  <span className="text-xs truncate">{profile.socials.facebook}</span>
-                </div>
-              </div>
             </Card>
           </div>
         </div>
