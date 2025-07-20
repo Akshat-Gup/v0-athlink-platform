@@ -308,7 +308,7 @@ export default function ProfilePage({ params }: PageProps) {
     const displayStats = showAll ? stats : stats.slice(0, 4)
 
     return (
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">{title}</h3>
           <Button
@@ -319,14 +319,14 @@ export default function ProfilePage({ params }: PageProps) {
             {showAll ? "Show Less" : `View All ${stats.length} Stats`} →
           </Button>
         </div>
-        <div className="flex space-x-4 overflow-x-auto pb-2">
+        <div className="flex space-x-3 sm:space-x-4 overflow-x-auto pb-2">
           {displayStats.map((stat, index) => (
             <div
               key={index}
-              className="flex-shrink-0 bg-white border border-gray-200 rounded-2xl p-6 min-w-[140px] text-center shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 cursor-pointer"
+              className="flex-shrink-0 bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 min-w-[120px] sm:min-w-[140px] text-center shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 cursor-pointer"
             >
-              <div className="text-2xl mb-2 text-gray-600">{stat.icon}</div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
+              <div className="text-xl sm:text-2xl mb-2 text-gray-600">{stat.icon}</div>
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
               <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">{stat.label}</div>
             </div>
           ))}
@@ -337,21 +337,21 @@ export default function ProfilePage({ params }: PageProps) {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-white pt-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Persistent Back Button - Moved Further Left */}
+      <div className="min-h-screen bg-white pt-4 sm:pt-6">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+          {/* Persistent Back Button */}
           <Link href="/discover">
             <Button
               variant="ghost"
               size="icon"
-              className="fixed top-8 left-1 sm:left-2 lg:left-4 xl:left-[max(0.5rem,calc((100vw-80rem)/2-1rem))] z-50 bg-white hover:bg-gray-50 rounded-full shadow-lg"
+              className="fixed top-4 sm:top-8 left-2 sm:left-4 lg:left-4 xl:left-[max(0.5rem,calc((100vw-80rem)/2-1rem))] z-50 bg-white hover:bg-gray-50 rounded-full shadow-lg"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
 
-          {/* Banner with Profile Image Overlay */}
-          <div className="relative h-96 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl overflow-visible mb-20">
+          {/* Banner with Profile Image Overlay - Mobile Optimized */}
+          <div className="relative h-48 sm:h-64 lg:h-96 bg-gradient-to-r from-green-400 to-blue-500 rounded-xl overflow-visible mb-12 sm:mb-16 lg:mb-20">
             <div className="w-full h-full rounded-xl overflow-hidden">
               <Image
                 src={profile.coverImage || "/placeholder.svg"}
@@ -362,37 +362,37 @@ export default function ProfilePage({ params }: PageProps) {
               />
             </div>
 
-            {/* Profile Image with Pill Background */}
-            <div className="absolute -bottom-16 left-8">
+            {/* Profile Image with Pill Background - Mobile Responsive */}
+            <div className="absolute -bottom-8 sm:-bottom-12 lg:-bottom-16 left-3 sm:left-6 lg:left-8">
               <div className="relative flex items-center">
-                {/* Pill Background */}
-                <div className="bg-white rounded-full shadow-xl border-4 border-white flex items-center pr-4">
-                  {/* Profile Image */}
+                {/* Pill Background - Responsive */}
+                <div className="bg-white rounded-full shadow-xl border-2 sm:border-4 border-white flex items-center pr-2 sm:pr-3 lg:pr-4">
+                  {/* Profile Image - Responsive sizes */}
                   <Image
                     src={profile.image || "/placeholder.svg"}
                     alt={profile.name}
                     width={128}
                     height={128}
-                    className="rounded-full object-cover w-32 h-32"
+                    className="rounded-full object-cover w-16 h-16 sm:w-24 sm:h-24 lg:w-32 lg:h-32"
                   />
-                  {/* Icons */}
-                  <div className="flex items-center gap-2 ml-4">
-                    <span className="text-2xl">{profile.country}</span>
-                    <span className="text-2xl">{profile.team}</span>
+                  {/* Icons - Responsive */}
+                  <div className="flex items-center gap-1 sm:gap-2 ml-2 sm:ml-3 lg:ml-4">
+                    <span className="text-lg sm:text-xl lg:text-2xl">{profile.country}</span>
+                    <span className="text-lg sm:text-xl lg:text-2xl">{profile.team}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Profile Info */}
-          <div className="flex items-center justify-between mb-8">
+          {/* Profile Info - Mobile Optimized */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 space-y-4 sm:space-y-0">
             <div className="flex items-center">
               <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
+                <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{profile.name}</h1>
                 </div>
-                <div className="flex items-center gap-4 text-gray-600">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-gray-600">
                   <div className="flex items-center">
                     <Star className="h-4 w-4 fill-current text-gray-900 mr-1" />
                     <span className="text-sm">{profile.rating}</span>
@@ -404,22 +404,26 @@ export default function ProfilePage({ params }: PageProps) {
                     <MapPin className="h-4 w-4 mr-1" />
                     <span className="text-sm">{profile.location}</span>
                   </Link>
-                  <Badge variant="secondary">{profile.achievements}</Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    {profile.achievements}
+                  </Badge>
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+
+            {/* Action Buttons - Mobile Responsive */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
               <Button variant="outline" className="bg-transparent rounded-full" size="icon">
                 <Heart className="h-4 w-4" />
               </Button>
               <Dialog open={showShareModal} onOpenChange={setShowShareModal}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="bg-transparent">
-                    <Share className="h-4 w-4 mr-2" />
-                    Share
+                  <Button variant="outline" className="bg-transparent text-sm px-3 sm:px-4">
+                    <Share className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Share</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md mx-4">
                   <DialogHeader>
                     <DialogTitle>Share Profile</DialogTitle>
                   </DialogHeader>
@@ -474,56 +478,54 @@ export default function ProfilePage({ params }: PageProps) {
                   </div>
                 </DialogContent>
               </Dialog>
-              <Button className="bg-black hover:bg-gray-900 animate-shimmer shadow-lg shadow-black/25">
-                <MessageCircle className="h-4 w-4 mr-2" />
-                Contact
+              <Button className="bg-black hover:bg-gray-900 animate-shimmer shadow-lg shadow-black/25 text-sm px-3 sm:px-4">
+                <MessageCircle className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Contact</span>
               </Button>
-              <Button className="bg-green-500 hover:bg-green-600 animate-shimmer shadow-lg shadow-green-500/25">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Analyse
+              <Button className="bg-green-500 hover:bg-green-600 animate-shimmer shadow-lg shadow-green-500/25 text-sm px-3 sm:px-4">
+                <Sparkles className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Analyse</span>
               </Button>
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Sticky Tabs - Persistent when scrolling */}
-              <div className="sticky top-0 z-40 bg-white pt-6 pb-6">
-                <div className="w-full">
-                  <div className="bg-white rounded-full shadow-lg border border-gray-200 px-2 py-2 flex w-full">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+              {/* Sticky Tabs - Mobile Optimized */}
+              <div className="sticky top-0 z-40 bg-white pt-4 pb-4 border-b border-gray-100 left-0 right-0 -mx-3 sm:-mx-4 lg:mx-0 px-3 sm:px-4 lg:px-0">
+                <div className="w-full max-w-7xl mx-auto">
+                  <div className="bg-gray-50 rounded-full p-1 flex w-full">
                     <button
                       onClick={() => setActiveTab("overview")}
-                      className={`flex items-center justify-center space-x-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 ${
+                      className={`flex items-center justify-center px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 min-w-0 ${
                         activeTab === "overview"
-                          ? "bg-gray-100 text-gray-900"
-                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                          ? "bg-white text-gray-900 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
                       }`}
                     >
-                      <Users className="h-4 w-4" />
-                      <span className="hidden sm:inline">Overview</span>
+                      <Users className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden sm:inline ml-2">Overview</span>
                     </button>
                     <button
                       onClick={() => setActiveTab("results")}
-                      className={`flex items-center justify-center space-x-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 ${
+                      className={`flex items-center justify-center px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 min-w-0 ${
                         activeTab === "results"
-                          ? "bg-gray-100 text-gray-900"
-                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                          ? "bg-white text-gray-900 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
                       }`}
                     >
-                      <Trophy className="h-4 w-4" />
-                      <span className="hidden sm:inline">Results</span>
+                      <Trophy className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden sm:inline ml-2">Results</span>
                     </button>
                     <button
                       onClick={() => setActiveTab("media")}
-                      className={`flex items-center justify-center space-x-2 px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 ${
-                        activeTab === "media"
-                          ? "bg-gray-100 text-gray-900"
-                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                      className={`flex items-center justify-center px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 min-w-0 ${
+                        activeTab === "media" ? "bg-white text-gray-900 shadow-sm" : "text-gray-600 hover:text-gray-900"
                       }`}
                     >
-                      <CalendarIcon className="h-4 w-4" />
-                      <span className="hidden sm:inline">Media</span>
+                      <CalendarIcon className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden sm:inline ml-2">Media</span>
                     </button>
                   </div>
                 </div>
@@ -531,12 +533,12 @@ export default function ProfilePage({ params }: PageProps) {
 
               {activeTab === "overview" && (
                 <>
-                  <Card className="p-6">
+                  <Card className="p-4 sm:p-6">
                     <h3 className="text-lg font-semibold mb-4">About</h3>
-                    <p className="text-gray-600">{profile.bio}</p>
+                    <p className="text-gray-600 text-sm sm:text-base">{profile.bio}</p>
                   </Card>
 
-                  <Card className="p-6">
+                  <Card className="p-4 sm:p-6">
                     <h3 className="text-lg font-semibold mb-4">Quick Facts</h3>
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
@@ -562,9 +564,9 @@ export default function ProfilePage({ params }: PageProps) {
                     setShowAllPerformanceStats,
                   )}
 
-                  <Card className="p-6">
+                  <Card className="p-4 sm:p-6">
                     <h3 className="text-lg font-semibold mb-4">Ranking Progress</h3>
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={250}>
                       <LineChart data={profile.performanceData}>
                         <XAxis dataKey="month" />
                         <YAxis />
@@ -574,9 +576,9 @@ export default function ProfilePage({ params }: PageProps) {
                     </ResponsiveContainer>
                   </Card>
 
-                  <Card className="p-6">
+                  <Card className="p-4 sm:p-6">
                     <h3 className="text-lg font-semibold mb-4">Monthly Wins</h3>
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={250}>
                       <BarChart data={profile.performanceData}>
                         <XAxis dataKey="month" />
                         <YAxis />
@@ -587,7 +589,7 @@ export default function ProfilePage({ params }: PageProps) {
                   </Card>
 
                   {/* Team Section */}
-                  <Card className="p-6">
+                  <Card className="p-4 sm:p-6">
                     <h3 className="text-lg font-semibold mb-4">Team</h3>
                     <div className="text-gray-600 text-center py-8">
                       <Users className="h-12 w-12 mx-auto mb-3 text-gray-400" />
@@ -600,9 +602,9 @@ export default function ProfilePage({ params }: PageProps) {
               {activeTab === "results" && (
                 <>
                   <AchievementsSection />
-                  <Card className="p-6">
+                  <Card className="p-4 sm:p-6">
                     <h3 className="text-lg font-semibold mb-4">Upcoming Competitions</h3>
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {profile.upcomingCompetitions.map((comp) => (
                         <Card key={comp.id} className="p-4">
                           <Image
@@ -620,7 +622,7 @@ export default function ProfilePage({ params }: PageProps) {
                     </div>
                   </Card>
 
-                  <Card className="p-6">
+                  <Card className="p-4 sm:p-6">
                     <h3 className="text-lg font-semibold mb-4">Past Results</h3>
                     <div className="space-y-8">
                       {Object.entries(profile.pastResults)
@@ -628,7 +630,7 @@ export default function ProfilePage({ params }: PageProps) {
                         .map(([year, results]) => (
                           <div key={year}>
                             <h4 className="text-md font-semibold mb-2">{year}</h4>
-                            <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               {results.map((result: any) => (
                                 <div key={result.id} className="p-4 border rounded-xl bg-white flex flex-col relative">
                                   <Image
@@ -661,13 +663,13 @@ export default function ProfilePage({ params }: PageProps) {
               )}
 
               {activeTab === "media" && (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Photos Row - Gallery Effect */}
                   <Dialog open={showPhotosModal} onOpenChange={setShowPhotosModal}>
                     <DialogTrigger asChild>
-                      <Card className="p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h3 className="text-lg font-semibold mb-4">Photos</h3>
-                        <div className="flex gap-4 overflow-x-auto pb-2">
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
                           {profile.mediaGallery.photos.map((photo) => (
                             <Image
                               key={photo.id}
@@ -675,13 +677,13 @@ export default function ProfilePage({ params }: PageProps) {
                               alt={photo.title}
                               width={200}
                               height={150}
-                              className="flex-shrink-0 w-32 h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                             />
                           ))}
                         </div>
                       </Card>
                     </DialogTrigger>
-                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
+                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto mx-4">
                       <DialogHeader>
                         <DialogTitle>Photos</DialogTitle>
                       </DialogHeader>
@@ -720,9 +722,9 @@ export default function ProfilePage({ params }: PageProps) {
                   {/* Videos Row - Gallery Effect */}
                   <Dialog open={showVideosModal} onOpenChange={setShowVideosModal}>
                     <DialogTrigger asChild>
-                      <Card className="p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h3 className="text-lg font-semibold mb-4">Videos</h3>
-                        <div className="flex gap-4 overflow-x-auto pb-2">
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
                           {profile.mediaGallery.videos.map((video) => (
                             <div key={video.id} className="relative flex-shrink-0">
                               <Image
@@ -730,17 +732,17 @@ export default function ProfilePage({ params }: PageProps) {
                                 alt={video.title}
                                 width={200}
                                 height={150}
-                                className="w-32 h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                                className="w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                               />
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <Play className="h-6 w-6 text-white bg-black bg-opacity-50 rounded-full p-1" />
+                                <Play className="h-4 w-4 sm:h-6 sm:w-6 text-white bg-black bg-opacity-50 rounded-full p-1" />
                               </div>
                             </div>
                           ))}
                         </div>
                       </Card>
                     </DialogTrigger>
-                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto">
+                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto mx-4">
                       <DialogHeader>
                         <DialogTitle>Videos</DialogTitle>
                       </DialogHeader>
@@ -784,12 +786,12 @@ export default function ProfilePage({ params }: PageProps) {
                   {/* YouTube Row - Gallery Effect */}
                   <Dialog open={showYoutubeModal} onOpenChange={setShowYoutubeModal}>
                     <DialogTrigger asChild>
-                      <Card className="p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <div className="flex items-center gap-2 mb-4">
                           <Youtube className="h-5 w-5 text-red-500" />
                           <h3 className="text-lg font-semibold">YouTube</h3>
                         </div>
-                        <div className="flex gap-4 overflow-x-auto pb-2">
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
                           {profile.mediaGallery.youtube.map((video) => (
                             <div key={video.id} className="relative flex-shrink-0">
                               <Image
@@ -797,21 +799,21 @@ export default function ProfilePage({ params }: PageProps) {
                                 alt={video.title}
                                 width={200}
                                 height={150}
-                                className="w-32 h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                                className="w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                               />
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <Youtube className="h-6 w-6 text-red-500 bg-white rounded-full p-1" />
+                                <Youtube className="h-4 w-4 sm:h-6 sm:w-6 text-red-500 bg-white rounded-full p-1" />
                               </div>
                             </div>
                           ))}
                         </div>
                       </Card>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl">
+                    <DialogContent className="max-w-4xl mx-4">
                       <DialogHeader>
                         <DialogTitle>YouTube Videos</DialogTitle>
                       </DialogHeader>
-                      <div className="grid md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {profile.mediaGallery.youtube.map((video) => (
                           <div key={video.id} className="relative">
                             <Image
@@ -833,12 +835,12 @@ export default function ProfilePage({ params }: PageProps) {
                   {/* Instagram Row - Gallery Effect */}
                   <Dialog open={showInstagramModal} onOpenChange={setShowInstagramModal}>
                     <DialogTrigger asChild>
-                      <Card className="p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <div className="flex items-center gap-2 mb-4">
                           <Instagram className="h-5 w-5 text-pink-500" />
                           <h3 className="text-lg font-semibold">Instagram</h3>
                         </div>
-                        <div className="flex gap-4 overflow-x-auto pb-2">
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
                           {profile.mediaGallery.instagram.map((post) => (
                             <Image
                               key={post.id}
@@ -846,17 +848,17 @@ export default function ProfilePage({ params }: PageProps) {
                               alt={post.title}
                               width={200}
                               height={150}
-                              className="flex-shrink-0 w-32 h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                             />
                           ))}
                         </div>
                       </Card>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl">
+                    <DialogContent className="max-w-4xl mx-4">
                       <DialogHeader>
                         <DialogTitle>Instagram Posts</DialogTitle>
                       </DialogHeader>
-                      <div className="grid md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         {profile.mediaGallery.instagram.map((post) => (
                           <Image
                             key={post.id}
@@ -864,7 +866,7 @@ export default function ProfilePage({ params }: PageProps) {
                             alt={post.title}
                             width={400}
                             height={300}
-                            className="w-full h-48 object-cover rounded-lg"
+                            className="w-full h-32 sm:h-48 object-cover rounded-lg"
                           />
                         ))}
                       </div>
@@ -874,8 +876,8 @@ export default function ProfilePage({ params }: PageProps) {
               )}
             </div>
 
-            {/* Scrollable Sticky Sidebar with Enhanced Shadows */}
-            <div className="space-y-6 ml-8">
+            {/* Scrollable Sticky Sidebar - Hidden on Mobile */}
+            <div className="hidden lg:block space-y-6 ml-8">
               <div className="sticky top-6 space-y-6 max-h-[calc(100vh-3rem)] overflow-y-auto overflow-x-visible px-2 -mx-2">
                 <Card className="p-6 shadow-xl border-0">
                   <h3 className="text-lg font-semibold mb-4">Campaign Progress</h3>
@@ -976,6 +978,97 @@ export default function ProfilePage({ params }: PageProps) {
                 </Card>
               </div>
             </div>
+          </div>
+
+          {/* Mobile Sidebar - Bottom Sheet Style */}
+          <div className="lg:hidden mt-6">
+            <Card className="p-4 shadow-xl border-0">
+              <h3 className="text-lg font-semibold mb-4">Campaign Progress</h3>
+              {renderProgressBar(profile.currentFunding, profile.goalFunding)}
+
+              <div className="mt-6 space-y-3">
+                <h4 className="font-medium text-sm">Sponsorship Checkpoints</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {profile.checkpoints.map((checkpoint, index) => (
+                    <div
+                      key={index}
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                        checkpoint.unlocked
+                          ? "bg-green-50 border-green-200"
+                          : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium text-sm">${checkpoint.amount.toLocaleString()}</span>
+                        {checkpoint.unlocked && <Badge className="bg-green-500 text-xs">Unlocked</Badge>}
+                      </div>
+                      <p className="text-xs text-gray-600">{checkpoint.reward}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Dialog open={showSponsorModal} onOpenChange={setShowSponsorModal}>
+                <DialogTrigger asChild>
+                  <Button className="w-full mt-4 bg-green-500 hover:bg-green-600">Support Campaign</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl mx-4">
+                  <DialogHeader>
+                    <DialogTitle>Sponsorship Packages</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <Card className="p-4 border-2 border-green-500">
+                        <h4 className="font-semibold mb-2">Bronze Package</h4>
+                        <p className="text-2xl font-bold text-green-500 mb-2">$1,000</p>
+                        <ul className="text-sm space-y-1">
+                          <li>• Social media mentions</li>
+                          <li>• Signed merchandise</li>
+                          <li>• Monthly updates</li>
+                        </ul>
+                      </Card>
+                      <Card className="p-4 border-2">
+                        <h4 className="font-semibold mb-2">Silver Package</h4>
+                        <p className="text-2xl font-bold mb-2">$2,500</p>
+                        <ul className="text-sm space-y-1">
+                          <li>• Logo on training gear</li>
+                          <li>• Event invitations</li>
+                          <li>• Exclusive content</li>
+                        </ul>
+                      </Card>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <Button className="flex-1 bg-green-500 hover:bg-green-600">Choose Package</Button>
+                      <Button variant="outline" className="flex-1 bg-transparent">
+                        Custom Negotiation
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </Card>
+
+            <Card className="p-4 shadow-lg mt-4">
+              <h3 className="text-lg font-semibold mb-4">Social Media</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2">
+                  <Instagram className="h-4 w-4 text-pink-500" />
+                  <span className="text-xs truncate">{profile.socials.instagram}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Twitter className="h-4 w-4 text-blue-500" />
+                  <span className="text-xs truncate">{profile.socials.twitter}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Youtube className="h-4 w-4 text-red-500" />
+                  <span className="text-xs truncate">{profile.socials.youtube}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Facebook className="h-4 w-4 text-blue-600" />
+                  <span className="text-xs truncate">{profile.socials.facebook}</span>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </div>
