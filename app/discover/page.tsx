@@ -926,11 +926,24 @@ export default function DiscoverPage() {
                             </span>
                             <span className="md:hidden">Type</span>
                           </div>
-                          <Select value={selectedTalentType} onValueChange={setSelectedTalentType}>
+                          <Select
+                            value={selectedTalentType}
+                            onValueChange={(value) =>
+                              value === "__clear__" ? setSelectedTalentType("") : setSelectedTalentType(value)
+                            }
+                          >
                             <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
                               <SelectValue placeholder="Select" />
                             </SelectTrigger>
                             <SelectContent>
+                              {selectedTalentType && (
+                                <SelectItem
+                                  value="__clear__"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  Clear selection
+                                </SelectItem>
+                              )}
                               {activeTab === "events" ? (
                                 <>
                                   <SelectItem value="athlete">Athlete-focused</SelectItem>
@@ -960,11 +973,24 @@ export default function DiscoverPage() {
                           <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                             <div className="w-full">
                               <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
-                              <Select value={selectedFit} onValueChange={setSelectedFit}>
+                              <Select
+                                value={selectedFit}
+                                onValueChange={(value) =>
+                                  value === "__clear__" ? setSelectedFit("") : setSelectedFit(value)
+                                }
+                              >
                                 <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
                                   <SelectValue placeholder="Select fit" />
                                 </SelectTrigger>
                                 <SelectContent>
+                                  {selectedFit && (
+                                    <SelectItem
+                                      value="__clear__"
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    >
+                                      Clear selection
+                                    </SelectItem>
+                                  )}
                                   <SelectItem value="top-talent">Top Talent</SelectItem>
                                   <SelectItem value="up-and-coming">Up and Coming</SelectItem>
                                   <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
@@ -1077,7 +1103,7 @@ export default function DiscoverPage() {
                 </div>
 
                 {/* Filter Buttons Below Search Bar */}
-                <div className="flex items-center justify-center space-x-3 mt-4 flex-wrap md:flex-nowrap gap-y-2">
+                <div className="flex items-center justify-center space-x-3 mt-4 flex-wrap gap-y-2 max-w-5xl mx-auto">
                   {selectedTalentType === "athlete" && (
                     <Select
                       value={selectedSport}
@@ -1291,11 +1317,24 @@ export default function DiscoverPage() {
                               </span>
                               <span className="md:hidden">Type</span>
                             </div>
-                            <Select value={selectedTalentType} onValueChange={setSelectedTalentType}>
+                            <Select
+                              value={selectedTalentType}
+                              onValueChange={(value) =>
+                                value === "__clear__" ? setSelectedTalentType("") : setSelectedTalentType(value)
+                              }
+                            >
                               <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
                                 <SelectValue placeholder="Select" />
                               </SelectTrigger>
                               <SelectContent>
+                                {selectedTalentType && (
+                                  <SelectItem
+                                    value="__clear__"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    Clear selection
+                                  </SelectItem>
+                                )}
                                 {activeTab === "events" ? (
                                   <>
                                     <SelectItem value="athlete">Athlete-focused</SelectItem>
@@ -1325,11 +1364,24 @@ export default function DiscoverPage() {
                             <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                               <div className="w-full">
                                 <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
-                                <Select value={selectedFit} onValueChange={setSelectedFit}>
+                                <Select
+                                  value={selectedFit}
+                                  onValueChange={(value) =>
+                                    value === "__clear__" ? setSelectedFit("") : setSelectedFit(value)
+                                  }
+                                >
                                   <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
                                     <SelectValue placeholder="Select fit" />
                                   </SelectTrigger>
                                   <SelectContent>
+                                    {selectedFit && (
+                                      <SelectItem
+                                        value="__clear__"
+                                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      >
+                                        Clear selection
+                                      </SelectItem>
+                                    )}
                                     <SelectItem value="top-talent">Top Talent</SelectItem>
                                     <SelectItem value="up-and-coming">Up and Coming</SelectItem>
                                     <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
@@ -1452,7 +1504,7 @@ export default function DiscoverPage() {
                   </div>
 
                   {/* Filter Buttons Below Search Bar */}
-                  <div className="flex items-center justify-center space-x-3 mt-4 flex-wrap md:flex-nowrap gap-y-2">
+                  <div className="flex items-center justify-center space-x-3 mt-4 flex-wrap gap-y-2 max-w-5xl mx-auto">
                     {selectedTalentType === "athlete" && (
                       <Select
                         value={selectedSport}
@@ -1791,7 +1843,7 @@ export default function DiscoverPage() {
           /* Content Sections by Fit for Talents and Teams */
           <>
             {/* Trending Section - MOVED TO TOP */}
-            {activeTab === "talents" && (
+            {activeTab === "talents" && !selectedFit && (
               <section className="mb-12">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-semibold text-gray-900">Trending</h2>
