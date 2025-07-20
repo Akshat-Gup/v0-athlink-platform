@@ -1804,7 +1804,7 @@ export default function DiscoverPage() {
                         />
                       </Button>
                     </div>
-                    <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                    <Link href={`/profile/${item.category}s/${item.id}`} className="flex flex-col flex-1">
                       <CardContent className="p-0 px-4 flex flex-col flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
@@ -1896,7 +1896,7 @@ export default function DiscoverPage() {
                             />
                           </Button>
                         </div>
-                        <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                        <Link href={`/profile/${item.category}s/${item.id}`} className="flex flex-col flex-1">
                           <CardContent className="p-0 px-4 flex flex-col flex-1">
                             <div className="flex items-center justify-between mb-2">
                               <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
@@ -1986,7 +1986,7 @@ export default function DiscoverPage() {
                             />
                           </Button>
                         </div>
-                        <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                        <Link href={`/profile/${item.category}s/${item.id}`} className="flex flex-col flex-1">
                           <CardContent className="p-0 px-4 flex flex-col flex-1">
                             <div className="flex items-center justify-between mb-2">
                               <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
@@ -2076,7 +2076,7 @@ export default function DiscoverPage() {
                             />
                           </Button>
                         </div>
-                        <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                        <Link href={`/profile/${item.category}s/${item.id}`} className="flex flex-col flex-1">
                           <CardContent className="p-0 px-4 flex flex-col flex-1">
                             <div className="flex items-center justify-between mb-2">
                               <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
@@ -2166,7 +2166,7 @@ export default function DiscoverPage() {
                             />
                           </Button>
                         </div>
-                        <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                        <Link href={`/profile/${item.category}s/${item.id}`} className="flex flex-col flex-1">
                           <CardContent className="p-0 px-4 flex flex-col flex-1">
                             <div className="flex items-center justify-between mb-2">
                               <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
