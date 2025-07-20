@@ -29,7 +29,6 @@ import {
   Building,
   Award,
   Target,
-  DollarSign,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -64,15 +63,15 @@ export default function DiscoverPage() {
       if (!ticking) {
         requestAnimationFrame(() => {
           // Look for the search bar element and check if its bottom border is at top of screen
-          const searchBar = document.querySelector('[data-search-bar]')
+          const searchBar = document.querySelector("[data-search-bar]")
           if (searchBar) {
             const rect = searchBar.getBoundingClientRect()
             setIsScrolled(rect.bottom <= -10) // Add some buffer to prevent jumpiness
           } else {
             // Fallback to height calculation
             const searchBarHeight = 200
-      setIsScrolled(window.scrollY > searchBarHeight)
-    }
+            setIsScrolled(window.scrollY > searchBarHeight)
+          }
           ticking = false
         })
         ticking = true
@@ -107,7 +106,7 @@ export default function DiscoverPage() {
       "track-field": ["USA Track & Field", "NCAA", "World Athletics"],
       gymnastics: ["USA Gymnastics", "NCAA", "FIG"],
       boxing: ["WBC", "WBA", "IBF", "WBO", "Amateur"],
-      cycling: ["UCI", "USA Cycling", "Tour de France"]
+      cycling: ["UCI", "USA Cycling", "Tour de France"],
     }
     return leagues[sport] || []
   }
@@ -449,11 +448,19 @@ export default function DiscoverPage() {
 
     // Get the first 3 items from the current tab as "always visible"
     const alwaysVisible = filtered.slice(0, 3)
-    
+
     // Check if any filters are applied
-    const hasFilters = searchQuery.trim() || aiQuery.trim() || selectedTalentType || selectedFit || 
-                      selectedSport || selectedLeague || selectedExperience || 
-                      (selectedLocation && selectedLocation !== "United States") || selectedRating || selectedBudget
+    const hasFilters =
+      searchQuery.trim() ||
+      aiQuery.trim() ||
+      selectedTalentType ||
+      selectedFit ||
+      selectedSport ||
+      selectedLeague ||
+      selectedExperience ||
+      (selectedLocation && selectedLocation !== "United States") ||
+      selectedRating ||
+      selectedBudget
 
     // If no filters, return normal filtered items
     if (!hasFilters) {
@@ -538,9 +545,9 @@ export default function DiscoverPage() {
     }
 
     // Combine always visible items with filtered items, removing duplicates
-    const alwaysVisibleIds = new Set(alwaysVisible.map(item => item.id))
-    const additionalFiltered = filtered.filter(item => !alwaysVisibleIds.has(item.id))
-    
+    const alwaysVisibleIds = new Set(alwaysVisible.map((item) => item.id))
+    const additionalFiltered = filtered.filter((item) => !alwaysVisibleIds.has(item.id))
+
     return [...alwaysVisible, ...additionalFiltered]
   }
 
@@ -580,7 +587,7 @@ export default function DiscoverPage() {
   }
 
   const getItemsByFit = (fit: string) => {
-    return filteredItems.filter(item => item.fit === fit)
+    return filteredItems.filter((item) => item.fit === fit)
   }
 
   const shouldShowSection = (fit: string) => {
@@ -688,12 +695,7 @@ export default function DiscoverPage() {
                 </SheetContent>
               </Sheet>
               {isScrolled && (
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  className="rounded-full"
-                  onClick={() => setShowSearchOverlay(true)}
-                >
+                <Button size="icon" variant="ghost" className="rounded-full" onClick={() => setShowSearchOverlay(true)}>
                   <Search className="h-4 w-4" />
                 </Button>
               )}
@@ -812,11 +814,7 @@ export default function DiscoverPage() {
                     </SheetContent>
                   </Sheet>
                   {isScrolled && (
-                    <Button 
-                      variant="ghost" 
-                      className="w-full justify-start"
-                      onClick={() => setShowSearchOverlay(true)}
-                    >
+                    <Button variant="ghost" className="w-full justify-start" onClick={() => setShowSearchOverlay(true)}>
                       <Search className="h-4 w-4 mr-2" />
                       Search
                     </Button>
@@ -895,9 +893,9 @@ export default function DiscoverPage() {
             <div className="flex items-center justify-center">
               {/* Main Search Bar */}
               <div className="flex-1 max-w-4xl relative">
-                <div className="flex bg-white border-2 border-gray-300 rounded-full shadow-lg h-16 items-center">
+                <div className="flex bg-white border-2 border-gray-300 rounded-full shadow-lg h-16 md:h-16 sm:h-12 items-center">
                   {searchMode === "ai" ? (
-                    <div className="flex-1 px-6 py-4 h-16 flex items-center">
+                    <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                       <Input
                         placeholder="Find with AI"
                         value={aiQuery}
@@ -906,7 +904,7 @@ export default function DiscoverPage() {
                       />
                     </div>
                   ) : searchMode === "search" ? (
-                    <div className="flex-1 px-6 py-4 h-16 flex items-center">
+                    <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                       <Input
                         placeholder="Search by keyword"
                         value={searchQuery}
@@ -916,14 +914,21 @@ export default function DiscoverPage() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex-1 px-6 py-4 h-16 flex items-center">
+                      <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                         <div className="w-full">
                           <div className="text-xs font-semibold text-gray-500 mb-1">
-                            {activeTab === "events" ? "Type of Event" : activeTab === "teams" ? "Type of Team" : "Type of Talent"}
+                            <span className="hidden md:inline">
+                              {activeTab === "events"
+                                ? "Type of Event"
+                                : activeTab === "teams"
+                                  ? "Type of Team"
+                                  : "Type of Talent"}
+                            </span>
+                            <span className="md:hidden">Type</span>
                           </div>
                           <Select value={selectedTalentType} onValueChange={setSelectedTalentType}>
                             <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
-                              <SelectValue placeholder="Select type" />
+                              <SelectValue placeholder="Select" />
                             </SelectTrigger>
                             <SelectContent>
                               {activeTab === "events" ? (
@@ -940,9 +945,9 @@ export default function DiscoverPage() {
                                 </>
                               ) : (
                                 <>
-                              <SelectItem value="athlete">Athlete</SelectItem>
-                              <SelectItem value="content-creator">Content Creator</SelectItem>
-                              <SelectItem value="creative-professional">Creative Professional</SelectItem>
+                                  <SelectItem value="athlete">Athlete</SelectItem>
+                                  <SelectItem value="content-creator">Content Creator</SelectItem>
+                                  <SelectItem value="creative-professional">Creative Professional</SelectItem>
                                 </>
                               )}
                             </SelectContent>
@@ -952,25 +957,25 @@ export default function DiscoverPage() {
                       <div className="w-px h-10 bg-gray-200"></div>
                       {activeTab !== "events" && (
                         <>
-                      <div className="flex-1 px-6 py-4 h-16 flex items-center">
-                        <div className="w-full">
-                          <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
-                          <Select value={selectedFit} onValueChange={setSelectedFit}>
+                          <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
+                            <div className="w-full">
+                              <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
+                              <Select value={selectedFit} onValueChange={setSelectedFit}>
                                 <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
                                   <SelectValue placeholder="Select fit" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="top-talent">Top Talent</SelectItem>
-                              <SelectItem value="up-and-coming">Up and Coming</SelectItem>
-                              <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <div className="w-px h-10 bg-gray-200"></div>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="top-talent">Top Talent</SelectItem>
+                                  <SelectItem value="up-and-coming">Up and Coming</SelectItem>
+                                  <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <div className="w-px h-10 bg-gray-200"></div>
                         </>
                       )}
-                      <div className="flex-1 px-6 py-4 h-16 flex items-center">
+                      <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                         <div className="w-full">
                           <div className="text-xs font-semibold text-gray-500 mb-1">Duration</div>
                           <div className="flex items-center space-x-2">
@@ -1006,8 +1011,9 @@ export default function DiscoverPage() {
                       </div>
                     </>
                   )}
-                  <div className="px-2 py-2 flex items-center h-16">
-                    <div className="bg-gray-100 rounded-full p-1 flex relative">
+                  <div className="px-2 py-2 flex items-center h-16 md:h-16 sm:h-12">
+                    {/* Desktop: Full toggle buttons */}
+                    <div className="hidden md:block bg-gray-100 rounded-full p-1 flex relative">
                       {/* Sliding shimmering background */}
                       <div
                         className={`absolute top-1 bottom-1 bg-green-500 rounded-full transition-all duration-300 ease-in-out shadow-lg shadow-green-500/25 animate-shimmer ${
@@ -1022,9 +1028,7 @@ export default function DiscoverPage() {
                         size="sm"
                         onClick={() => setSearchMode("filter")}
                         className={`relative z-10 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent ${
-                          searchMode === "filter"
-                            ? "text-white"
-                            : "text-gray-600"
+                          searchMode === "filter" ? "text-white" : "text-gray-600"
                         }`}
                       >
                         <Filter className="h-4 w-4" />
@@ -1033,9 +1037,7 @@ export default function DiscoverPage() {
                         size="sm"
                         onClick={() => setSearchMode("search")}
                         className={`relative z-10 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent ${
-                          searchMode === "search"
-                            ? "text-white"
-                            : "text-gray-600"
+                          searchMode === "search" ? "text-white" : "text-gray-600"
                         }`}
                       >
                         <Search className="h-4 w-4" />
@@ -1044,168 +1046,202 @@ export default function DiscoverPage() {
                         size="sm"
                         onClick={() => setSearchMode("ai")}
                         className={`relative z-10 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent ${
-                          searchMode === "ai"
-                            ? "text-white"
-                            : "text-gray-600"
+                          searchMode === "ai" ? "text-white" : "text-gray-600"
                         }`}
                       >
                         <Sparkles className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {/* Mobile: Single toggle button */}
+                    <div className="md:hidden">
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          if (searchMode === "filter") {
+                            setSearchMode("search")
+                          } else if (searchMode === "search") {
+                            setSearchMode("ai")
+                          } else {
+                            setSearchMode("filter")
+                          }
+                        }}
+                        className="relative rounded-full px-3 h-10 bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/25 animate-shimmer"
+                      >
+                        {searchMode === "filter" && <Filter className="h-4 w-4" />}
+                        {searchMode === "search" && <Search className="h-4 w-4" />}
+                        {searchMode === "ai" && <Sparkles className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
                 </div>
 
                 {/* Filter Buttons Below Search Bar */}
-                <div className="flex items-center justify-center space-x-3 mt-4">
+                <div className="flex items-center justify-center space-x-3 mt-4 flex-wrap md:flex-nowrap gap-y-2">
                   {selectedTalentType === "athlete" && (
-                    <Select value={selectedSport} onValueChange={(value) => {
-                      if (value === "__clear__") {
-                        setSelectedSport("")
-                        setSelectedLeague("")
-                      } else {
-                        setSelectedSport(value)
-                        setSelectedLeague("") // Reset league when sport changes
-                      }
-                    }}>
+                    <Select
+                      value={selectedSport}
+                      onValueChange={(value) => {
+                        if (value === "__clear__") {
+                          setSelectedSport("")
+                          setSelectedLeague("")
+                        } else {
+                          setSelectedSport(value)
+                          setSelectedLeague("") // Reset league when sport changes
+                        }
+                      }}
+                    >
                       <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
                         <div className="flex items-center gap-2">
                           <Target className="h-4 w-4 text-gray-600" />
                           <SelectValue placeholder="Sport" />
                         </div>
-                        </SelectTrigger>
-                        <SelectContent>
+                      </SelectTrigger>
+                      <SelectContent>
                         {selectedSport && (
                           <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
                             Clear selection
                           </SelectItem>
                         )}
-                          <SelectItem value="tennis">Tennis</SelectItem>
-                          <SelectItem value="basketball">Basketball</SelectItem>
-                          <SelectItem value="soccer">Soccer</SelectItem>
-                          <SelectItem value="swimming">Swimming</SelectItem>
-                          <SelectItem value="track-field">Track & Field</SelectItem>
-                          <SelectItem value="gymnastics">Gymnastics</SelectItem>
-                          <SelectItem value="boxing">Boxing</SelectItem>
-                          <SelectItem value="cycling">Cycling</SelectItem>
-                        </SelectContent>
-                      </Select>
-                  )}
-                  {selectedTalentType === "athlete" && selectedSport && getLeaguesForSport(selectedSport).length > 0 && (
-                    <Select value={selectedLeague} onValueChange={(value) => value === "__clear__" ? setSelectedLeague("") : setSelectedLeague(value)}>
-                      <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
-                        <div className="flex items-center gap-2">
-                          <Trophy className="h-4 w-4 text-gray-600" />
-                          <SelectValue placeholder="League" />
-                    </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {selectedLeague && (
-                          <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
-                            Clear selection
-                          </SelectItem>
-                        )}
-                        {getLeaguesForSport(selectedSport).map((league) => (
-                          <SelectItem key={league} value={league.toLowerCase().replace(/\s+/g, '-')}>
-                            {league}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="tennis">Tennis</SelectItem>
+                        <SelectItem value="basketball">Basketball</SelectItem>
+                        <SelectItem value="soccer">Soccer</SelectItem>
+                        <SelectItem value="swimming">Swimming</SelectItem>
+                        <SelectItem value="track-field">Track & Field</SelectItem>
+                        <SelectItem value="gymnastics">Gymnastics</SelectItem>
+                        <SelectItem value="boxing">Boxing</SelectItem>
+                        <SelectItem value="cycling">Cycling</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
-                  <Select value={selectedExperience} onValueChange={(value) => value === "__clear__" ? setSelectedExperience("") : setSelectedExperience(value)}>
+                  {selectedTalentType === "athlete" &&
+                    selectedSport &&
+                    getLeaguesForSport(selectedSport).length > 0 && (
+                      <Select
+                        value={selectedLeague}
+                        onValueChange={(value) =>
+                          value === "__clear__" ? setSelectedLeague("") : setSelectedLeague(value)
+                        }
+                      >
+                        <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
+                          <div className="flex items-center gap-2">
+                            <Target className="h-4 w-4 text-gray-600" />
+                            <SelectValue placeholder="League" />
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {selectedLeague && (
+                            <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                              Clear selection
+                            </SelectItem>
+                          )}
+                          {getLeaguesForSport(selectedSport).map((league) => (
+                            <SelectItem key={league} value={league.toLowerCase().replace(/\s+/g, "-")}>
+                              {league}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  <Select
+                    value={selectedExperience}
+                    onValueChange={(value) =>
+                      value === "__clear__" ? setSelectedExperience("") : setSelectedExperience(value)
+                    }
+                  >
                     <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
                       <div className="flex items-center gap-2">
                         <Award className="h-4 w-4 text-gray-600" />
                         <SelectValue placeholder="Experience Level" />
                       </div>
-                      </SelectTrigger>
-                      <SelectContent>
+                    </SelectTrigger>
+                    <SelectContent>
                       {selectedExperience && (
                         <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
                           Clear selection
                         </SelectItem>
                       )}
-                        <SelectItem value="professional">Professional</SelectItem>
-                        <SelectItem value="semi-professional">Semi-Professional</SelectItem>
-                        <SelectItem value="amateur">Amateur</SelectItem>
-                        <SelectItem value="college">College</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  <Select value={selectedRating} onValueChange={(value) => value === "__clear__" ? setSelectedRating("") : setSelectedRating(value)}>
+                      <SelectItem value="professional">Professional</SelectItem>
+                      <SelectItem value="semi-professional">Semi-Professional</SelectItem>
+                      <SelectItem value="amateur">Amateur</SelectItem>
+                      <SelectItem value="college">College</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select
+                    value={selectedRating}
+                    onValueChange={(value) =>
+                      value === "__clear__" ? setSelectedRating("") : setSelectedRating(value)
+                    }
+                  >
                     <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
-                        <div className="flex items-center gap-2">
-                          <Star className="h-4 w-4 text-gray-600" />
-                          <SelectValue placeholder="Rating" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
+                      <div className="flex items-center gap-2">
+                        <Star className="h-4 w-4 text-gray-600" />
+                        <SelectValue placeholder="Rating" />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
                       {selectedRating && (
                         <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
                           Clear selection
                         </SelectItem>
                       )}
-                        <SelectItem value="5">
-                          <div className="flex items-center">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                            ))}
-                            <span className="ml-2">5.0+ Stars</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="4.5">
-                          <div className="flex items-center">
-                            {[...Array(4)].map((_, i) => (
-                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                            ))}
-                            <Star
-                              className="h-3 w-3 fill-current text-black mr-0.5"
-                              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-                            />
-                            <span className="ml-2">4.5+ Stars</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="4">
-                          <div className="flex items-center">
-                            {[...Array(4)].map((_, i) => (
-                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                            ))}
-                            <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                            <span className="ml-2">4.0+ Stars</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="3.5">
-                          <div className="flex items-center">
-                            {[...Array(3)].map((_, i) => (
-                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                            ))}
-                            <Star
-                              className="h-3 w-3 fill-current text-black mr-0.5"
-                              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-                            />
-                            <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                            <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                            <span className="ml-2">3.5+ Stars</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="3">
-                          <div className="flex items-center">
-                            {[...Array(3)].map((_, i) => (
-                              <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
-                            ))}
-                            {[...Array(2)].map((_, i) => (
-                              <Star key={i} className="h-3 w-3 text-gray-300 mr-0.5" />
-                            ))}
-                            <span className="ml-2">3.0+ Stars</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  <BudgetSlider
-                    min={0}
-                    max={100000}
-                    step={1000}
-                    onChange={setSelectedBudget}
-                  />
+                      <SelectItem value="5">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                          ))}
+                          <span className="ml-2">5.0+ Stars</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="4.5">
+                        <div className="flex items-center">
+                          {[...Array(4)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                          ))}
+                          <Star
+                            className="h-3 w-3 fill-current text-black mr-0.5"
+                            style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
+                          />
+                          <span className="ml-2">4.5+ Stars</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="4">
+                        <div className="flex items-center">
+                          {[...Array(4)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                          ))}
+                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                          <span className="ml-2">4.0+ Stars</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="3.5">
+                        <div className="flex items-center">
+                          {[...Array(3)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                          ))}
+                          <Star
+                            className="h-3 w-3 fill-current text-black mr-0.5"
+                            style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
+                          />
+                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
+                          <span className="ml-2">3.5+ Stars</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="3">
+                        <div className="flex items-center">
+                          {[...Array(3)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 fill-current text-black mr-0.5" />
+                          ))}
+                          {[...Array(2)].map((_, i) => (
+                            <Star key={i} className="h-3 w-3 text-gray-300 mr-0.5" />
+                          ))}
+                          <span className="ml-2">3.0+ Stars</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <BudgetSlider min={0} max={100000} step={1000} onChange={setSelectedBudget} />
                   <LocationFilter value={selectedLocation} onChange={setSelectedLocation} />
                 </div>
               </div>
@@ -1222,9 +1258,9 @@ export default function DiscoverPage() {
               <div className="flex items-center justify-center">
                 {/* Main Search Bar */}
                 <div className="flex-1 max-w-4xl relative">
-                  <div className="flex bg-white border-2 border-gray-300 rounded-full shadow-lg h-16 items-center">
+                  <div className="flex bg-white border-2 border-gray-300 rounded-full shadow-lg h-16 md:h-16 sm:h-12 items-center">
                     {searchMode === "ai" ? (
-                      <div className="flex-1 px-6 py-4 h-16 flex items-center">
+                      <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                         <Input
                           placeholder="Find with AI"
                           value={aiQuery}
@@ -1233,7 +1269,7 @@ export default function DiscoverPage() {
                         />
                       </div>
                     ) : searchMode === "search" ? (
-                      <div className="flex-1 px-6 py-4 h-16 flex items-center">
+                      <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                         <Input
                           placeholder="Search by keyword"
                           value={searchQuery}
@@ -1243,14 +1279,21 @@ export default function DiscoverPage() {
                       </div>
                     ) : (
                       <>
-                        <div className="flex-1 px-6 py-4 h-16 flex items-center">
+                        <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                           <div className="w-full">
                             <div className="text-xs font-semibold text-gray-500 mb-1">
-                              {activeTab === "events" ? "Type of Event" : activeTab === "teams" ? "Type of Team" : "Type of Talent"}
+                              <span className="hidden md:inline">
+                                {activeTab === "events"
+                                  ? "Type of Event"
+                                  : activeTab === "teams"
+                                    ? "Type of Team"
+                                    : "Type of Talent"}
+                              </span>
+                              <span className="md:hidden">Type</span>
                             </div>
                             <Select value={selectedTalentType} onValueChange={setSelectedTalentType}>
                               <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
-                                <SelectValue placeholder="Select type" />
+                                <SelectValue placeholder="Select" />
                               </SelectTrigger>
                               <SelectContent>
                                 {activeTab === "events" ? (
@@ -1276,28 +1319,28 @@ export default function DiscoverPage() {
                             </Select>
                           </div>
                         </div>
-                                                                          <div className="w-px h-10 bg-gray-200"></div>
-                         {activeTab !== "events" && (
-                           <>
-                             <div className="flex-1 px-6 py-4 h-16 flex items-center">
-                               <div className="w-full">
-                                 <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
-                                 <Select value={selectedFit} onValueChange={setSelectedFit}>
-                                   <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
-                                     <SelectValue placeholder="Select fit" />
-                                   </SelectTrigger>
-                                   <SelectContent>
-                                     <SelectItem value="top-talent">Top Talent</SelectItem>
-                                     <SelectItem value="up-and-coming">Up and Coming</SelectItem>
-                                     <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
-                                   </SelectContent>
-                                 </Select>
-                               </div>
-                             </div>
-                             <div className="w-px h-10 bg-gray-200"></div>
-                           </>
-                         )}
-                         <div className="flex-1 px-6 py-4 h-16 flex items-center">
+                        <div className="w-px h-10 bg-gray-200"></div>
+                        {activeTab !== "events" && (
+                          <>
+                            <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
+                              <div className="w-full">
+                                <div className="text-xs font-semibold text-gray-500 mb-1">Fit</div>
+                                <Select value={selectedFit} onValueChange={setSelectedFit}>
+                                  <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 text-left gap-2">
+                                    <SelectValue placeholder="Select fit" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="top-talent">Top Talent</SelectItem>
+                                    <SelectItem value="up-and-coming">Up and Coming</SelectItem>
+                                    <SelectItem value="brand-ambassador">Brand Ambassador</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            <div className="w-px h-10 bg-gray-200"></div>
+                          </>
+                        )}
+                        <div className="flex-1 px-6 py-4 h-16 md:h-16 sm:h-12 sm:px-4 sm:py-2 flex items-center">
                           <div className="w-full">
                             <div className="text-xs font-semibold text-gray-500 mb-1">Duration</div>
                             <div className="flex items-center space-x-2">
@@ -1334,7 +1377,8 @@ export default function DiscoverPage() {
                       </>
                     )}
                     <div className="px-2 py-2 flex items-center h-16">
-                      <div className="bg-gray-100 rounded-full p-1 flex relative">
+                      {/* Desktop: Full toggle buttons */}
+                      <div className="hidden md:block bg-gray-100 rounded-full p-1 flex relative">
                         {/* Sliding shimmering background */}
                         <div
                           className={`absolute top-1 bottom-1 bg-green-500 rounded-full transition-all duration-300 ease-in-out shadow-lg shadow-green-500/25 animate-shimmer pointer-events-none ${
@@ -1349,9 +1393,7 @@ export default function DiscoverPage() {
                           size="sm"
                           onClick={() => setSearchMode("filter")}
                           className={`relative z-20 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent cursor-pointer ${
-                            searchMode === "filter"
-                              ? "text-white"
-                              : "text-gray-600"
+                            searchMode === "filter" ? "text-white" : "text-gray-600"
                           }`}
                         >
                           <Filter className="h-4 w-4" />
@@ -1360,9 +1402,7 @@ export default function DiscoverPage() {
                           size="sm"
                           onClick={() => setSearchMode("search")}
                           className={`relative z-20 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent cursor-pointer ${
-                            searchMode === "search"
-                              ? "text-white"
-                              : "text-gray-600"
+                            searchMode === "search" ? "text-white" : "text-gray-600"
                           }`}
                         >
                           <Search className="h-4 w-4" />
@@ -1371,18 +1411,38 @@ export default function DiscoverPage() {
                           size="sm"
                           onClick={() => setSearchMode("ai")}
                           className={`relative z-20 rounded-full px-3 h-10 transition-all duration-300 bg-transparent hover:bg-transparent cursor-pointer ${
-                            searchMode === "ai"
-                              ? "text-white"
-                              : "text-gray-600"
+                            searchMode === "ai" ? "text-white" : "text-gray-600"
                           }`}
                         >
                           <Sparkles className="h-4 w-4" />
                         </Button>
                       </div>
+
+                      {/* Mobile: Single toggle button */}
+                      <div className="md:hidden">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            if (searchMode === "filter") {
+                              setSearchMode("search")
+                            } else if (searchMode === "search") {
+                              setSearchMode("ai")
+                            } else {
+                              setSearchMode("filter")
+                            }
+                          }}
+                          className="relative rounded-full px-3 h-10 bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/25 animate-shimmer"
+                        >
+                          {searchMode === "filter" && <Filter className="h-4 w-4" />}
+                          {searchMode === "search" && <Search className="h-4 w-4" />}
+                          {searchMode === "ai" && <Sparkles className="h-4 w-4" />}
+                        </Button>
+                      </div>
+
                       {/* Close button */}
-                      <Button 
-                        size="icon" 
-                        variant="ghost" 
+                      <Button
+                        size="icon"
+                        variant="ghost"
                         onClick={() => setShowSearchOverlay(false)}
                         className="rounded-full h-10 w-10 ml-2 bg-gray-100 hover:bg-gray-200 cursor-pointer"
                       >
@@ -1392,17 +1452,20 @@ export default function DiscoverPage() {
                   </div>
 
                   {/* Filter Buttons Below Search Bar */}
-                  <div className="flex items-center justify-center space-x-3 mt-4">
+                  <div className="flex items-center justify-center space-x-3 mt-4 flex-wrap md:flex-nowrap gap-y-2">
                     {selectedTalentType === "athlete" && (
-                      <Select value={selectedSport} onValueChange={(value) => {
-                        if (value === "__clear__") {
-                          setSelectedSport("")
-                          setSelectedLeague("")
-                        } else {
-                          setSelectedSport(value)
-                          setSelectedLeague("") // Reset league when sport changes
-                        }
-                      }}>
+                      <Select
+                        value={selectedSport}
+                        onValueChange={(value) => {
+                          if (value === "__clear__") {
+                            setSelectedSport("")
+                            setSelectedLeague("")
+                          } else {
+                            setSelectedSport(value)
+                            setSelectedLeague("") // Reset league when sport changes
+                          }
+                        }}
+                      >
                         <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
                           <div className="flex items-center gap-2">
                             <Target className="h-4 w-4 text-gray-600" />
@@ -1426,29 +1489,41 @@ export default function DiscoverPage() {
                         </SelectContent>
                       </Select>
                     )}
-                    {selectedTalentType === "athlete" && selectedSport && getLeaguesForSport(selectedSport).length > 0 && (
-                      <Select value={selectedLeague} onValueChange={(value) => value === "__clear__" ? setSelectedLeague("") : setSelectedLeague(value)}>
-                        <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
-                          <div className="flex items-center gap-2">
-                            <Trophy className="h-4 w-4 text-gray-600" />
-                            <SelectValue placeholder="League" />
-                  </div>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {selectedLeague && (
-                            <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
-                              Clear selection
-                            </SelectItem>
-                          )}
-                          {getLeaguesForSport(selectedSport).map((league) => (
-                            <SelectItem key={league} value={league.toLowerCase().replace(/\s+/g, '-')}>
-                              {league}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                    <Select value={selectedExperience} onValueChange={(value) => value === "__clear__" ? setSelectedExperience("") : setSelectedExperience(value)}>
+                    {selectedTalentType === "athlete" &&
+                      selectedSport &&
+                      getLeaguesForSport(selectedSport).length > 0 && (
+                        <Select
+                          value={selectedLeague}
+                          onValueChange={(value) =>
+                            value === "__clear__" ? setSelectedLeague("") : setSelectedLeague(value)
+                          }
+                        >
+                          <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
+                            <div className="flex items-center gap-2">
+                              <Trophy className="h-4 w-4 text-gray-600" />
+                              <SelectValue placeholder="League" />
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {selectedLeague && (
+                              <SelectItem value="__clear__" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                                Clear selection
+                              </SelectItem>
+                            )}
+                            {getLeaguesForSport(selectedSport).map((league) => (
+                              <SelectItem key={league} value={league.toLowerCase().replace(/\s+/g, "-")}>
+                                {league}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    <Select
+                      value={selectedExperience}
+                      onValueChange={(value) =>
+                        value === "__clear__" ? setSelectedExperience("") : setSelectedExperience(value)
+                      }
+                    >
                       <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
                         <div className="flex items-center gap-2">
                           <Award className="h-4 w-4 text-gray-600" />
@@ -1467,7 +1542,12 @@ export default function DiscoverPage() {
                         <SelectItem value="college">College</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Select value={selectedRating} onValueChange={(value) => value === "__clear__" ? setSelectedRating("") : setSelectedRating(value)}>
+                    <Select
+                      value={selectedRating}
+                      onValueChange={(value) =>
+                        value === "__clear__" ? setSelectedRating("") : setSelectedRating(value)
+                      }
+                    >
                       <SelectTrigger className="bg-transparent border-0 hover:bg-gray-100 rounded-lg px-3 py-2 h-auto text-sm w-auto min-w-0 gap-2">
                         <div className="flex items-center gap-2">
                           <Star className="h-4 w-4 text-gray-600" />
@@ -1536,13 +1616,8 @@ export default function DiscoverPage() {
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                  <BudgetSlider
-                    min={0}
-                    max={100000}
-                    step={1000}
-                    onChange={setSelectedBudget}
-                  />
-                  <LocationFilter value={selectedLocation} onChange={setSelectedLocation} />
+                    <BudgetSlider min={0} max={100000} step={1000} onChange={setSelectedBudget} />
+                    <LocationFilter value={selectedLocation} onChange={setSelectedLocation} />
                   </div>
                 </div>
               </div>
@@ -1555,8 +1630,8 @@ export default function DiscoverPage() {
       <main className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ${isScrolled ? "pt-24" : ""}`}>
         {searchMode === "ai" ? (
           /* AI Reports Section */
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-gray-900">Past AI Industry Reports</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1627,9 +1702,7 @@ export default function DiscoverPage() {
           /* Events Section */
           <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">
-                Up and Coming Events in {selectedLocation}
-              </h2>
+              <h2 className="text-2xl font-semibold text-gray-900">Up and Coming Events in {selectedLocation}</h2>
               <Link href={`/discover/${activeTab}`}>
                 <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
                   Show all
@@ -1637,78 +1710,81 @@ export default function DiscoverPage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredItems.filter(item => item.category === "event").slice(0, 8).map((item, index) => (
-                <Card
-                  key={item.id}
-                  className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="relative mb-4 -mx-4 -mt-4">
-                    <Image
-                      src={item.image || "/placeholder.svg"}
-                      alt={item.name}
-                      width={400}
-                      height={300}
-                      className="w-full h-48 object-cover rounded-t-lg"
-                    />
-                    {!selectedTalentType && (
-                      <Badge 
-                        className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, '-'))
-                        }}
-                      >
-                        {item.talentType}
-                      </Badge>
-                    )}
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
-                      onClick={(e) => toggleFavorite(item.id, e)}
-                    >
-                      <Heart
-                        className={`h-4 w-4 transition-all ${
-                          favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
-                        }`}
+              {filteredItems
+                .filter((item) => item.category === "event")
+                .slice(0, 8)
+                .map((item, index) => (
+                  <Card
+                    key={item.id}
+                    className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="relative mb-4 -mx-4 -mt-4">
+                      <Image
+                        src={item.image || "/placeholder.svg"}
+                        alt={item.name}
+                        width={400}
+                        height={300}
+                        className="w-full h-48 object-cover rounded-t-lg"
                       />
-                    </Button>
-                  </div>
-                  <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
-                    <CardContent className="p-0 px-4 flex flex-col flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 fill-current text-gray-900" />
-                          <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
-                        </div>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-1">
-                        {item.sport} in {item.location}
-                      </p>
-                      <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
-
-                      {/* Fixed bottom section */}
-                      <div className="mt-auto">
-                        {item.currentFunding && item.goalFunding ? (
-                          <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
-                        ) : 'price' in item && 'period' in item ? (
-                          <div className="flex items-baseline mb-4">
-                            <span className="font-semibold text-gray-900">{(item as any).price}</span>
-                            <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                      {!selectedTalentType && (
+                        <Badge
+                          className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, "-"))
+                          }}
+                        >
+                          {item.talentType}
+                        </Badge>
+                      )}
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
+                        onClick={(e) => toggleFavorite(item.id, e)}
+                      >
+                        <Heart
+                          className={`h-4 w-4 transition-all ${
+                            favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+                          }`}
+                        />
+                      </Button>
+                    </div>
+                    <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                      <CardContent className="p-0 px-4 flex flex-col flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                          <div className="flex items-center">
+                            <Star className="h-4 w-4 fill-current text-gray-900" />
+                            <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
                           </div>
-                        ) : null}
+                        </div>
+                        <p className="text-gray-600 text-sm mb-1">
+                          {item.sport} in {item.location}
+                        </p>
+                        <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
 
-                        <Button variant="outline" size="sm" className="w-full bg-transparent">
-                          View Profile
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Link>
-                </Card>
-              ))}
+                        {/* Fixed bottom section */}
+                        <div className="mt-auto">
+                          {item.currentFunding && item.goalFunding ? (
+                            <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
+                          ) : "price" in item && "period" in item ? (
+                            <div className="flex items-baseline mb-4">
+                              <span className="font-semibold text-gray-900">{(item as any).price}</span>
+                              <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                            </div>
+                          ) : null}
+
+                          <Button variant="outline" size="sm" className="w-full bg-transparent">
+                            View Profile
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Link>
+                  </Card>
+                ))}
             </div>
           </section>
         ) : (
@@ -1726,79 +1802,82 @@ export default function DiscoverPage() {
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {filteredItems.filter(item => item.category === "talent").slice(0, 8).map((item, index) => (
-                    <Card
-                      key={item.id}
-                      className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <div className="relative mb-4 -mx-4 -mt-4">
-                        <Image
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          width={400}
-                          height={300}
-                          className="w-full h-48 object-cover rounded-t-lg"
-                        />
-                        {!selectedTalentType && (
-                          <Badge 
-                            className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, '-'))
-                            }}
-                          >
-                            {item.talentType}
-                          </Badge>
-                        )}
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
-                          onClick={(e) => toggleFavorite(item.id, e)}
-                        >
-                          <Heart
-                            className={`h-4 w-4 transition-all ${
-                              favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
-                            }`}
+                  {filteredItems
+                    .filter((item) => item.category === "talent")
+                    .slice(0, 8)
+                    .map((item, index) => (
+                      <Card
+                        key={item.id}
+                        className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <div className="relative mb-4 -mx-4 -mt-4">
+                          <Image
+                            src={item.image || "/placeholder.svg"}
+                            alt={item.name}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover rounded-t-lg"
                           />
-                        </Button>
-                      </div>
-                      <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
-                        <CardContent className="p-0 px-4 flex flex-col flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
-                            <div className="flex items-center">
-                              <Star className="h-4 w-4 fill-current text-gray-900" />
-                              <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
-                            </div>
-                          </div>
-                          <p className="text-gray-600 text-sm mb-1">
-                            {item.sport} in {item.location}
-                          </p>
-                          <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
-
-                          {/* Fixed bottom section */}
-                          <div className="mt-auto">
-                            {item.currentFunding && item.goalFunding ? (
-                              <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
-                            ) : 'price' in item && 'period' in item ? (
-                              <div className="flex items-baseline mb-4">
-                                <span className="font-semibold text-gray-900">{(item as any).price}</span>
-                                <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                          {!selectedTalentType && (
+                            <Badge
+                              className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, "-"))
+                              }}
+                            >
+                              {item.talentType}
+                            </Badge>
+                          )}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
+                            onClick={(e) => toggleFavorite(item.id, e)}
+                          >
+                            <Heart
+                              className={`h-4 w-4 transition-all ${
+                                favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+                              }`}
+                            />
+                          </Button>
+                        </div>
+                        <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                          <CardContent className="p-0 px-4 flex flex-col flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                              <div className="flex items-center">
+                                <Star className="h-4 w-4 fill-current text-gray-900" />
+                                <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
                               </div>
-                            ) : null}
+                            </div>
+                            <p className="text-gray-600 text-sm mb-1">
+                              {item.sport} in {item.location}
+                            </p>
+                            <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
 
-                        <Button variant="outline" size="sm" className="w-full bg-transparent">
-                          View Profile
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Link>
-                </Card>
-              ))}
-            </div>
+                            {/* Fixed bottom section */}
+                            <div className="mt-auto">
+                              {item.currentFunding && item.goalFunding ? (
+                                <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
+                              ) : "price" in item && "period" in item ? (
+                                <div className="flex items-baseline mb-4">
+                                  <span className="font-semibold text-gray-900">{(item as any).price}</span>
+                                  <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                                </div>
+                              ) : null}
+
+                              <Button variant="outline" size="sm" className="w-full bg-transparent">
+                                View Profile
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Link>
+                      </Card>
+                    ))}
+                </div>
               </section>
             )}
 
@@ -1814,166 +1893,170 @@ export default function DiscoverPage() {
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {getItemsByFit("top-talent").slice(0, 8).map((item, index) => (
-                    <Card
-                      key={item.id}
-                      className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <div className="relative mb-4 -mx-4 -mt-4">
-                        <Image
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          width={400}
-                          height={300}
-                          className="w-full h-48 object-cover rounded-t-lg"
-                        />
-                        {!selectedTalentType && (
-                          <Badge 
-                            className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, '-'))
-                            }}
-                          >
-                            {item.talentType}
-                          </Badge>
-                        )}
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
-                          onClick={(e) => toggleFavorite(item.id, e)}
-                        >
-                          <Heart
-                            className={`h-4 w-4 transition-all ${
-                              favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
-                            }`}
+                  {getItemsByFit("top-talent")
+                    .slice(0, 8)
+                    .map((item, index) => (
+                      <Card
+                        key={item.id}
+                        className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <div className="relative mb-4 -mx-4 -mt-4">
+                          <Image
+                            src={item.image || "/placeholder.svg"}
+                            alt={item.name}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover rounded-t-lg"
                           />
-                        </Button>
-                      </div>
-                      <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
-                        <CardContent className="p-0 px-4 flex flex-col flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
-                            <div className="flex items-center">
-                              <Star className="h-4 w-4 fill-current text-gray-900" />
-                              <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
-                            </div>
-                          </div>
-                          <p className="text-gray-600 text-sm mb-1">
-                            {item.sport} in {item.location}
-                          </p>
-                          <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
-
-                          {/* Fixed bottom section */}
-                          <div className="mt-auto">
-                            {item.currentFunding && item.goalFunding ? (
-                              <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
-                            ) : 'price' in item && 'period' in item ? (
-                              <div className="flex items-baseline mb-4">
-                                <span className="font-semibold text-gray-900">{(item as any).price}</span>
-                                <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                          {!selectedTalentType && (
+                            <Badge
+                              className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, "-"))
+                              }}
+                            >
+                              {item.talentType}
+                            </Badge>
+                          )}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
+                            onClick={(e) => toggleFavorite(item.id, e)}
+                          >
+                            <Heart
+                              className={`h-4 w-4 transition-all ${
+                                favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+                              }`}
+                            />
+                          </Button>
+                        </div>
+                        <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                          <CardContent className="p-0 px-4 flex flex-col flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                              <div className="flex items-center">
+                                <Star className="h-4 w-4 fill-current text-gray-900" />
+                                <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
                               </div>
-                            ) : null}
+                            </div>
+                            <p className="text-gray-600 text-sm mb-1">
+                              {item.sport} in {item.location}
+                            </p>
+                            <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
 
-                            <Button variant="outline" size="sm" className="w-full bg-transparent">
-                              View Profile
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Link>
-                    </Card>
-                  ))}
+                            {/* Fixed bottom section */}
+                            <div className="mt-auto">
+                              {item.currentFunding && item.goalFunding ? (
+                                <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
+                              ) : "price" in item && "period" in item ? (
+                                <div className="flex items-baseline mb-4">
+                                  <span className="font-semibold text-gray-900">{(item as any).price}</span>
+                                  <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                                </div>
+                              ) : null}
+
+                              <Button variant="outline" size="sm" className="w-full bg-transparent">
+                                View Profile
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Link>
+                      </Card>
+                    ))}
                 </div>
-        </section>
+              </section>
             )}
 
-        {/* Up and Coming Section */}
+            {/* Up and Coming Section */}
             {shouldShowSection("up-and-coming") && (
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Up and Coming</h2>
+              <section className="mb-12">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-semibold text-gray-900">Up and Coming</h2>
                   <Link href={`/discover/${activeTab}`}>
-              <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                Show all
-              </Button>
+                    <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                      Show all
+                    </Button>
                   </Link>
-            </div>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {getItemsByFit("up-and-coming").slice(0, 8).map((item, index) => (
-                    <Card
-                      key={item.id}
-                      className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      <div className="relative mb-4 -mx-4 -mt-4">
-                        <Image
-                          src={item.image || "/placeholder.svg"}
-                          alt={item.name}
-                          width={400}
-                          height={300}
-                          className="w-full h-48 object-cover rounded-t-lg"
-                        />
-                        {!selectedTalentType && (
-                          <Badge 
-                            className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, '-'))
-                            }}
-                          >
-                            {item.talentType}
-                          </Badge>
-                        )}
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
-                          onClick={(e) => toggleFavorite(item.id, e)}
-                        >
-                          <Heart
-                            className={`h-4 w-4 transition-all ${
-                              favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
-                            }`}
+                  {getItemsByFit("up-and-coming")
+                    .slice(0, 8)
+                    .map((item, index) => (
+                      <Card
+                        key={item.id}
+                        className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <div className="relative mb-4 -mx-4 -mt-4">
+                          <Image
+                            src={item.image || "/placeholder.svg"}
+                            alt={item.name}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover rounded-t-lg"
                           />
-                        </Button>
-                      </div>
-                      <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
-                        <CardContent className="p-0 px-4 flex flex-col flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
-                            <div className="flex items-center">
-                              <Star className="h-4 w-4 fill-current text-gray-900" />
-                              <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
-                            </div>
-                          </div>
-                          <p className="text-gray-600 text-sm mb-1">
-                            {item.sport} in {item.location}
-                          </p>
-                          <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
-
-                          {/* Fixed bottom section */}
-                          <div className="mt-auto">
-                            {item.currentFunding && item.goalFunding ? (
-                              <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
-                            ) : 'price' in item && 'period' in item ? (
-                              <div className="flex items-baseline mb-4">
-                                <span className="font-semibold text-gray-900">{(item as any).price}</span>
-                                <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                          {!selectedTalentType && (
+                            <Badge
+                              className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, "-"))
+                              }}
+                            >
+                              {item.talentType}
+                            </Badge>
+                          )}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
+                            onClick={(e) => toggleFavorite(item.id, e)}
+                          >
+                            <Heart
+                              className={`h-4 w-4 transition-all ${
+                                favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+                              }`}
+                            />
+                          </Button>
+                        </div>
+                        <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                          <CardContent className="p-0 px-4 flex flex-col flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                              <div className="flex items-center">
+                                <Star className="h-4 w-4 fill-current text-gray-900" />
+                                <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
                               </div>
-                            ) : null}
+                            </div>
+                            <p className="text-gray-600 text-sm mb-1">
+                              {item.sport} in {item.location}
+                            </p>
+                            <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
 
-                            <Button variant="outline" size="sm" className="w-full bg-transparent">
-                              View Profile
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Link>
-                    </Card>
-                  ))}
+                            {/* Fixed bottom section */}
+                            <div className="mt-auto">
+                              {item.currentFunding && item.goalFunding ? (
+                                <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
+                              ) : "price" in item && "period" in item ? (
+                                <div className="flex items-baseline mb-4">
+                                  <span className="font-semibold text-gray-900">{(item as any).price}</span>
+                                  <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                                </div>
+                              ) : null}
+
+                              <Button variant="outline" size="sm" className="w-full bg-transparent">
+                                View Profile
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Link>
+                      </Card>
+                    ))}
                 </div>
               </section>
             )}
@@ -1989,84 +2072,84 @@ export default function DiscoverPage() {
                     </Button>
                   </Link>
                 </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {getItemsByFit("brand-ambassador").slice(0, 8).map((item, index) => (
-                <Card
-                  key={item.id}
-                      className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="relative mb-4 -mx-4 -mt-4">
-                    <Image
-                      src={item.image || "/placeholder.svg"}
-                      alt={item.name}
-                      width={400}
-                      height={300}
-                      className="w-full h-48 object-cover rounded-t-lg"
-                    />
-                        {!selectedTalentType && (
-                          <Badge 
-                            className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, '-'))
-                            }}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {getItemsByFit("brand-ambassador")
+                    .slice(0, 8)
+                    .map((item, index) => (
+                      <Card
+                        key={item.id}
+                        className="group cursor-pointer border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 p-4 animate-in fade-in slide-in-from-bottom-4 flex flex-col h-full"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
+                        <div className="relative mb-4 -mx-4 -mt-4">
+                          <Image
+                            src={item.image || "/placeholder.svg"}
+                            alt={item.name}
+                            width={400}
+                            height={300}
+                            className="w-full h-48 object-cover rounded-t-lg"
+                          />
+                          {!selectedTalentType && (
+                            <Badge
+                              className="absolute top-3 left-3 bg-white text-gray-900 hover:bg-gray-100 cursor-pointer transition-colors"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                setSelectedTalentType(item.talentType.toLowerCase().replace(/\s+/g, "-"))
+                              }}
+                            >
+                              {item.talentType}
+                            </Badge>
+                          )}
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
+                            onClick={(e) => toggleFavorite(item.id, e)}
                           >
-                      {item.talentType}
-                    </Badge>
-                        )}
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
-                      onClick={(e) => toggleFavorite(item.id, e)}
-                    >
-                      <Heart
-                        className={`h-4 w-4 transition-all ${
-                          favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
-                        }`}
-                      />
-                    </Button>
-                  </div>
-                  <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
-                    <CardContent className="p-0 px-4 flex flex-col flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 fill-current text-gray-900" />
-                          <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
+                            <Heart
+                              className={`h-4 w-4 transition-all ${
+                                favorites.includes(item.id) ? "fill-red-500 text-red-500" : "text-gray-600"
+                              }`}
+                            />
+                          </Button>
                         </div>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-1">
-                        {item.sport} in {item.location}
-                      </p>
-                      <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
-
-                      {/* Fixed bottom section */}
-                      <div className="mt-auto">
-                            {item.currentFunding && item.goalFunding ? (
-                        <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
-                            ) : 'price' in item && 'period' in item ? (
-                              <div className="flex items-baseline mb-4">
-                                <span className="font-semibold text-gray-900">{(item as any).price}</span>
-                                <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                        <Link href={`/profile/${item.id}`} className="flex flex-col flex-1">
+                          <CardContent className="p-0 px-4 flex flex-col flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+                              <div className="flex items-center">
+                                <Star className="h-4 w-4 fill-current text-gray-900" />
+                                <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
                               </div>
-                            ) : null}
+                            </div>
+                            <p className="text-gray-600 text-sm mb-1">
+                              {item.sport} in {item.location}
+                            </p>
+                            <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
 
-                        <Button variant="outline" size="sm" className="w-full bg-transparent">
-                          View Profile
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Link>
-                </Card>
-              ))}
-            </div>
-          </section>
+                            {/* Fixed bottom section */}
+                            <div className="mt-auto">
+                              {item.currentFunding && item.goalFunding ? (
+                                <div className="mb-4">{renderProgressBar(item.currentFunding, item.goalFunding)}</div>
+                              ) : "price" in item && "period" in item ? (
+                                <div className="flex items-baseline mb-4">
+                                  <span className="font-semibold text-gray-900">{(item as any).price}</span>
+                                  <span className="text-gray-600 text-sm ml-1">{(item as any).period}</span>
+                                </div>
+                              ) : null}
+
+                              <Button variant="outline" size="sm" className="w-full bg-transparent">
+                                View Profile
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Link>
+                      </Card>
+                    ))}
+                </div>
+              </section>
             )}
-
-
           </>
         )}
       </main>
