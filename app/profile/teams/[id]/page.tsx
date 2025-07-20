@@ -23,6 +23,7 @@ import {
   Shield,
   BarChart,
   Trophy,
+  Play,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -189,21 +190,49 @@ export default function TeamProfilePage({ params }: PageProps) {
           id: 1,
           url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
           title: "Team Practice",
+          category: "Training",
         },
         {
           id: 2,
           url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
-          title: "Victory Celebration",
+          title: "Skill Development",
+          category: "Training",
         },
         {
           id: 3,
           url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
-          title: "Championship Trophy",
+          title: "Championship Game",
+          category: "Games",
         },
         {
           id: 4,
           url: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&h=300&fit=crop",
-          title: "Team Huddle",
+          title: "Victory Celebration",
+          category: "Games",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Awards Ceremony",
+          category: "Events",
+        },
+        {
+          id: 6,
+          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
+          title: "Team Building",
+          category: "Events",
+        },
+        {
+          id: 7,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Locker Room",
+          category: "Behind the Scenes",
+        },
+        {
+          id: 8,
+          url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+          title: "Team Meeting",
+          category: "Behind the Scenes",
         },
       ],
       videos: [
@@ -211,11 +240,31 @@ export default function TeamProfilePage({ params }: PageProps) {
           id: 1,
           url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
           title: "Game Highlights",
+          category: "Game Highlights",
         },
         {
           id: 2,
           url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+          title: "Best Plays",
+          category: "Game Highlights",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
           title: "Training Session",
+          category: "Training",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&h=300&fit=crop",
+          title: "Practice Drills",
+          category: "Training",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Behind the Scenes",
+          category: "Behind the Scenes",
         },
       ],
       youtube: [
@@ -229,6 +278,16 @@ export default function TeamProfilePage({ params }: PageProps) {
           url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
           title: "Behind the Scenes",
         },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Player Interviews",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&h=300&fit=crop",
+          title: "Team Documentary",
+        },
       ],
       instagram: [
         {
@@ -240,6 +299,26 @@ export default function TeamProfilePage({ params }: PageProps) {
           id: 2,
           url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
           title: "Team Bonding",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Victory Dance",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&h=300&fit=crop",
+          title: "Training Hard",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Championship Trophy",
+        },
+        {
+          id: 6,
+          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
+          title: "Team Spirit",
         },
       ],
     },
@@ -567,6 +646,7 @@ export default function TeamProfilePage({ params }: PageProps) {
 
               {activeTab === "media" && (
                 <div className="space-y-4 sm:space-y-6">
+                  {/* Photos Row - Gallery Effect */}
                   <Dialog open={showPhotosModal} onOpenChange={setShowPhotosModal}>
                     <DialogTrigger asChild>
                       <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
@@ -579,69 +659,196 @@ export default function TeamProfilePage({ params }: PageProps) {
                               alt={photo.title}
                               width={200}
                               height={150}
-                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md"
+                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                             />
                           ))}
                         </div>
                       </Card>
                     </DialogTrigger>
+                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto mx-4">
+                      <DialogHeader>
+                        <DialogTitle>Photos</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-8">
+                        {["Training", "Games", "Events", "Behind the Scenes"].map((category) => {
+                          const categoryPhotos = team.mediaGallery.photos.filter((photo) => photo.category === category)
+                          if (categoryPhotos.length === 0) return null
+
+                          return (
+                            <div key={category}>
+                              <h4 className="text-lg font-semibold mb-4">{category}</h4>
+                              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+                                {categoryPhotos.map((photo) => (
+                                  <div key={photo.id} className="break-inside-avoid">
+                                    <Image
+                                      src={photo.url || "/placeholder.svg"}
+                                      alt={photo.title}
+                                      width={400}
+                                      height={300}
+                                      className="w-full rounded-lg object-cover"
+                                      style={{ height: "auto" }}
+                                    />
+                                    <p className="text-sm text-gray-600 mt-2 px-1">{photo.title}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </DialogContent>
                   </Dialog>
+
+                  {/* Videos Row - Gallery Effect */}
                   <Dialog open={showVideosModal} onOpenChange={setShowVideosModal}>
                     <DialogTrigger asChild>
                       <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
                         <h3 className="text-lg font-semibold mb-4">Videos</h3>
                         <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
                           {team.mediaGallery.videos.map((video) => (
-                            <Image
-                              key={video.id}
-                              src={video.url || "/placeholder.svg"}
-                              alt={video.title}
-                              width={200}
-                              height={150}
-                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md"
-                            />
+                            <div key={video.id} className="relative flex-shrink-0">
+                              <Image
+                                src={video.url || "/placeholder.svg"}
+                                alt={video.title}
+                                width={200}
+                                height={150}
+                                className="w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Play className="h-4 w-4 sm:h-6 sm:w-6 text-white bg-black bg-opacity-50 rounded-full p-1" />
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </Card>
                     </DialogTrigger>
+                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto mx-4">
+                      <DialogHeader>
+                        <DialogTitle>Videos</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-8">
+                        {["Game Highlights", "Training", "Behind the Scenes"].map((category) => {
+                          const categoryVideos = team.mediaGallery.videos.filter((video) => video.category === category)
+                          if (categoryVideos.length === 0) return null
+
+                          return (
+                            <div key={category}>
+                              <h4 className="text-lg font-semibold mb-4">{category}</h4>
+                              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+                                {categoryVideos.map((video) => (
+                                  <div key={video.id} className="break-inside-avoid">
+                                    <div className="relative">
+                                      <Image
+                                        src={video.url || "/placeholder.svg"}
+                                        alt={video.title}
+                                        width={400}
+                                        height={300}
+                                        className="w-full rounded-lg object-cover"
+                                        style={{ height: "auto" }}
+                                      />
+                                      <div className="absolute inset-0 flex items-center justify-center">
+                                        <Play className="h-12 w-12 text-white bg-black bg-opacity-50 rounded-full p-3" />
+                                      </div>
+                                    </div>
+                                    <p className="text-sm text-gray-600 mt-2 px-1">{video.title}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </DialogContent>
                   </Dialog>
+
+                  {/* YouTube Row - Gallery Effect */}
                   <Dialog open={showYoutubeModal} onOpenChange={setShowYoutubeModal}>
                     <DialogTrigger asChild>
                       <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                        <h3 className="text-lg font-semibold mb-4">YouTube</h3>
+                        <div className="flex items-center gap-2 mb-4">
+                          <Youtube className="h-5 w-5 text-red-500" />
+                          <h3 className="text-lg font-semibold">YouTube</h3>
+                        </div>
                         <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
-                          {team.mediaGallery.youtube.map((yt) => (
-                            <Image
-                              key={yt.id}
-                              src={yt.url || "/placeholder.svg"}
-                              alt={yt.title}
-                              width={200}
-                              height={150}
-                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md"
-                            />
+                          {team.mediaGallery.youtube.map((video) => (
+                            <div key={video.id} className="relative flex-shrink-0">
+                              <Image
+                                src={video.url || "/placeholder.svg"}
+                                alt={video.title}
+                                width={200}
+                                height={150}
+                                className="w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Youtube className="h-4 w-4 sm:h-6 sm:w-6 text-red-500 bg-white rounded-full p-1" />
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </Card>
                     </DialogTrigger>
+                    <DialogContent className="max-w-4xl mx-4">
+                      <DialogHeader>
+                        <DialogTitle>YouTube Videos</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {team.mediaGallery.youtube.map((video) => (
+                          <div key={video.id} className="relative">
+                            <Image
+                              src={video.url || "/placeholder.svg"}
+                              alt={video.title}
+                              width={400}
+                              height={300}
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Youtube className="h-12 w-12 text-red-500 bg-white rounded-full p-3" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </DialogContent>
                   </Dialog>
+
+                  {/* Instagram Row - Gallery Effect */}
                   <Dialog open={showInstagramModal} onOpenChange={setShowInstagramModal}>
                     <DialogTrigger asChild>
                       <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
-                        <h3 className="text-lg font-semibold mb-4">Instagram</h3>
+                        <div className="flex items-center gap-2 mb-4">
+                          <Instagram className="h-5 w-5 text-pink-500" />
+                          <h3 className="text-lg font-semibold">Instagram</h3>
+                        </div>
                         <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
-                          {team.mediaGallery.instagram.map((ig) => (
+                          {team.mediaGallery.instagram.map((post) => (
                             <Image
-                              key={ig.id}
-                              src={ig.url || "/placeholder.svg"}
-                              alt={ig.title}
+                              key={post.id}
+                              src={post.url || "/placeholder.svg"}
+                              alt={post.title}
                               width={200}
                               height={150}
-                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md"
+                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                             />
                           ))}
                         </div>
                       </Card>
                     </DialogTrigger>
+                    <DialogContent className="max-w-4xl mx-4">
+                      <DialogHeader>
+                        <DialogTitle>Instagram Posts</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {team.mediaGallery.instagram.map((post) => (
+                          <Image
+                            key={post.id}
+                            src={post.url || "/placeholder.svg"}
+                            alt={post.title}
+                            width={400}
+                            height={300}
+                            className="w-full h-32 sm:h-48 object-cover rounded-lg"
+                          />
+                        ))}
+                      </div>
+                    </DialogContent>
                   </Dialog>
                 </div>
               )}

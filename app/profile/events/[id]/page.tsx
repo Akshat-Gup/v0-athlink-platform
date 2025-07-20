@@ -23,6 +23,11 @@ import {
   Clock,
   Globe,
   BarChart,
+  Users,
+  Tv,
+  Smartphone,
+  Handshake,
+  Play,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -40,6 +45,9 @@ export default function EventProfilePage({ params }: PageProps) {
   const { id } = params
   const [activeTab, setActiveTab] = useState("overview")
   const [showPhotosModal, setShowPhotosModal] = useState(false)
+  const [showVideosModal, setShowVideosModal] = useState(false)
+  const [showYoutubeModal, setShowYoutubeModal] = useState(false)
+  const [showInstagramModal, setShowInstagramModal] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
 
   // Mock data for event
@@ -65,6 +73,7 @@ export default function EventProfilePage({ params }: PageProps) {
       venue: "Aquatics Center",
       capacity: "5,000",
       ticketPrice: "$20-100",
+      organizer: "USA Swimming Federation",
     },
     eventStats: [
       { label: "START DATE", value: "Aug 15", icon: "📅" },
@@ -157,12 +166,136 @@ export default function EventProfilePage({ params }: PageProps) {
         {
           id: 1,
           url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
-          title: "Championship Court",
+          title: "Championship Pool",
+          category: "Event Setup",
         },
         {
           id: 2,
           url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+          title: "Opening Ceremony",
+          category: "Event Setup",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+          title: "Swimming Competition",
+          category: "Competition",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
+          title: "Victory Moment",
+          category: "Competition",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Awards Ceremony",
+          category: "Awards",
+        },
+        {
+          id: 6,
+          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
+          title: "Medal Presentation",
+          category: "Awards",
+        },
+        {
+          id: 7,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Event Setup",
+          category: "Behind the Scenes",
+        },
+        {
+          id: 8,
+          url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
           title: "Team Preparation",
+          category: "Behind the Scenes",
+        },
+      ],
+      videos: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
+          title: "Race Highlights",
+          category: "Competition",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+          title: "Championship Finals",
+          category: "Competition",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+          title: "Event Recap",
+          category: "Event Highlights",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
+          title: "Best Moments",
+          category: "Event Highlights",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Behind the Scenes",
+          category: "Behind the Scenes",
+        },
+      ],
+      youtube: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
+          title: "Event Highlights",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+          title: "Championship Recap",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+          title: "Athlete Interviews",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
+          title: "Event Preview",
+        },
+      ],
+      instagram: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
+          title: "Event Day",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+          title: "Championship Moments",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+          title: "Victory Celebration",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
+          title: "Awards Night",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Team Spirit",
+        },
+        {
+          id: 6,
+          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
+          title: "Event Atmosphere",
         },
       ],
     },
@@ -178,6 +311,70 @@ export default function EventProfilePage({ params }: PageProps) {
         </div>
         <Progress value={percentage} className="h-2 [&>div]:bg-green-500" />
       </div>
+    )
+  }
+
+  const renderEventDetails = () => {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-6">Event Details</h3>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 text-green-500 flex-shrink-0">
+              <Calendar className="w-5 h-5" />
+            </div>
+            <span className="text-gray-900 font-medium">
+              {event.eventDetails.startDate} - {event.eventDetails.endDate}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 text-green-500 flex-shrink-0">
+              <MapPin className="w-5 h-5" />
+            </div>
+            <span className="text-gray-900 font-medium">{event.location}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 text-green-500 flex-shrink-0">
+              <CalendarIcon className="w-5 h-5" />
+            </div>
+            <span className="text-gray-900 font-medium">Organized by {event.eventDetails.organizer}</span>
+          </div>
+        </div>
+      </Card>
+    )
+  }
+
+  const renderSponsorshipImpact = () => {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-6">Sponsorship Impact</h3>
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 text-green-500 flex-shrink-0">
+              <Handshake className="w-5 h-5" />
+            </div>
+            <span className="text-gray-900 font-medium">12 Current Sponsors</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 text-green-500 flex-shrink-0">
+              <Tv className="w-5 h-5" />
+            </div>
+            <span className="text-gray-900 font-medium">2.5M Media Reach</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 text-green-500 flex-shrink-0">
+              <Users className="w-5 h-5" />
+            </div>
+            <span className="text-gray-900 font-medium">5K Expected Attendees</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-5 h-5 text-green-500 flex-shrink-0">
+              <Smartphone className="w-5 h-5" />
+            </div>
+            <span className="text-gray-900 font-medium">500K Live Stream Viewers</span>
+          </div>
+        </div>
+      </Card>
     )
   }
 
@@ -344,8 +541,8 @@ export default function EventProfilePage({ params }: PageProps) {
                     <h3 className="text-lg font-semibold mb-4">About the Event</h3>
                     <p className="text-gray-600 text-sm sm:text-base">{event.bio}</p>
                   </Card>
-                  {renderStatsGrid(event.eventStats, "Event Details")}
-                  {renderStatsGrid(event.sponsorshipStats, "Sponsorship Impact")}
+                  {renderEventDetails()}
+                  {renderSponsorshipImpact()}
                   <Card className="p-4 sm:p-6">
                     <h3 className="text-lg font-semibold mb-4">Featured Participants</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -426,6 +623,7 @@ export default function EventProfilePage({ params }: PageProps) {
 
               {activeTab === "media" && (
                 <div className="space-y-4 sm:space-y-6">
+                  {/* Photos Row - Gallery Effect */}
                   <Dialog open={showPhotosModal} onOpenChange={setShowPhotosModal}>
                     <DialogTrigger asChild>
                       <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
@@ -438,12 +636,200 @@ export default function EventProfilePage({ params }: PageProps) {
                               alt={photo.title}
                               width={200}
                               height={150}
-                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md"
+                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
                             />
                           ))}
                         </div>
                       </Card>
                     </DialogTrigger>
+                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto mx-4">
+                      <DialogHeader>
+                        <DialogTitle>Photos</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-8">
+                        {["Event Setup", "Competition", "Awards", "Behind the Scenes"].map((category) => {
+                          const categoryPhotos = event.mediaGallery.photos.filter(
+                            (photo) => photo.category === category,
+                          )
+                          if (categoryPhotos.length === 0) return null
+
+                          return (
+                            <div key={category}>
+                              <h4 className="text-lg font-semibold mb-4">{category}</h4>
+                              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+                                {categoryPhotos.map((photo) => (
+                                  <div key={photo.id} className="break-inside-avoid">
+                                    <Image
+                                      src={photo.url || "/placeholder.svg"}
+                                      alt={photo.title}
+                                      width={400}
+                                      height={300}
+                                      className="w-full rounded-lg object-cover"
+                                      style={{ height: "auto" }}
+                                    />
+                                    <p className="text-sm text-gray-600 mt-2 px-1">{photo.title}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* Videos Row - Gallery Effect */}
+                  <Dialog open={showVideosModal} onOpenChange={setShowVideosModal}>
+                    <DialogTrigger asChild>
+                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                        <h3 className="text-lg font-semibold mb-4">Videos</h3>
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
+                          {event.mediaGallery.videos.map((video) => (
+                            <div key={video.id} className="relative flex-shrink-0">
+                              <Image
+                                src={video.url || "/placeholder.svg"}
+                                alt={video.title}
+                                width={200}
+                                height={150}
+                                className="w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Play className="h-4 w-4 sm:h-6 sm:w-6 text-white bg-black bg-opacity-50 rounded-full p-1" />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-6xl max-h-[80vh] overflow-y-auto mx-4">
+                      <DialogHeader>
+                        <DialogTitle>Videos</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-8">
+                        {["Competition", "Event Highlights", "Behind the Scenes"].map((category) => {
+                          const categoryVideos = event.mediaGallery.videos.filter(
+                            (video) => video.category === category,
+                          )
+                          if (categoryVideos.length === 0) return null
+
+                          return (
+                            <div key={category}>
+                              <h4 className="text-lg font-semibold mb-4">{category}</h4>
+                              <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+                                {categoryVideos.map((video) => (
+                                  <div key={video.id} className="break-inside-avoid">
+                                    <div className="relative">
+                                      <Image
+                                        src={video.url || "/placeholder.svg"}
+                                        alt={video.title}
+                                        width={400}
+                                        height={300}
+                                        className="w-full rounded-lg object-cover"
+                                        style={{ height: "auto" }}
+                                      />
+                                      <div className="absolute inset-0 flex items-center justify-center">
+                                        <Play className="h-12 w-12 text-white bg-black bg-opacity-50 rounded-full p-3" />
+                                      </div>
+                                    </div>
+                                    <p className="text-sm text-gray-600 mt-2 px-1">{video.title}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* YouTube Row - Gallery Effect */}
+                  <Dialog open={showYoutubeModal} onOpenChange={setShowYoutubeModal}>
+                    <DialogTrigger asChild>
+                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Youtube className="h-5 w-5 text-red-500" />
+                          <h3 className="text-lg font-semibold">YouTube</h3>
+                        </div>
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
+                          {event.mediaGallery.youtube.map((video) => (
+                            <div key={video.id} className="relative flex-shrink-0">
+                              <Image
+                                src={video.url || "/placeholder.svg"}
+                                alt={video.title}
+                                width={200}
+                                height={150}
+                                className="w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Youtube className="h-4 w-4 sm:h-6 sm:w-6 text-red-500 bg-white rounded-full p-1" />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl mx-4">
+                      <DialogHeader>
+                        <DialogTitle>YouTube Videos</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {event.mediaGallery.youtube.map((video) => (
+                          <div key={video.id} className="relative">
+                            <Image
+                              src={video.url || "/placeholder.svg"}
+                              alt={video.title}
+                              width={400}
+                              height={300}
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Youtube className="h-12 w-12 text-red-500 bg-white rounded-full p-3" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* Instagram Row - Gallery Effect */}
+                  <Dialog open={showInstagramModal} onOpenChange={setShowInstagramModal}>
+                    <DialogTrigger asChild>
+                      <Card className="p-4 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Instagram className="h-5 w-5 text-pink-500" />
+                          <h3 className="text-lg font-semibold">Instagram</h3>
+                        </div>
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2">
+                          {event.mediaGallery.instagram.map((post) => (
+                            <Image
+                              key={post.id}
+                              src={post.url || "/placeholder.svg"}
+                              alt={post.title}
+                              width={200}
+                              height={150}
+                              className="flex-shrink-0 w-24 h-18 sm:w-32 sm:h-24 object-cover rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                            />
+                          ))}
+                        </div>
+                      </Card>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl mx-4">
+                      <DialogHeader>
+                        <DialogTitle>Instagram Posts</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {event.mediaGallery.instagram.map((post) => (
+                          <Image
+                            key={post.id}
+                            src={post.url || "/placeholder.svg"}
+                            alt={post.title}
+                            width={400}
+                            height={300}
+                            className="w-full h-32 sm:h-48 object-cover rounded-lg"
+                          />
+                        ))}
+                      </div>
+                    </DialogContent>
                   </Dialog>
                 </div>
               )}
@@ -469,7 +855,7 @@ export default function EventProfilePage({ params }: PageProps) {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full mt-4 bg-green-500 hover:bg-green-600">Become Sponsor</Button>
+                  <Button className="w-full mt-4 bg-green-500 hover:bg-green-600">Sponsor Event</Button>
                 </Card>
                 <Card className="p-6 shadow-lg">
                   <h3 className="text-lg font-semibold mb-4">Event Details</h3>
