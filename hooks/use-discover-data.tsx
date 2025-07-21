@@ -33,6 +33,8 @@ interface UseDiscoverDataProps {
   selectedLeague: string
   selectedExperience: string
   selectedRating: string
+  selectedBudget?: [number, number]
+  selectedLocation: string
   startDate?: Date
   endDate?: Date
 }
@@ -171,22 +173,6 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     },
     // Teams
     {
-      id: 3,
-      name: "Elite Runners Club",
-      sport: "Track & Field",
-      location: "New York, NY",
-      rating: 4.92,
-      price: "$5,000",
-      period: "per event",
-      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
-      achievements: "Team of 12 Athletes",
-      category: "team",
-      talentType: "Athletic Team",
-      fit: "top-talent",
-      tags: ["Team", "Professional", "Track & Field"],
-      keywords: ["running", "track", "team", "new york"],
-    },
-    {
       id: 6,
       name: "Cycling Team Pro",
       sport: "Cycling",
@@ -218,6 +204,22 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
       keywords: ["swimming", "championships", "national", "miami"],
       price: "$8,500",
       period: "per event",
+    },
+    {
+      id: 3,
+      name: "Elite Runners Club",
+      sport: "Track & Field",
+      location: "New York, NY",
+      rating: 4.92,
+      price: "$5,000",
+      period: "per event",
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+      achievements: "Team of 12 Athletes",
+      category: "team",
+      talentType: "Athletic Team",
+      fit: "top-talent",
+      tags: ["Team", "Professional", "Track & Field"],
+      keywords: ["running", "track", "team", "new york"],
     },
   ], [])
 
@@ -269,6 +271,46 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         return false
       }
 
+      // League filter (only for athletes with matching sport)
+      if (filters.selectedLeague && filters.selectedTalentType === "athlete") {
+        // This would need to be implemented based on how leagues are stored in your data
+        // For now, we'll skip this filter until league data structure is defined
+      }
+
+      // Experience level filter
+      if (filters.selectedExperience) {
+        // Map experience levels to item properties - you'll need to add experience field to TalentItem
+        // For now, we'll use achievements as a proxy
+        const experienceKeywords = {
+          'professional': ['professional', 'pro', 'olympic', 'world', 'national'],
+          'semi-professional': ['semi-pro', 'collegiate', 'university', 'college'],
+          'amateur': ['amateur', 'local', 'regional'],
+          'college': ['college', 'collegiate', 'university', 'ncaa']
+        };
+        
+        const keywords = experienceKeywords[filters.selectedExperience as keyof typeof experienceKeywords] || [];
+        const itemText = (item.achievements + ' ' + item.name).toLowerCase();
+        const hasExperienceMatch = keywords.some(keyword => itemText.includes(keyword));
+        
+        if (!hasExperienceMatch) return false;
+      }
+
+      // Location filter
+      if (filters.selectedLocation) {
+        if (!item.location.toLowerCase().includes(filters.selectedLocation.toLowerCase())) {
+          return false
+        }
+      }
+
+      // Budget filter (for items with pricing)
+      if (filters.selectedBudget && 'currentFunding' in item && 'goalFunding' in item) {
+        const [minBudget, maxBudget] = filters.selectedBudget
+        const itemBudget = item.goalFunding || 0
+        if (itemBudget < minBudget || itemBudget > maxBudget) {
+          return false
+        }
+      }
+
       if (filters.selectedRating) {
         const minRating = parseFloat(filters.selectedRating.replace("+", ""))
         if (item.rating < minRating) return false
@@ -289,6 +331,29 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         if (!searchFields.some(field => field.includes(query))) {
           return false
         }
+      }
+
+      // AI query filter (enhanced semantic search)
+      if (filters.aiQuery && filters.searchMode === "ai") {
+        const query = filters.aiQuery.toLowerCase()
+        const semanticFields = [
+          item.name.toLowerCase(),
+          item.sport.toLowerCase(),
+          item.location.toLowerCase(),
+          item.achievements.toLowerCase(),
+          item.talentType.toLowerCase(),
+          item.fit.toLowerCase(),
+          ...item.keywords,
+          ...item.tags.map(tag => tag.toLowerCase())
+        ]
+        
+        // Enhanced AI search with better matching
+        const queryWords = query.split(' ').filter(word => word.length > 2)
+        const hasMatch = queryWords.some(word => 
+          semanticFields.some(field => field.includes(word))
+        ) || semanticFields.some(field => field.includes(query))
+        
+        if (!hasMatch) return false
       }
 
       return true

@@ -216,6 +216,47 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
+        {/* Trending Section */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center space-x-3">
+              <h2 className="text-2xl font-semibold text-gray-900">Trending</h2>
+              {/* <span className="bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full animate-pulse">
+                HOT
+              </span> */}
+            </div>
+            <Link href={`/discover/${activeTab}`}>
+              <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                Show all
+              </Button>
+            </Link>
+          </div>
+          <TalentGrid
+            items={(() => {
+              // Get items from all fit categories and respect filters
+              const topTalentItems = getItemsByFit("top-talent");
+              const upAndComingItems = getItemsByFit("up-and-coming");
+              const brandAmbassadorItems = getItemsByFit("brand-ambassador");
+              
+              // Combine and sort by rating for trending
+              const allFitItems = [
+                ...topTalentItems,
+                ...upAndComingItems,
+                ...brandAmbassadorItems
+              ];
+              
+              // Sort by rating and take top 12 for trending
+              return allFitItems
+                .sort((a, b) => b.rating - a.rating)
+                .slice(0, 12);
+            })()}
+            favorites={favorites}
+            onToggleFavorite={toggleFavorite}
+            selectedTalentType={selectedTalentType}
+            onTalentTypeClick={setSelectedTalentType}
+          />
+        </section>
+
         {/* Top Talent Section */}
         {shouldShowSection("top-talent") && (
           <section className="mb-12">
@@ -228,7 +269,10 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
               </Link>
             </div>
             <TalentGrid
-              items={getItemsByFit("top-talent").slice(0, 8)}
+              items={(() => {
+                const items = getItemsByFit("top-talent").slice(0, 12)
+                return items
+              })()}
               favorites={favorites}
               onToggleFavorite={toggleFavorite}
               selectedTalentType={selectedTalentType}
@@ -249,7 +293,7 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
               </Link>
             </div>
             <TalentGrid
-              items={getItemsByFit("up-and-coming").slice(0, 8)}
+              items={getItemsByFit("up-and-coming").slice(0, 12)}
               favorites={favorites}
               onToggleFavorite={toggleFavorite}
               selectedTalentType={selectedTalentType}
@@ -270,7 +314,7 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
               </Link>
             </div>
             <TalentGrid
-              items={getItemsByFit("brand-ambassador").slice(0, 8)}
+              items={getItemsByFit("brand-ambassador").slice(0, 12)}
               favorites={favorites}
               onToggleFavorite={toggleFavorite}
               selectedTalentType={selectedTalentType}

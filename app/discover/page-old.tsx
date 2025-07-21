@@ -51,7 +51,7 @@ export default function DiscoverPage() {
   const [selectedLeague, setSelectedLeague] = useState("")
   const [selectedExperience, setSelectedExperience] = useState("")
   const [selectedBudget, setSelectedBudget] = useState<[number, number] | undefined>(undefined)
-  const [selectedLocation, setSelectedLocation] = useState("United States")
+  const [selectedLocation, setSelectedLocation] = useState("")
   const [startDate, setStartDate] = useState<Date>()
   const [endDate, setEndDate] = useState<Date>()
   const [selectedRating, setSelectedRating] = useState("")
@@ -91,7 +91,7 @@ export default function DiscoverPage() {
     setSelectedLeague("")
     setSelectedExperience("")
     setSelectedBudget(undefined)
-    setSelectedLocation("United States")
+    setSelectedLocation("")
     setStartDate(undefined)
     setEndDate(undefined)
     setSelectedRating("")
@@ -458,7 +458,7 @@ export default function DiscoverPage() {
       selectedSport ||
       selectedLeague ||
       selectedExperience ||
-      (selectedLocation && selectedLocation !== "United States") ||
+      (selectedLocation) ||
       selectedRating ||
       selectedBudget
 
@@ -520,7 +520,7 @@ export default function DiscoverPage() {
     }
 
     // Apply location filter
-    if (selectedLocation && selectedLocation !== "United States") {
+    if (selectedLocation) {
       filtered = filtered.filter((item) => item.location.toLowerCase().includes(selectedLocation.toLowerCase()))
     }
 

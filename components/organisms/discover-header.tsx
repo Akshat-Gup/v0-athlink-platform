@@ -6,7 +6,7 @@ import Image from "next/image"
 import { Button } from "@/components/atoms/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/organisms/dialog"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/organisms/sheet"
-import { Heart, Menu, User, CalendarIcon, Trophy, Building, Users, Search } from "lucide-react"
+import { Heart, Menu, User, CalendarIcon, Trophy, Building, Users, Search, X } from "lucide-react"
 import { TalentItem } from "@/hooks/use-discover-data"
 
 interface DiscoverHeaderProps {
@@ -133,7 +133,7 @@ export function DiscoverHeader({
               </Sheet>
               {isScrolled && (
                 <Button size="icon" variant="ghost" className="rounded-full" onClick={() => setShowSearchOverlay(!showSearchOverlay)}>
-                  <Search className="h-4 w-4" />
+                  {showSearchOverlay ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
                 </Button>
               )}
               <Button
@@ -252,8 +252,8 @@ export function DiscoverHeader({
                   </Sheet>
                   {isScrolled && (
                     <Button variant="ghost" className="w-full justify-start" onClick={() => setShowSearchOverlay(!showSearchOverlay)}>
-                      <Search className="h-4 w-4 mr-2" />
-                      Search
+                      {showSearchOverlay ? <X className="h-4 w-4 mr-2" /> : <Search className="h-4 w-4 mr-2" />}
+                      {showSearchOverlay ? "Close Search" : "Search"}
                     </Button>
                   )}
                   <Button

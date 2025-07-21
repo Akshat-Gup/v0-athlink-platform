@@ -17,6 +17,8 @@ export default function DiscoverPage() {
     selectedLeague: state.selectedLeague,
     selectedExperience: state.selectedExperience,
     selectedRating: state.selectedRating,
+    selectedBudget: state.selectedBudget,
+    selectedLocation: state.selectedLocation,
     startDate: state.startDate,
     endDate: state.endDate,
   })
