@@ -1250,7 +1250,6 @@ export default function DiscoverPage() {
                             style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
                           />
                           <Star className="h-3 w-3 text-gray-300 mr-0.5" />
-                          <Star className="h-3 w-3 text-gray-300 mr-0.5" />
                           <span className="ml-2">3.5+ Stars</span>
                         </div>
                       </SelectItem>
