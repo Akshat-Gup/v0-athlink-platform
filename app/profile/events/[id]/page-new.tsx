@@ -16,7 +16,7 @@ import {
     MediaGallery,
     EventSidebar
 } from "@/components/organisms"
-import { StatsGrid } from "@/components/molecules/stats-grid"
+import { StatsGrid } from "@/components/molecules/profile/stats-grid"
 
 interface PageProps {
   params: {

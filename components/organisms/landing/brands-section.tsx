@@ -1,6 +1,6 @@
 import { brands, stats } from "@/lib/landing-data"
 import { BrandLogo } from "@/components/molecules/brand-logo"
-import { StatsCard } from "@/components/molecules/stats-card"
+import { StatsCard } from "@/components/molecules/landing/stats-card"
 
 export function BrandsSection() {
   return (

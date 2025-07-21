@@ -1,4 +1,6 @@
 // Mock data for event profile
+import { Calendar, MapPin, CalendarIcon, Handshake, Tv, Users, Smartphone } from "lucide-react"
+
 export function getEventMockData(id: string) {
   return {
     id: Number.parseInt(id),
@@ -24,6 +26,40 @@ export function getEventMockData(id: string) {
       ticketPrice: "$20-100",
       organizer: "USA Swimming Federation",
     },
+    // Event details data for StatsList component
+    eventDetailsData: [
+      {
+        icon: Calendar,
+        text: "August 15, 2024 - August 17, 2024"
+      },
+      {
+        icon: MapPin,
+        text: "Aquatics Center, Miami"
+      },
+      {
+        icon: CalendarIcon,
+        text: "Organized by USA Swimming Federation"
+      }
+    ],
+    // Sponsorship impact data for StatsList component
+    sponsorshipImpactData: [
+      {
+        icon: Handshake,
+        text: "12 Current Sponsors"
+      },
+      {
+        icon: Tv,
+        text: "2.5M Media Reach"
+      },
+      {
+        icon: Users,
+        text: "5K Expected Attendees"
+      },
+      {
+        icon: Smartphone,
+        text: "500K Live Stream Viewers"
+      }
+    ],
     eventStats: [
       { label: "START DATE", value: "Aug 15", icon: "📅" },
       { label: "DURATION", value: "3 Days", icon: "⏱️" },
