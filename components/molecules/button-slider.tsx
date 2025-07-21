@@ -2,8 +2,8 @@
 
 import type React from "react"
 import { useState } from "react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { DoubleSlider } from "@/components/custom/double-slider"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/popover"
+import { DoubleSlider } from "@/components/atoms/double-slider"
 import { ChevronDown, DollarSign } from "lucide-react"
 
 interface BudgetSliderProps {

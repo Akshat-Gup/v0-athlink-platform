@@ -2,18 +2,18 @@
 
 import type React from "react"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { BudgetSlider } from "@/components/custom/button-slider"
-import { LocationFilter } from "@/components/custom/location-filter"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { SimpleCalendar } from "@/components/ui/simple-calendar"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Button } from "@/components/atoms/button"
+import { Input } from "@/components/atoms/input"
+import { Card, CardContent } from "@/components/molecules/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/molecules/select"
+import { BudgetSlider } from "@/components/molecules/button-slider"
+import { LocationFilter } from "@/components/molecules/location-filter"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/popover"
+import { SimpleCalendar } from "@/components/organisms/simple-calendar"
+import { Progress } from "@/components/atoms/progress"
+import { Badge } from "@/components/atoms/badge"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/organisms/sheet"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/organisms/dialog"
 import {
   Search,
   Heart,

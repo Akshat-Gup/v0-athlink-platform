@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card } from "@/components/molecules/card"
+import { Badge } from "@/components/atoms/badge"
 import { Trophy, Medal, Award, Star, Target, Zap } from "lucide-react"
 
 interface Achievement {

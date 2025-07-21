@@ -1,10 +1,10 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/atoms/button"
+import { Card } from "@/components/molecules/card"
+import { Progress } from "@/components/atoms/progress"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/organisms/dialog"
+import { Badge } from "@/components/atoms/badge"
 import {
   Star,
   Heart,
@@ -33,7 +33,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { XAxis, YAxis, ResponsiveContainer, BarChart as ReBarChart, Bar } from "recharts"
-import { Tooltip, TooltipProvider } from "@/components/ui/tooltip"
+import { Tooltip, TooltipProvider } from "@/components/molecules/tooltip"
 
 interface PageProps {
   params: {

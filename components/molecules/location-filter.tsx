@@ -2,10 +2,10 @@
 
 import type React from "react"
 import { useState, useMemo } from "react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/popover"
+import { Input } from "@/components/atoms/input"
+import { Button } from "@/components/atoms/button"
+import { ScrollArea } from "@/components/molecules/scroll-area"
 import { MapPin, Search, ChevronDown } from "lucide-react"
 
 interface LocationFilterProps {

@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/atoms/button"
+import { Card, CardContent } from "@/components/molecules/card"
 import { ArrowRight, Users, Trophy, Target } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"

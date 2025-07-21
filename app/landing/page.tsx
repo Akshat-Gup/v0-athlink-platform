@@ -5,9 +5,9 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, Check, Star, TrendingUp, Target, Zap } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/atoms/button"
+import { Card, CardContent } from "@/components/molecules/card"
+import { Badge } from "@/components/atoms/badge"
 import { cn } from "@/lib/utils"
 
 /* -------------------------------------------------------------------------- */
