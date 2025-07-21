@@ -287,26 +287,26 @@ export function DiscoverSearchBar({
                 </div>
 
                 <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      // Reset all filters
-                      setSearchQuery("")
-                      setAiQuery("")
-                      setSelectedTalentType("")
-                      setSelectedFit("")
-                      setSelectedSport("")
-                      setSelectedLeague("")
-                      setSelectedExperience("")
-                      setSelectedRating("")
-                      setSelectedBudget(undefined)
-                      setSelectedLocation("")
-                      setStartDate(undefined)
-                      setEndDate(undefined)
-                    }}
-                    className="rounded-full h-10 w-10 ml-2 bg-gray-100 hover:bg-gray-200 cursor-pointer flex items-center justify-center"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    // Reset all filters
+                    setSearchQuery("")
+                    setAiQuery("")
+                    setSelectedTalentType("")
+                    setSelectedFit("")
+                    setSelectedSport("")
+                    setSelectedLeague("")
+                    setSelectedExperience("")
+                    setSelectedRating("")
+                    setSelectedBudget(undefined)
+                    setSelectedLocation("")
+                    setStartDate(undefined)
+                    setEndDate(undefined)
+                  }}
+                  className="rounded-full h-10 px-4 ml-2 bg-gray-100 hover:bg-gray-200 cursor-pointer flex items-center justify-center text-sm font-medium"
                 >
-                    <X className="h-4 w-4" />
+                  Clear
                 </Button>
               </div>
             </div>
