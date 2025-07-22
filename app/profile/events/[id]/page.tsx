@@ -34,7 +34,7 @@ export default function EventProfilePage({ params }: PageProps) {
       <StatsList stats={event.eventDetailsData} title="Event Details" />
       <StatsList stats={event.sponsorshipImpactData} title="Sponsorship Impact" />
       <StatsProfile title="Featured Participants" participants={event.featuredParticipants} />
-      <StatsGraph title="Ticket Sales Progress" data={event.ticketSales} />
+      <StatsGraph title="Ticket Sales Progress" data={event.ticketSales} dataKey="sold" color="#22c55e" />
       <StatsSponsors title="Current Sponsors" sponsors={event.sponsors} />
     </>
   )

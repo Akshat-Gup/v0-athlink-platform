@@ -53,23 +53,27 @@ export function ProfileTemplate({
           <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               {/* Tab Navigation */}
-              <Card className="p-4 sm:p-6">
-                <div className="flex space-x-1 border-b border-gray-200">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-4 py-2 text-sm font-medium transition-colors duration-200 border-b-2 ${
-                        activeTab === tab.id
-                          ? "text-green-600 border-green-600"
-                          : "text-gray-600 border-transparent hover:text-green-600 hover:border-green-300"
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
+              <div className="sticky top-0 z-40 bg-white pt-4 pb-4 border-b border-gray-100 left-0 right-0 -mx-3 sm:-mx-4 lg:mx-0 px-3 sm:px-4 lg:px-0">
+                <div className="w-full max-w-7xl mx-auto">
+                  <div className="bg-gray-50 rounded-full p-1 flex w-full">
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center justify-center px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 min-w-0 ${
+                          activeTab === tab.id
+                            ? "bg-white text-gray-900 shadow-sm"
+                            : "text-gray-600 hover:text-gray-900"
+                        }`}
+                      >
+                        {/* Optionally add tab.icon here if available */}
+                        <span className="hidden sm:inline ml-2">{tab.label}</span>
+                        <span className="sm:hidden">{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </Card>
+              </div>
 
               {/* Tab Content */}
               <div className="space-y-4 sm:space-y-6">

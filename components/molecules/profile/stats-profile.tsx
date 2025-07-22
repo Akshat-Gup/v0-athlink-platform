@@ -1,5 +1,6 @@
 import { Badge } from "@/components/atoms/badge"
 import { Card } from "@/components/molecules/card"
+import { Users } from "lucide-react"
 import Image from "next/image"
 import React from "react"
 
@@ -52,29 +53,37 @@ interface Participant {
 interface StatsProfileProps {
   participants: Participant[]
   title?: string
+  emptyText?: string
 }
 
-export function StatsProfile({ participants, title }: StatsProfileProps) {
+export function StatsProfile({ participants, title, emptyText = "No participants found." }: StatsProfileProps) {
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {participants.map((participant) => (
-          <Card key={participant.id} className="p-4 flex items-center gap-4">
-            <Image
-              src={participant.image || "/placeholder.svg"}
-              alt={participant.name}
-              width={64}
-              height={64}
-              className="w-16 h-16 rounded-full object-cover"
-            />
-            <div>
-              <h4 className="font-semibold">{participant.name}</h4>
-              <p className="text-sm text-gray-600 whitespace-pre-line">{participant.description}</p>
-            </div>
-          </Card>
-        ))}
-      </div>
+      {participants.length === 0 ? (
+        <div className="text-gray-600 text-center py-8">
+            <Users className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+            {emptyText}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {participants.map((participant) => (
+            <Card key={participant.id} className="p-4 flex items-center gap-4">
+              <Image
+                src={participant.image || "/placeholder.svg"}
+                alt={participant.name}
+                width={64}
+                height={64}
+                className="w-16 h-16 rounded-full object-cover"
+              />
+              <div>
+                <h4 className="font-semibold">{participant.name}</h4>
+                <p className="text-sm text-gray-600 whitespace-pre-line">{participant.description}</p>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </Card>
   )
 }

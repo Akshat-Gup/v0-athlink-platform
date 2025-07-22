@@ -33,9 +33,6 @@ interface EventSidebarProps {
 
 interface DefaultSidebarProps {
   item: {
-    title: string
-    subtitle: string
-    submitButtonText?: string
     currentFunding: number
     goalFunding: number
     checkpoints: Array<{
@@ -49,7 +46,10 @@ interface DefaultSidebarProps {
       youtube: string
       facebook: string
     }
-  }
+  },
+  title: string
+  subtitle: string
+  submitButtonText?: string
 }
 
 export function EventSidebar({ event }: EventSidebarProps) {
@@ -111,7 +111,7 @@ export function EventSidebar({ event }: EventSidebarProps) {
   )
 }
 
-export function DefaultSidebar({ item }: DefaultSidebarProps) {
+export function DefaultSidebar({ item, title, subtitle, submitButtonText }: DefaultSidebarProps) {
   const renderProgressBar = (current: number, goal: number) => {
     const percentage = (current / goal) * 100
     return (
@@ -133,9 +133,9 @@ export function DefaultSidebar({ item }: DefaultSidebarProps) {
           goalFunding={item.goalFunding}
           checkpoints={item.checkpoints}
           renderProgressBar={renderProgressBar}
-          title={item.title}
-          subtitle={item.subtitle}
-          submitButtonText={item.submitButtonText}
+          title={title}
+          subtitle={subtitle}
+          submitButtonText={submitButtonText}
         />
         <SidebarSocials socials={item.socials} />
       </div>

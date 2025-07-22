@@ -1,5 +1,6 @@
 // Mock data for event profile
-import { Calendar, MapPin, CalendarIcon, Handshake, Tv, Users, Smartphone } from "lucide-react"
+import { Calendar, MapPin, CalendarIcon, Handshake, Tv, Users, Smartphone, Trophy, Target } from "lucide-react"
+import { Achievement } from "./database-schemas";
 
 export function getEventMockData(id: string) {
   return {
@@ -286,7 +287,14 @@ export function getEventMockData(id: string) {
     }
   }
 }
-
+interface Achievement {
+  id: number
+  title: string
+  description: string
+  date: string
+  type: "gold" | "silver" | "bronze" | "tournament" | "ranking" | "special"
+  image?: string
+}
 // Mock data for talent profile
 export function getTalentMockData(id: string) {
   const profile = {
@@ -309,6 +317,20 @@ export function getTalentMockData(id: string) {
       wins: 32,
       ranking: 15,
     },
+    talentDetailsData: [
+    {
+      icon: Trophy,
+      text: "Olympic Qualifier",
+    },
+    {
+      icon: Calendar,
+      text: "8 years experience"
+    },
+    {
+      icon: Target,
+      text: `World Ranking #15` // This line will be fixed below
+    }
+  ],
     demographics: [
       { label: "GENDER", value: "Female", icon: "👤" },
       { label: "AGE", value: "24", icon: "📅" },
@@ -323,12 +345,57 @@ export function getTalentMockData(id: string) {
       { label: "PRIZE MONEY", value: "$125K", icon: "💰" },
       { label: "FOLLOWERS", value: "125K", icon: "👥" },
     ],
+    teamList: [],
     socials: {
       instagram: "@sarahchen_tennis",
       twitter: "@sarahchen",
       youtube: "Sarah Chen Tennis",
       facebook: "Sarah Chen Official",
     },
+    achievementsList: [
+      {
+        id: 1,
+        title: "US Open Semifinalist",
+        description: "Reached semifinals at the US Open Tennis Championships",
+        date: "March 2024",
+        type: "gold",
+      },
+      {
+        id: 2,
+        title: "Miami Open Quarter Finals",
+        description: "Advanced to quarter finals at Miami Open",
+        date: "February 2024",
+        type: "silver",
+      },
+      {
+        id: 3,
+        title: "Top 15 World Ranking",
+        description: "Achieved career-high ranking of #15 in WTA rankings",
+        date: "January 2024",
+        type: "ranking",
+      },
+      {
+        id: 4,
+        title: "Olympic Qualifier",
+        description: "Qualified for upcoming Olympic Games",
+        date: "December 2023",
+        type: "special",
+      },
+      {
+        id: 5,
+        title: "French Open First Round",
+        description: "Competed in French Open main draw",
+        date: "June 2023",
+        type: "tournament",
+      },
+      {
+        id: 6,
+        title: "Rising Star Award",
+        description: "Received WTA Rising Star Award for breakthrough performance",
+        date: "November 2023",
+        type: "special",
+      },
+    ] as Achievement[],
     checkpoints: [
       { amount: 1000, reward: "Social media shoutout + signed photo", unlocked: true },
       { amount: 2500, reward: "Logo on training gear + monthly updates", unlocked: true },

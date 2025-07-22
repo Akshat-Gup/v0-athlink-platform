@@ -1,6 +1,5 @@
 // Organisms - Complex UI components
-export * from './profile/achievement-card'
-export * from './profile/event-header'
+export * from './profile/header'
 export * from './profile/sidebar'
 export * from './profile/media-gallery'
 export * from './profile/tab-navigation'
