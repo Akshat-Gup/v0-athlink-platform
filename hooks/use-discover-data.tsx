@@ -364,12 +364,130 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     return getItemsByFit(fit).length > 0
   }
 
+  // Filter items with all selected filters applied
+  const getFilteredItems = (): TalentItem[] => {
+    return allItems.filter(item => {
+      // Filter by category (talents, teams, events)
+      const categoryMatch = filters.activeTab === "talents" 
+        ? item.category === "talent"
+        : filters.activeTab === "teams"
+        ? item.category === "team" 
+        : item.category === "event"
+
+      if (!categoryMatch) return false
+
+      // Filter by fit (if selectedFit is specified)
+      if (filters.selectedFit && item.fit !== filters.selectedFit) {
+        return false
+      }
+
+      // Apply other filters
+      if (filters.selectedTalentType && 
+          item.talentType.toLowerCase().replace(/\s+/g, "-") !== filters.selectedTalentType) {
+        return false
+      }
+
+      if (filters.selectedSport && 
+          item.sport.toLowerCase().replace(/\s+/g, "-") !== filters.selectedSport) {
+        return false
+      }
+
+      // League filter (only for athletes with matching sport)
+      if (filters.selectedLeague && filters.selectedTalentType === "athlete") {
+        // This would need to be implemented based on how leagues are stored in your data
+        // For now, we'll skip this filter until league data structure is defined
+      }
+
+      // Experience level filter
+      if (filters.selectedExperience) {
+        // Map experience levels to item properties - you'll need to add experience field to TalentItem
+        // For now, we'll use achievements as a proxy
+        const experienceKeywords = {
+          'professional': ['professional', 'pro', 'olympic', 'world', 'national'],
+          'semi-professional': ['semi-pro', 'collegiate', 'university', 'college'],
+          'amateur': ['amateur', 'local', 'regional'],
+          'college': ['college', 'collegiate', 'university', 'ncaa']
+        };
+        
+        const keywords = experienceKeywords[filters.selectedExperience as keyof typeof experienceKeywords] || [];
+        const itemText = (item.achievements + ' ' + item.name).toLowerCase();
+        const hasExperienceMatch = keywords.some(keyword => itemText.includes(keyword));
+        
+        if (!hasExperienceMatch) return false;
+      }
+
+      // Location filter
+      if (filters.selectedLocation) {
+        if (!item.location.toLowerCase().includes(filters.selectedLocation.toLowerCase())) {
+          return false
+        }
+      }
+
+      // Budget filter (for items with pricing)
+      if (filters.selectedBudget && 'currentFunding' in item && 'goalFunding' in item) {
+        const [minBudget, maxBudget] = filters.selectedBudget
+        const itemBudget = item.goalFunding || 0
+        if (itemBudget < minBudget || itemBudget > maxBudget) {
+          return false
+        }
+      }
+
+      if (filters.selectedRating) {
+        const minRating = parseFloat(filters.selectedRating.replace("+", ""))
+        if (item.rating < minRating) return false
+      }
+
+      // Search query filter
+      if (filters.searchQuery && filters.searchMode === "search") {
+        const query = filters.searchQuery.toLowerCase()
+        const searchFields = [
+          item.name.toLowerCase(),
+          item.sport.toLowerCase(),
+          item.location.toLowerCase(),
+          item.achievements.toLowerCase(),
+          ...item.keywords,
+          ...item.tags.map(tag => tag.toLowerCase())
+        ]
+        
+        if (!searchFields.some(field => field.includes(query))) {
+          return false
+        }
+      }
+
+      // AI query filter (enhanced semantic search)
+      if (filters.aiQuery && filters.searchMode === "ai") {
+        const query = filters.aiQuery.toLowerCase()
+        const semanticFields = [
+          item.name.toLowerCase(),
+          item.sport.toLowerCase(),
+          item.location.toLowerCase(),
+          item.achievements.toLowerCase(),
+          item.talentType.toLowerCase(),
+          item.fit.toLowerCase(),
+          ...item.keywords,
+          ...item.tags.map(tag => tag.toLowerCase())
+        ]
+        
+        // Enhanced AI search with better matching
+        const queryWords = query.split(' ').filter(word => word.length > 2)
+        const hasMatch = queryWords.some(word => 
+          semanticFields.some(field => field.includes(word))
+        ) || semanticFields.some(field => field.includes(query))
+        
+        if (!hasMatch) return false
+      }
+
+      return true
+    })
+  }
+
   return {
     allItems,
     upAndComingItems,
     brandAmbassadorItems,
     getLeaguesForSport,
     getItemsByFit,
+    getFilteredItems,
     shouldShowSection,
   }
 }
