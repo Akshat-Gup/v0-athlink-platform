@@ -35,7 +35,7 @@ export function EventHeader({ event, onShareClick }: EventHeaderProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="fixed top-4 sm:top-8 left-2 sm:left-4 lg:left-4 xl:left-[max(0.5rem,calc((100vw-80rem)/2-1rem))] z-50 bg-white hover:bg-gray-50 rounded-full shadow-lg"
+          className="fixed top-4 sm:top-4 left-2 sm:left-4 lg:left-4 xl:left-[max(0.5rem,calc((100vw-80rem)/2-1rem))] z-50 bg-white hover:bg-gray-50 rounded-full shadow-lg"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
@@ -146,7 +146,7 @@ export function TalentHeader({ talent, onShareClick }: TalentHeaderProps) {
         <Button
           variant="ghost"
           size="icon"
-              className="fixed top-4 sm:top-8 left-2 sm:left-4 lg:left-4 xl:left-[max(0.5rem,calc((100vw-80rem)/2-1rem))] z-50 bg-white hover:bg-gray-50 rounded-full shadow-lg"
+              className="fixed top-4 sm:top-4 left-2 sm:left-4 lg:left-4 xl:left-[max(0.5rem,calc((100vw-80rem)/2-1rem))] z-50 bg-white hover:bg-gray-50 rounded-full shadow-lg"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -307,7 +307,7 @@ export function TeamHeader({ team, onShareClick }: TeamHeaderProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="fixed top-4 sm:top-8 left-2 sm:left-4 lg:left-4 xl:left-[max(0.5rem,calc((100vw-80rem)/2-1rem))] z-50 bg-white hover:bg-gray-50 rounded-full shadow-lg"
+          className="fixed top-4 sm:top-4 left-2 sm:left-4 lg:left-4 xl:left-[max(0.5rem,calc((100vw-80rem)/2-1rem))] z-50 bg-white hover:bg-gray-50 rounded-full shadow-lg"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
