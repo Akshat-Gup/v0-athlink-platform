@@ -3,9 +3,9 @@
 import React from "react"
 import Link from "next/link"
 import { Button } from "@/components/atoms/button"
-import { DiscoverHeader } from "@/components/organisms/discover-header"
-import { DiscoverSearchBar } from "@/components/organisms/discover-search-bar"
-import { TalentGrid } from "@/components/organisms/talent-grid"
+import { DiscoverHeader } from "@/components/organisms/discover/discover-header"
+import { DiscoverSearchBar } from "@/components/organisms/discover/discover-search-bar"
+import { TalentGrid } from "@/components/organisms/discover/talent-grid"
 import { TalentItem } from "@/hooks/use-discover-data"
 
 interface DiscoverTemplateProps {
@@ -58,6 +58,7 @@ interface DiscoverTemplateProps {
   toggleFavorite: (id: number, e: React.MouseEvent) => void
   getLeaguesForSport: (sport: string) => string[]
   getItemsByFit: (fit: string) => TalentItem[]
+  getFilteredItems: () => TalentItem[]
   shouldShowSection: (fit: string) => boolean
 }
 
@@ -105,6 +106,7 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
     toggleFavorite,
     getLeaguesForSport,
     getItemsByFit,
+    getFilteredItems,
     shouldShowSection,
   } = props
 
@@ -216,111 +218,135 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Trending Section */}
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-3">
-              <h2 className="text-2xl font-semibold text-gray-900">Trending</h2>
-              {/* <span className="bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full animate-pulse">
-                HOT
-              </span> */}
-            </div>
-            <Link href={`/discover/${activeTab}`}>
-              <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                Show all
-              </Button>
-            </Link>
-          </div>
-          <TalentGrid
-            items={(() => {
-              // Get items from all fit categories and respect filters
-              const topTalentItems = getItemsByFit("top-talent");
-              const upAndComingItems = getItemsByFit("up-and-coming");
-              const brandAmbassadorItems = getItemsByFit("brand-ambassador");
-              
-              // Combine and sort by rating for trending
-              const allFitItems = [
-                ...topTalentItems,
-                ...upAndComingItems,
-                ...brandAmbassadorItems
-              ];
-              
-              // Sort by rating and take top 12 for trending
-              return allFitItems
-                .sort((a, b) => b.rating - a.rating)
-                .slice(0, 12);
-            })()}
-            favorites={favorites}
-            onToggleFavorite={toggleFavorite}
-            selectedTalentType={selectedTalentType}
-            onTalentTypeClick={setSelectedTalentType}
-          />
-        </section>
-
-        {/* Top Talent Section */}
-        {shouldShowSection("top-talent") && (
+        {/* Check if any specific filters are applied */}
+        {(searchQuery || aiQuery || selectedFit || selectedTalentType || selectedSport || selectedLeague || selectedExperience || selectedRating || selectedBudget || selectedLocation) ? (
+          /* Filtered Results Section */
           <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Top Talent</h2>
-              <Link href={`/discover/${activeTab}`}>
-                <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                  Show all
-                </Button>
-              </Link>
+              <h2 className="text-2xl font-semibold text-gray-900">
+                {searchMode === "search" && searchQuery ? `Search Results for "${searchQuery}"` :
+                 searchMode === "ai" && aiQuery ? `AI Search Results` :
+                 "Filtered Results"}
+              </h2>
             </div>
             <TalentGrid
-              items={(() => {
-                const items = getItemsByFit("top-talent").slice(0, 12)
-                return items
-              })()}
+              items={getFilteredItems()}
               favorites={favorites}
               onToggleFavorite={toggleFavorite}
               selectedTalentType={selectedTalentType}
               onTalentTypeClick={setSelectedTalentType}
             />
           </section>
-        )}
+        ) : (
+          /* Default Browse Sections */
+          <>
+            {/* Trending Section */}
+            <section className="mb-12">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-3">
+                  <h2 className="text-2xl font-semibold text-gray-900">Trending</h2>
+                  {/* <span className="bg-red-500 text-white text-xs font-medium px-2 py-1 rounded-full animate-pulse">
+                    HOT
+                  </span> */}
+                </div>
+                <Link href={`/discover/${activeTab}`}>
+                  <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                    Show all
+                  </Button>
+                </Link>
+              </div>
+              <TalentGrid
+                items={(() => {
+                  // Get items from all fit categories and respect filters
+                  const topTalentItems = getItemsByFit("top-talent");
+                  const upAndComingItems = getItemsByFit("up-and-coming");
+                  const brandAmbassadorItems = getItemsByFit("brand-ambassador");
+                  
+                  // Combine and sort by rating for trending
+                  const allFitItems = [
+                    ...topTalentItems,
+                    ...upAndComingItems,
+                    ...brandAmbassadorItems
+                  ];
+                  
+                  // Sort by rating and take top 12 for trending
+                  return allFitItems
+                    .sort((a, b) => b.rating - a.rating)
+                    .slice(0, 12);
+                })()}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                selectedTalentType={selectedTalentType}
+                onTalentTypeClick={setSelectedTalentType}
+              />
+            </section>
 
-        {/* Up and Coming Section */}
-        {shouldShowSection("up-and-coming") && (
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Up and Coming</h2>
-              <Link href={`/discover/${activeTab}`}>
-                <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                  Show all
-                </Button>
-              </Link>
-            </div>
-            <TalentGrid
-              items={getItemsByFit("up-and-coming").slice(0, 12)}
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-              selectedTalentType={selectedTalentType}
-              onTalentTypeClick={setSelectedTalentType}
-            />
-          </section>
-        )}
+            {/* Top Talent Section */}
+            {shouldShowSection("top-talent") && (
+              <section className="mb-12">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-semibold text-gray-900">Top Talent</h2>
+                  <Link href={`/discover/${activeTab}`}>
+                    <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                      Show all
+                    </Button>
+                  </Link>
+                </div>
+                <TalentGrid
+                  items={(() => {
+                    const items = getItemsByFit("top-talent").slice(0, 12)
+                    return items
+                  })()}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
+                  selectedTalentType={selectedTalentType}
+                  onTalentTypeClick={setSelectedTalentType}
+                />
+              </section>
+            )}
 
-        {/* Brand Ambassador Section */}
-        {shouldShowSection("brand-ambassador") && (
-          <section className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Brand Ambassadors</h2>
-              <Link href={`/discover/${activeTab}`}>
-                <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
-                  Show all
-                </Button>
-              </Link>
-            </div>
-            <TalentGrid
-              items={getItemsByFit("brand-ambassador").slice(0, 12)}
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-              selectedTalentType={selectedTalentType}
-              onTalentTypeClick={setSelectedTalentType}
-            />
-          </section>
+            {/* Up and Coming Section */}
+            {shouldShowSection("up-and-coming") && (
+              <section className="mb-12">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-semibold text-gray-900">Up and Coming</h2>
+                  <Link href={`/discover/${activeTab}`}>
+                    <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                      Show all
+                    </Button>
+                  </Link>
+                </div>
+                <TalentGrid
+                  items={getItemsByFit("up-and-coming").slice(0, 12)}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
+                  selectedTalentType={selectedTalentType}
+                  onTalentTypeClick={setSelectedTalentType}
+                />
+              </section>
+            )}
+
+            {/* Brand Ambassador Section */}
+            {shouldShowSection("brand-ambassador") && (
+              <section className="mb-12">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-semibold text-gray-900">Brand Ambassadors</h2>
+                  <Link href={`/discover/${activeTab}`}>
+                    <Button variant="ghost" className="text-gray-600 hover:text-gray-900">
+                      Show all
+                    </Button>
+                  </Link>
+                </div>
+                <TalentGrid
+                  items={getItemsByFit("brand-ambassador").slice(0, 12)}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
+                  selectedTalentType={selectedTalentType}
+                  onTalentTypeClick={setSelectedTalentType}
+                />
+              </section>
+            )}
+          </>
         )}
       </main>
     </div>

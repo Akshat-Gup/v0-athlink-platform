@@ -16,7 +16,7 @@ import {
     MediaGallery,
     EventSidebar
 } from "@/components/organisms"
-import { StatsList } from "@/components/molecules/profile/stats-list"
+import { StatsGrid } from "@/components/molecules/profile/stats-grid"
 
 interface PageProps {
   params: {
@@ -39,8 +39,8 @@ export default function EventProfilePage({ params }: PageProps) {
         <p className="text-gray-600 text-sm sm:text-base">{event.bio}</p>
       </Card>
       
-      <StatsList stats={event.eventDetailsData} title="Event Details" />
-      <StatsList stats={event.sponsorshipImpactData} title="Sponsorship Impact" />
+      <StatsGrid stats={event.eventStats} title="Event Statistics" />
+      <StatsGrid stats={event.sponsorshipStats} title="Sponsorship Impact" />
       
       <Card className="p-4 sm:p-6">
         <h3 className="text-lg font-semibold mb-4">Featured Participants</h3>
