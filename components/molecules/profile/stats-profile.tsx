@@ -9,7 +9,7 @@ interface Sponsor {
   name: string
   logo?: string
   tier?: string
-  amount: number
+  amount?: number
 }
 
 interface StatsSponsorsProps {
@@ -35,7 +35,8 @@ export function StatsSponsors({ sponsors, title }: StatsSponsorsProps) {
               <h4 className="font-semibold">{sponsor.name}</h4>
               <p className="text-sm text-gray-600">{sponsor.tier}</p>
             </div>
-            <Badge className="bg-green-500">${sponsor.amount.toLocaleString()}</Badge>
+            {sponsor.amount &&
+              <Badge className="bg-blue-500">${sponsor.amount.toLocaleString()}</Badge>}
           </div>
         ))}
       </div>
@@ -86,4 +87,73 @@ export function StatsProfile({ participants, title, emptyText = "No participants
       )}
     </Card>
   )
+}
+
+// Team roster component
+interface Player {
+  id: number;
+  name: string;
+  position: string;
+  number: number;
+  image?: string;
+  stats: {
+    ppg: number;
+    apg: number;
+    rpg: number;
+  };
+}
+
+interface TeamRosterProps {
+  roster: Player[];
+  title?: string;
+  emptyText?: string;
+}
+
+export function TeamRoster({ roster, title, emptyText = "No players found." }: TeamRosterProps) {
+  return (
+    <Card className="p-4 sm:p-6">
+      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+      {roster.length === 0 ? (
+        <div className="text-gray-600 text-center py-8">
+          <Users className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+          {emptyText}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {roster.map((player) => (
+            <Card key={player.id} className="p-4">
+              <div className="flex items-center gap-4">
+                <Image
+                  src={player.image || "/placeholder.svg"}
+                  alt={player.name}
+                  width={60}
+                  height={60}
+                  className="w-15 h-15 object-cover rounded-full"
+                />
+                <div className="flex-1">
+                  <h4 className="font-semibold">{player.name}</h4>
+                  <p className="text-sm text-gray-600">{player.position}</p>
+                  <p className="text-sm text-gray-600">#{player.number}</p>
+                </div>
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <p className="text-lg font-bold">{player.stats.ppg}</p>
+                  <p className="text-xs text-gray-600">PPG</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold">{player.stats.apg}</p>
+                  <p className="text-xs text-gray-600">APG</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold">{player.stats.rpg}</p>
+                  <p className="text-xs text-gray-600">RPG</p>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
 }

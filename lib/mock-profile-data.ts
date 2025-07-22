@@ -1,6 +1,5 @@
 // Mock data for event profile
 import { Calendar, MapPin, CalendarIcon, Handshake, Tv, Users, Smartphone, Trophy, Target } from "lucide-react"
-import { Achievement } from "./database-schemas";
 
 export function getEventMockData(id: string) {
   return {

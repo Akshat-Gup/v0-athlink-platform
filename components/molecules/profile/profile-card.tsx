@@ -175,3 +175,84 @@ export function PastResults({ results, title }: PastResultsProps) {
     </Card>
   );
 }
+
+// Team-specific components
+interface Game {
+  id: number;
+  opponent: string;
+  date: string;
+  location: string;
+  time: string;
+  image?: string;
+}
+
+interface UpcomingGamesProps {
+  games: Game[];
+  title: string;
+}
+
+export function UpcomingGames({ games, title }: UpcomingGamesProps) {
+  return (
+    <Card className="p-4 sm:p-6">
+      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {games.map((game) => (
+          <Card key={game.id} className="p-4">
+            <Image
+              src={game.image || "/placeholder.svg"}
+              alt={game.opponent}
+              width={300}
+              height={200}
+              className="w-full h-32 object-cover rounded-lg mb-3"
+            />
+            <h4 className="font-semibold">vs {game.opponent}</h4>
+            <p className="text-sm text-gray-600">{game.date}</p>
+            <p className="text-sm text-gray-600">{game.location}</p>
+            <p className="text-sm text-gray-600">{game.time}</p>
+          </Card>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+interface RecentResult {
+  id: number;
+  opponent: string;
+  date: string;
+  location: string;
+  result: string;
+  image?: string;
+}
+
+interface RecentResultsProps {
+  results: RecentResult[];
+  title: string;
+}
+
+export function RecentResults({ results, title }: RecentResultsProps) {
+  return (
+    <Card className="p-4 sm:p-6">
+      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+      <div className="space-y-4">
+        {results.map((result) => (
+          <div key={result.id} className="flex items-center gap-4 p-4 border rounded-xl">
+            <Image
+              src={result.image || "/placeholder.svg"}
+              alt={result.opponent}
+              width={80}
+              height={60}
+              className="w-20 h-15 object-cover rounded-lg"
+            />
+            <div className="flex-1">
+              <h4 className="font-semibold">vs {result.opponent}</h4>
+              <p className="text-sm text-gray-600">{result.date}</p>
+              <p className="text-sm text-gray-600">{result.location}</p>
+            </div>
+            <Badge className="bg-green-500">{result.result}</Badge>
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+}
