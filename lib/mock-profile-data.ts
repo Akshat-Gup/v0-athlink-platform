@@ -283,6 +283,530 @@ export function getEventMockData(id: string) {
           title: "Event Atmosphere",
         },
       ],
-    },
+    }
   }
 }
+
+// Mock data for talent profile
+export function getTalentMockData(id: string) {
+  const profile = {
+    id: Number.parseInt(id),
+    name: "Sarah Chen",
+    sport: "Tennis",
+    location: "Los Angeles, CA",
+    country: "🇺🇸",
+    team: "🎾",
+    rating: 4.95,
+    currentFunding: 2500,
+    goalFunding: 5000,
+    image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=600&h=400&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=1200&h=300&fit=crop",
+    achievements: "Olympic Qualifier",
+    category: "talent",
+    bio: "Professional tennis player with 8 years of competitive experience. Currently training for the upcoming Olympic qualifiers and seeking sponsorship to support my journey to represent my country at the highest level.",
+    stats: {
+      tournaments: 45,
+      wins: 32,
+      ranking: 15,
+    },
+    demographics: [
+      { label: "GENDER", value: "Female", icon: "👤" },
+      { label: "AGE", value: "24", icon: "📅" },
+      { label: "HEIGHT", value: "5'7\"", icon: "📏" },
+      { label: "WEIGHT", value: "130 lbs", icon: "⚖️" },
+      { label: "REACH", value: "2.1M", icon: "📱" },
+    ],
+    performanceStats: [
+      { label: "RANKING", value: "#15", icon: "🏆" },
+      { label: "WIN RATE", value: "71%", icon: "📊" },
+      { label: "TOURNAMENTS", value: "45", icon: "🎾" },
+      { label: "PRIZE MONEY", value: "$125K", icon: "💰" },
+      { label: "FOLLOWERS", value: "125K", icon: "👥" },
+    ],
+    socials: {
+      instagram: "@sarahchen_tennis",
+      twitter: "@sarahchen",
+      youtube: "Sarah Chen Tennis",
+      facebook: "Sarah Chen Official",
+    },
+    checkpoints: [
+      { amount: 1000, reward: "Social media shoutout + signed photo", unlocked: true },
+      { amount: 2500, reward: "Logo on training gear + monthly updates", unlocked: true },
+      { amount: 5000, reward: "Logo on competition outfit + VIP event access", unlocked: false },
+      { amount: 7500, reward: "Personal training session + exclusive content", unlocked: false },
+    ],
+    performanceData: [
+      { month: "Jan", ranking: 25, wins: 2 },
+      { month: "Feb", ranking: 22, wins: 3 },
+      { month: "Mar", ranking: 18, wins: 4 },
+      { month: "Apr", ranking: 15, wins: 5 },
+      { month: "May", ranking: 15, wins: 3 },
+      { month: "Jun", ranking: 12, wins: 6 },
+    ],
+    pastResults: {
+      2024: [
+        {
+          id: 1,
+          tournament: "US Open Qualifier",
+          date: "March 2024",
+          result: "Semifinalist",
+          image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=300&h=200&fit=crop",
+        },
+        {
+          id: 2,
+          tournament: "Miami Open",
+          date: "February 2024",
+          result: "Quarter Finals",
+          image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=200&fit=crop",
+        },
+      ],
+      2023: [
+        {
+          id: 3,
+          tournament: "French Open Qualifier",
+          date: "June 2023",
+          result: "First Round",
+          image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=300&h=200&fit=crop",
+        },
+      ],
+    },
+    upcomingCompetitions: [
+      {
+        id: 1,
+        tournament: "Wimbledon Qualifier",
+        date: "August 2024",
+        location: "London, UK",
+        image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=300&h=200&fit=crop",
+      },
+      {
+        id: 2,
+        tournament: "Olympic Trials",
+        date: "September 2024",
+        location: "Paris, France",
+        image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=200&fit=crop",
+      },
+    ],
+    mediaGallery: {
+      photos: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
+          title: "Training Session",
+          category: "Training",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
+          title: "Victory Celebration",
+          category: "Showcase",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+          title: "Championship Match",
+          category: "Showcase",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
+          title: "Practice Court",
+          category: "Training",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Awards Ceremony",
+          category: "Events",
+        },
+        {
+          id: 6,
+          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
+          title: "Team Photo",
+          category: "Behind the Scenes",
+        },
+        {
+          id: 7,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Gym Training",
+          category: "Training",
+        },
+        {
+          id: 8,
+          url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+          title: "Media Interview",
+          category: "Behind the Scenes",
+        },
+      ],
+      videos: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
+          title: "Match Highlights",
+          category: "Competition",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
+          title: "Training Montage",
+          category: "Training",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+          title: "Behind the Scenes",
+          category: "Behind the Scenes",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
+          title: "Tournament Prep",
+          category: "Training",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Victory Speech",
+          category: "Competition",
+        },
+      ],
+      youtube: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
+          title: "Training Routine",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
+          title: "Q&A Session",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+          title: "Day in My Life",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
+          title: "Equipment Review",
+        },
+      ],
+      instagram: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=400&h=300&fit=crop",
+          title: "Behind the Scenes",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&h=300&fit=crop",
+          title: "Morning Training",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop",
+          title: "Competition Day",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop",
+          title: "Recovery Session",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Celebration",
+        },
+        {
+          id: 6,
+          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
+          title: "Team Building",
+        },
+      ],
+    },
+  };
+  return profile;
+}
+
+// Mock data for team profile
+export function getTeamMockData(id: string) {
+  const team = {
+    id: Number.parseInt(id),
+    name: "Thunder Hawks Basketball",
+    sport: "Basketball",
+    location: "Chicago, IL",
+    country: "🇺🇸",
+    league: "🏀",
+    rating: 4.8,
+    currentFunding: 15000,
+    goalFunding: 25000,
+    image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&h=400&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=1200&h=300&fit=crop",
+    achievements: "Regional Champions 2024",
+    category: "team",
+    bio: "Professional basketball team competing in the regional league. We're a diverse group of talented athletes working together to achieve excellence on and off the court. Currently seeking sponsorship to upgrade our training facilities and equipment.",
+    stats: {
+      wins: 28,
+      losses: 12,
+      ranking: 3,
+      members: 15,
+    },
+    teamStats: [
+      { label: "FOUNDED", value: "2018", icon: "📅" },
+      { label: "MEMBERS", value: "15", icon: "👥" },
+      { label: "LEAGUE", value: "Regional", icon: "🏆" },
+      { label: "HOME VENUE", value: "Hawks Arena", icon: "🏟️" },
+    ],
+    performanceStats: [
+      { label: "RANKING", value: "#3", icon: "🏆" },
+      { label: "WIN RATE", value: "70%", icon: "📊" },
+      { label: "GAMES PLAYED", value: "40", icon: "🏀" },
+      { label: "POINTS AVG", value: "89.5", icon: "🎯" },
+    ],
+    socials: {
+      instagram: "@thunderhawks_bball",
+      twitter: "@thunderhawks",
+      youtube: "Thunder Hawks Basketball",
+      facebook: "Thunder Hawks Official",
+    },
+    checkpoints: [
+      { amount: 5000, reward: "Team logo on social media + team photo", unlocked: true },
+      { amount: 10000, reward: "Logo on practice jerseys + facility tour", unlocked: true },
+      { amount: 15000, reward: "Logo on game jerseys + VIP game tickets", unlocked: true },
+      { amount: 25000, reward: "Naming rights to training facility + exclusive events", unlocked: false },
+    ],
+    performanceData: [
+      { month: "Jan", ranking: 8, wins: 3 },
+      { month: "Feb", ranking: 6, wins: 5 },
+      { month: "Mar", ranking: 4, wins: 6 },
+      { month: "Apr", ranking: 3, wins: 7 },
+      { month: "May", ranking: 3, wins: 4 },
+      { month: "Jun", ranking: 2, wins: 3 },
+    ],
+    roster: [
+      {
+        id: 1,
+        name: "Marcus Johnson",
+        position: "Point Guard",
+        number: 23,
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop",
+        stats: { ppg: 18.5, apg: 7.2, rpg: 4.1 },
+      },
+      {
+        id: 2,
+        name: "David Chen",
+        position: "Shooting Guard",
+        number: 15,
+        image: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66?w=300&h=300&fit=crop",
+        stats: { ppg: 22.1, apg: 3.8, rpg: 5.2 },
+      },
+      {
+        id: 3,
+        name: "Alex Rodriguez",
+        position: "Small Forward",
+        number: 7,
+        image: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=300&h=300&fit=crop",
+        stats: { ppg: 16.8, apg: 4.5, rpg: 6.9 },
+      },
+      {
+        id: 4,
+        name: "James Wilson",
+        position: "Power Forward",
+        number: 32,
+        image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop",
+        stats: { ppg: 14.2, apg: 2.1, rpg: 8.7 },
+      },
+    ],
+    upcomingGames: [
+      {
+        id: 1,
+        opponent: "City Wolves",
+        date: "August 15, 2024",
+        location: "Hawks Arena",
+        time: "7:00 PM",
+        image: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=300&h=200&fit=crop",
+      },
+      {
+        id: 2,
+        opponent: "Metro Lions",
+        date: "August 22, 2024",
+        location: "Lions Stadium",
+        time: "6:30 PM",
+        image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=300&h=200&fit=crop",
+      },
+    ],
+    recentResults: [
+      {
+        id: 1,
+        opponent: "Valley Eagles",
+        date: "July 28, 2024",
+        result: "W 95-87",
+        location: "Hawks Arena",
+        image: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=300&h=200&fit=crop",
+      },
+      {
+        id: 2,
+        opponent: "River Sharks",
+        date: "July 21, 2024",
+        result: "W 102-89",
+        location: "Sharks Court",
+        image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=300&h=200&fit=crop",
+      },
+    ],
+    sponsors: [
+      {
+        id: 1,
+        name: "SportsCorp",
+        logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=100&fit=crop",
+        tier: "Title Sponsor",
+      },
+      {
+        id: 2,
+        name: "Athletic Gear Co",
+        logo: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=200&h=100&fit=crop",
+        tier: "Official Partner",
+      },
+    ],
+    mediaGallery: {
+      photos: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
+          title: "Team Practice",
+          category: "Training",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+          title: "Skill Development",
+          category: "Training",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Championship Game",
+          category: "Games",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&h=300&fit=crop",
+          title: "Victory Celebration",
+          category: "Games",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Awards Ceremony",
+          category: "Events",
+        },
+        {
+          id: 6,
+          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
+          title: "Team Building",
+          category: "Events",
+        },
+        {
+          id: 7,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Locker Room",
+          category: "Behind the Scenes",
+        },
+        {
+          id: 8,
+          url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
+          title: "Team Meeting",
+          category: "Behind the Scenes",
+        },
+      ],
+      videos: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
+          title: "Game Highlights",
+          category: "Game Highlights",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+          title: "Best Plays",
+          category: "Game Highlights",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Training Session",
+          category: "Training",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&h=300&fit=crop",
+          title: "Practice Drills",
+          category: "Training",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Behind the Scenes",
+          category: "Behind the Scenes",
+        },
+      ],
+      youtube: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
+          title: "Season Highlights",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+          title: "Behind the Scenes",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Player Interviews",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&h=300&fit=crop",
+          title: "Team Documentary",
+        },
+      ],
+      instagram: [
+        {
+          id: 1,
+          url: "https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4?w=400&h=300&fit=crop",
+          title: "Game Day",
+        },
+        {
+          id: 2,
+          url: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=300&fit=crop",
+          title: "Team Bonding",
+        },
+        {
+          id: 3,
+          url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop",
+          title: "Victory Dance",
+        },
+        {
+          id: 4,
+          url: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=400&h=300&fit=crop",
+          title: "Training Hard",
+        },
+        {
+          id: 5,
+          url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+          title: "Championship Trophy",
+        },
+        {
+          id: 6,
+          url: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=300&fit=crop",
+          title: "Team Spirit",
+        },
+      ],
+    },
+  };
+  return team;
+}
+
+
