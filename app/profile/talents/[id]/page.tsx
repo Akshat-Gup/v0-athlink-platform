@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/atoms/button"
-import { AchievementsSection } from "@/components/organisms/profile/achievement-card"
+import { AchievementsSection } from "@/components/organisms/achievement-card"
 import { Card } from "@/components/molecules/card"
 import { Progress } from "@/components/atoms/progress"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/organisms/dialog"

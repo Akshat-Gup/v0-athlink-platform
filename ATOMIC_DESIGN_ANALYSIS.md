@@ -17,13 +17,13 @@
 
 ## Atomic Design Structure
 
-```
+\`\`\`
 components/
 ├── atoms/           ✅ Basic building blocks (Button, Input, etc.)
 ├── molecules/       ✅ Simple combinations (Card, Select, etc.)
 ├── organisms/       ⚠️  Complex components (needs more abstraction)
 └── templates/       ❌ Missing! Page-level layouts
-```
+\`\`\`
 
 ## Refactoring Strategy
 
@@ -47,18 +47,18 @@ components/
 
 ### Before (Single File)
 
-```
+\`\`\`
 app/discover/page.tsx (2,210 lines)
 ├── All imports
 ├── All state management
 ├── All data logic
 ├── All UI components
 └── Massive JSX return
-```
+\`\`\`
 
 ### After (Atomic Design)
 
-```
+\`\`\`
 app/discover/page.tsx (< 100 lines)
 ├── State management hook
 ├── Data logic hook
@@ -74,7 +74,7 @@ components/
 └── hooks/
     ├── use-discover-state.tsx
     └── use-discover-data.tsx
-```
+\`\`\`
 
 ## Benefits of This Approach
 
@@ -102,7 +102,7 @@ Different developers can work on different components
 
 Your refactored page.tsx would look like:
 
-```tsx
+\`\`\`tsx
 "use client";
 
 import { DiscoverTemplate } from "@/components/templates/discover-template";
@@ -115,7 +115,7 @@ export default function DiscoverPage() {
 
   return <DiscoverTemplate {...state} {...data} />;
 }
-```
+\`\`\`
 
 ## Next Steps
 
