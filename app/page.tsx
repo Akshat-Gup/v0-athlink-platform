@@ -1,6 +1,4 @@
-// presumably useless. can't find any references to it
-
-
+import { redirect } from "next/navigation"
 import { Button } from "@/components/atoms/button"
 import { Card, CardContent } from "@/components/molecules/card"
 import { ArrowRight, Users, Trophy, Target } from "lucide-react"
@@ -297,4 +295,7 @@ export default function HomePage() {
       </footer>
     </div>
   )
+
+export default function HomePage() {
+  redirect("/discover")
 }
