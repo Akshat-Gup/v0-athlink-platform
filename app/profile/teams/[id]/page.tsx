@@ -16,15 +16,16 @@ import {
     RecentResults,
     StatsSponsors
 } from "@/components/molecules"
+import { use } from "react"
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function TeamProfilePage({ params }: PageProps) {
-  const { id } = params
+  const { id } = use(params)
   // Get team data from mock data
   const team = getTeamMockData(id)
 

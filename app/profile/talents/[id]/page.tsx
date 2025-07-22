@@ -17,16 +17,16 @@ import {
     UpcomingCompetitions,
     PastResults
 } from "@/components/molecules"
-import { profile } from "console"
+import { use } from "react"
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function TalentProfilePage({ params }: PageProps) {
-  const { id } = params
+  const { id } = use(params)
   // Get event data from mock data
   const talent = getTalentMockData(id)
 

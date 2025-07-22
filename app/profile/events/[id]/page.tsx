@@ -12,15 +12,16 @@ import {
     StatsSponsors,
     StatsSchedule
 } from "@/components/molecules"
+import { use } from "react"
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default function EventProfilePage({ params }: PageProps) {
-  const { id } = params
+  const { id } = use(params)
   // Get event data from mock data
   const event = getEventMockData(id)
 
