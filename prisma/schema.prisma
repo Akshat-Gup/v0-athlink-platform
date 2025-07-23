@@ -1,0 +1,253 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // or "mysql", "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  talents   Talent[]
+  teams     Team[]
+  events    Event[]
+  
+  @@map("users")
+}
+
+model Talent {
+  id              String   @id @default(cuid())
+  name            String
+  sport           String
+  location        String
+  country         String
+  team            String?
+  rating          Float    @default(0)
+  currentFunding  Int      @default(0)
+  goalFunding     Int
+  image           String?
+  coverImage      String?
+  achievements    String?
+  bio             String?
+  category        String   @default("talent")
+  
+  // Relations
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sponsors        Sponsor[]
+  stats           TalentStats[]
+  competitions    Competition[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("talents")
+}
+
+model Team {
+  id              String   @id @default(cuid())
+  name            String
+  sport           String
+  location        String
+  country         String
+  league          String?
+  rating          Float    @default(0)
+  currentFunding  Int      @default(0)
+  goalFunding     Int
+  image           String?
+  coverImage      String?
+  achievements    String?
+  bio             String?
+  category        String   @default("team")
+  
+  // Relations
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  players         Player[]
+  sponsors        Sponsor[]
+  games           Game[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("teams")
+}
+
+model Event {
+  id              String   @id @default(cuid())
+  name            String
+  location        String
+  country         String
+  rating          Float    @default(0)
+  status          String
+  image           String?
+  coverImage      String?
+  bio             String?
+  category        String   @default("event")
+  
+  // Event specific fields
+  startDate       DateTime
+  endDate         DateTime
+  ticketPrice     Int?
+  maxAttendees    Int?
+  
+  // Relations
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sponsors        Sponsor[]
+  participants    EventParticipant[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("events")
+}
+
+model Player {
+  id         String @id @default(cuid())
+  name       String
+  position   String
+  number     Int
+  image      String?
+  
+  // Stats
+  ppg        Float  @default(0) // Points per game
+  apg        Float  @default(0) // Assists per game
+  rpg        Float  @default(0) // Rebounds per game
+  
+  // Relations
+  teamId     String
+  team       Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@map("players")
+}
+
+model Game {
+  id         String   @id @default(cuid())
+  opponent   String
+  date       DateTime
+  location   String
+  time       String
+  result     String?  // "W 95-87", "L 78-82", null for upcoming
+  image      String?
+  
+  // Relations
+  teamId     String
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@map("games")
+}
+
+model Sponsor {
+  id         String @id @default(cuid())
+  name       String
+  logo       String?
+  tier       String?
+  amount     Int
+  
+  // Relations (polymorphic - can sponsor talents, teams, or events)
+  talentId   String?
+  talent     Talent? @relation(fields: [talentId], references: [id], onDelete: Cascade)
+  teamId     String?
+  team       Team?   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  eventId    String?
+  event      Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@map("sponsors")
+}
+
+model TalentStats {
+  id         String @id @default(cuid())
+  label      String
+  value      String
+  icon       String?
+  
+  // Relations
+  talentId   String
+  talent     Talent @relation(fields: [talentId], references: [id], onDelete: Cascade)
+  
+  @@map("talent_stats")
+}
+
+model Competition {
+  id           String   @id @default(cuid())
+  tournament   String
+  date         DateTime
+  location     String
+  result       String?
+  image        String?
+  type         String   @default("upcoming") // "upcoming" or "past"
+  
+  // Relations
+  talentId     String
+  talent       Talent   @relation(fields: [talentId], references: [id], onDelete: Cascade)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@map("competitions")
+}
+
+model EventParticipant {
+  id          String @id @default(cuid())
+  name        String
+  image       String?
+  description String?
+  
+  // Relations
+  eventId     String
+  event       Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  @@map("event_participants")
+}
+
+model Media {
+  id         String @id @default(cuid())
+  url        String
+  title      String?
+  type       MediaType
+  category   String?
+  
+  // Relations (polymorphic)
+  talentId   String?
+  teamId     String?
+  eventId    String?
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@map("media")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum MediaType {
+  PHOTO
+  VIDEO
+  YOUTUBE
+  INSTAGRAM
+}
