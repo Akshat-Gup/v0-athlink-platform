@@ -3,22 +3,21 @@ import { Badge } from "@/components/atoms/badge"
 import { Trophy, Medal, Award, Star, Target, Zap, Calendar } from "lucide-react"
 import Image from "next/image";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/molecules";
-
-interface Achievement {
-  id: number
-  title: string
-  description: string
-  date: string
-  type: "gold" | "silver" | "bronze" | "tournament" | "ranking" | "special"
-  image?: string
-}
+import { Achievement } from "@/lib/database-schemas";
 
 interface AchievementsSectionProps {
-  achievements: Achievement[]
+  achievements: {
+    id: number
+    title: string
+    description: string
+    date: string
+    type: "gold" | "silver" | "bronze" | "tournament" | "ranking" | "special"
+    image?: string
+  }[]
   title: string
 }
 
-const getAchievementIcon = (type: Achievement["type"]) => {
+const getAchievementIcon = (type: AchievementsSectionProps["achievements"][number]["type"]) => {
   switch (type) {
     case "gold":
       return <Trophy className="h-5 w-5 text-yellow-500" />

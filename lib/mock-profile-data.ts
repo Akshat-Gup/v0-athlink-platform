@@ -286,14 +286,7 @@ export function getEventMockData(id: string) {
     }
   }
 }
-interface Achievement {
-  id: number
-  title: string
-  description: string
-  date: string
-  type: "gold" | "silver" | "bronze" | "tournament" | "ranking" | "special"
-  image?: string
-}
+
 // Mock data for talent profile
 export function getTalentMockData(id: string) {
   const profile = {
@@ -394,7 +387,7 @@ export function getTalentMockData(id: string) {
         date: "November 2023",
         type: "special",
       },
-    ] as Achievement[],
+    ],
     checkpoints: [
       { amount: 1000, reward: "Social media shoutout + signed photo", unlocked: true },
       { amount: 2500, reward: "Logo on training gear + monthly updates", unlocked: true },

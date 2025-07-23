@@ -420,20 +420,13 @@ export interface TeamEventParticipation {
 
 export interface Achievement {
   id: number
-  user_id: number
   title: string
   description: string
-  achievement_date: Date
-  achievement_type: "major" | "championship" | "recognition" | "tournament" | "personal" | "milestone" | "team"
-  icon_type: "trophy" | "medal" | "award" | "star" | "target" | "team"
-  is_featured: boolean
-  // Link to specific event result if achievement came from an event
-  linked_event_result_id?: number
-  // Link to team if it's a team achievement
-  linked_team_id?: number
-  created_at: Date
-  updated_at: Date
+  date: string
+  type: "gold" | "silver" | "bronze" | "tournament" | "ranking" | "special"
+  image?: string
 }
+
 
 // ============================================================================
 // MEDIA ATTACHMENT SYSTEM (files can be attached to multiple entities)
