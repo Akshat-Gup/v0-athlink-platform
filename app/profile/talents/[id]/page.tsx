@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/components/molecules/card"
-import { getTalentMockData } from "@/lib/mock-profile-data"
+import { getTalentProfile } from "@/lib/services/profile-service"
 import { ProfileTemplate } from "@/components/templates/profile-template"
 import { TalentHeaderAdapter, TalentSidebarAdapter } from "@/components/adapters/profile-adapters"
 import { MediaGallery } from "@/components/organisms"
@@ -18,6 +18,7 @@ import {
     PastResults
 } from "@/components/molecules"
 import { use } from "react"
+import { useEffect, useState } from "react"
 
 interface PageProps {
   params: Promise<{
@@ -27,8 +28,55 @@ interface PageProps {
 
 export default function TalentProfilePage({ params }: PageProps) {
   const { id } = use(params)
-  // Get event data from mock data
-  const talent = getTalentMockData(id)
+  const [talent, setTalent] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchTalent() {
+      try {
+        setLoading(true)
+        const data = await getTalentProfile(id)
+        if (data) {
+          setTalent(data)
+        } else {
+          setError('Talent not found')
+        }
+      } catch (err) {
+        console.error('Error fetching talent:', err)
+        setError('Failed to load talent profile')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTalent()
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+          <p className="mt-4 text-gray-600">Loading talent profile...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !talent) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Profile Not Found</h1>
+          <p className="text-gray-600">{error || 'This talent profile could not be found.'}</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Get talent data from database
+  // const talent = getTalentMockData(id) // Old mock data approach
 
   const renderOverviewTab = () => (
     <>

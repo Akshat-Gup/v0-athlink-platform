@@ -1,0 +1,425 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  Int               @id @default(autoincrement())
+  name                String
+  email               String            @unique
+  primary_sport       String
+  base_location_id    Int
+  country_code        String
+  country_flag        String
+  team_emoji          String
+  rating              Float
+  rating_source       String?
+  rating_last_updated DateTime?
+  bio                 String
+  profile_image_id    Int?
+  cover_image_id      Int?
+  category            String
+  talent_type_id      Int?
+  verification_status String            @default("UNVERIFIED")
+  years_experience    Int
+  is_active           Boolean           @default(true)
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @updatedAt
+  event_profile       EventProfile?
+  media_items         MediaItem[]
+  social_links        SocialLink[]
+  sponsors            SponsorRelation[] @relation("SponsoredUser")
+  sponsorships        SponsorRelation[] @relation("SponsorUser")
+  talent_profile      TalentProfile?
+  team_profile        TeamProfile?
+  user_tags           UserTag[]
+  cover_image         File?             @relation("CoverImage", fields: [cover_image_id], references: [id])
+  profile_image       File?             @relation("ProfileImage", fields: [profile_image_id], references: [id])
+  talent_type         TalentType?       @relation(fields: [talent_type_id], references: [id])
+  base_location       Location          @relation(fields: [base_location_id], references: [id])
+
+  @@map("users")
+}
+
+model TalentType {
+  id               Int      @id @default(autoincrement())
+  type_key         String   @unique
+  type_name        String
+  description      String
+  icon             String
+  color            String
+  requires_sports  Boolean  @default(true)
+  requires_leagues Boolean  @default(false)
+  is_active        Boolean  @default(true)
+  created_at       DateTime @default(now())
+  users            User[]
+
+  @@map("talent_types")
+}
+
+model Location {
+  id           Int            @id @default(autoincrement())
+  city         String
+  state        String?
+  country      String
+  country_code String
+  latitude     Float?
+  longitude    Float?
+  created_at   DateTime       @default(now())
+  events       EventProfile[]
+  users        User[]
+
+  @@unique([city, state, country])
+  @@map("locations")
+}
+
+model TalentProfile {
+  id                Int                 @id @default(autoincrement())
+  user_id           Int                 @unique
+  current_funding   Int?
+  goal_funding      Int?
+  price             String?
+  period            String?
+  achievements      String
+  fit_type          String
+  created_at        DateTime            @default(now())
+  updated_at        DateTime            @updatedAt
+  achievements_list TalentAchievement[]
+  checkpoints       TalentCheckpoint[]
+  competitions      TalentCompetition[]
+  performance_data  TalentPerformance[]
+  user              User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  stats             TalentStat[]
+
+  @@map("talent_profiles")
+}
+
+model TalentStat {
+  id                Int           @id @default(autoincrement())
+  talent_profile_id Int
+  label             String
+  value             String
+  icon              String
+  category          String        @default("GENERAL")
+  created_at        DateTime      @default(now())
+  talent_profile    TalentProfile @relation(fields: [talent_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("talent_stats")
+}
+
+model TalentAchievement {
+  id                Int           @id @default(autoincrement())
+  talent_profile_id Int
+  title             String
+  description       String
+  date              String
+  type              String
+  created_at        DateTime      @default(now())
+  talent_profile    TalentProfile @relation(fields: [talent_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("talent_achievements")
+}
+
+model TalentCompetition {
+  id                Int           @id @default(autoincrement())
+  talent_profile_id Int
+  tournament        String
+  date              String
+  result            String
+  location          String?
+  image_url         String?
+  year              Int
+  created_at        DateTime      @default(now())
+  talent_profile    TalentProfile @relation(fields: [talent_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("talent_competitions")
+}
+
+model TalentPerformance {
+  id                Int           @id @default(autoincrement())
+  talent_profile_id Int
+  month             String
+  ranking           Int
+  wins              Int
+  created_at        DateTime      @default(now())
+  talent_profile    TalentProfile @relation(fields: [talent_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("talent_performance")
+}
+
+model TalentCheckpoint {
+  id                Int           @id @default(autoincrement())
+  talent_profile_id Int
+  amount            Int
+  reward            String
+  unlocked          Boolean       @default(false)
+  created_at        DateTime      @default(now())
+  talent_profile    TalentProfile @relation(fields: [talent_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("talent_checkpoints")
+}
+
+model TeamProfile {
+  id               Int               @id @default(autoincrement())
+  user_id          Int               @unique
+  current_funding  Int?
+  goal_funding     Int?
+  league           String?
+  wins             Int               @default(0)
+  losses           Int               @default(0)
+  ranking          Int?
+  members          Int               @default(0)
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+  checkpoints      TeamCheckpoint[]
+  games            TeamGame[]
+  roster           TeamMember[]
+  performance_data TeamPerformance[]
+  user             User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  stats            TeamStat[]
+
+  @@map("team_profiles")
+}
+
+model TeamStat {
+  id              Int         @id @default(autoincrement())
+  team_profile_id Int
+  label           String
+  value           String
+  icon            String
+  category        String      @default("GENERAL")
+  created_at      DateTime    @default(now())
+  team_profile    TeamProfile @relation(fields: [team_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("team_stats")
+}
+
+model TeamMember {
+  id              Int         @id @default(autoincrement())
+  team_profile_id Int
+  name            String
+  position        String
+  number          Int
+  image_url       String?
+  stats           Json?
+  created_at      DateTime    @default(now())
+  team_profile    TeamProfile @relation(fields: [team_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("team_members")
+}
+
+model TeamGame {
+  id              Int         @id @default(autoincrement())
+  team_profile_id Int
+  opponent        String
+  date            String
+  location        String?
+  time            String?
+  result          String?
+  image_url       String?
+  is_upcoming     Boolean     @default(false)
+  created_at      DateTime    @default(now())
+  team_profile    TeamProfile @relation(fields: [team_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("team_games")
+}
+
+model TeamCheckpoint {
+  id              Int         @id @default(autoincrement())
+  team_profile_id Int
+  amount          Int
+  reward          String
+  unlocked        Boolean     @default(false)
+  created_at      DateTime    @default(now())
+  team_profile    TeamProfile @relation(fields: [team_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("team_checkpoints")
+}
+
+model TeamPerformance {
+  id              Int         @id @default(autoincrement())
+  team_profile_id Int
+  month           String
+  ranking         Int
+  wins            Int
+  created_at      DateTime    @default(now())
+  team_profile    TeamProfile @relation(fields: [team_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("team_performance")
+}
+
+model EventProfile {
+  id              Int                @id @default(autoincrement())
+  user_id         Int                @unique
+  location_id     Int
+  current_funding Int?
+  goal_funding    Int?
+  start_date      String
+  end_date        String
+  duration        String
+  venue           String
+  capacity        String
+  ticket_price    String?
+  organizer       String?
+  event_type      String
+  status          String             @default("upcoming")
+  created_at      DateTime           @default(now())
+  updated_at      DateTime           @updatedAt
+  checkpoints     EventCheckpoint[]
+  participants    EventParticipant[]
+  location        Location           @relation(fields: [location_id], references: [id])
+  user            User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  schedule        EventSchedule[]
+  stats           EventStat[]
+  ticket_sales    EventTicketSale[]
+
+  @@map("event_profiles")
+}
+
+model EventStat {
+  id               Int          @id @default(autoincrement())
+  event_profile_id Int
+  label            String
+  value            String
+  icon             String
+  category         String       @default("GENERAL")
+  created_at       DateTime     @default(now())
+  event_profile    EventProfile @relation(fields: [event_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("event_stats")
+}
+
+model EventParticipant {
+  id               Int          @id @default(autoincrement())
+  event_profile_id Int
+  name             String
+  description      String
+  image_url        String?
+  created_at       DateTime     @default(now())
+  event_profile    EventProfile @relation(fields: [event_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("event_participants")
+}
+
+model EventSchedule {
+  id               Int          @id @default(autoincrement())
+  event_profile_id Int
+  day              Int
+  date             String
+  events           Json
+  created_at       DateTime     @default(now())
+  event_profile    EventProfile @relation(fields: [event_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("event_schedule")
+}
+
+model EventCheckpoint {
+  id               Int          @id @default(autoincrement())
+  event_profile_id Int
+  amount           Int
+  reward           String
+  unlocked         Boolean      @default(false)
+  created_at       DateTime     @default(now())
+  event_profile    EventProfile @relation(fields: [event_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("event_checkpoints")
+}
+
+model EventTicketSale {
+  id               Int          @id @default(autoincrement())
+  event_profile_id Int
+  month            String
+  sold             Int
+  revenue          Int
+  created_at       DateTime     @default(now())
+  event_profile    EventProfile @relation(fields: [event_profile_id], references: [id], onDelete: Cascade)
+
+  @@map("event_ticket_sales")
+}
+
+model File {
+  id             Int         @id @default(autoincrement())
+  filename       String
+  original_name  String
+  mime_type      String
+  size           Int
+  url            String
+  created_at     DateTime    @default(now())
+  media_items    MediaItem[]
+  cover_images   User[]      @relation("CoverImage")
+  profile_images User[]      @relation("ProfileImage")
+
+  @@map("files")
+}
+
+model MediaItem {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  file_id    Int?
+  url        String
+  title      String
+  category   String
+  media_type String
+  platform   String?
+  created_at DateTime @default(now())
+  file       File?    @relation(fields: [file_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("media_items")
+}
+
+model SocialLink {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  platform   String
+  username   String
+  url        String?
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, platform])
+  @@map("social_links")
+}
+
+model SponsorRelation {
+  id           Int       @id @default(autoincrement())
+  sponsor_id   Int
+  sponsored_id Int
+  amount       Int?
+  tier         String?
+  status       String    @default("PENDING")
+  start_date   DateTime?
+  end_date     DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+  sponsored    User      @relation("SponsoredUser", fields: [sponsored_id], references: [id])
+  sponsor      User      @relation("SponsorUser", fields: [sponsor_id], references: [id])
+
+  @@unique([sponsor_id, sponsored_id])
+  @@map("sponsor_relations")
+}
+
+model Tag {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique
+  category   String?
+  created_at DateTime  @default(now())
+  user_tags  UserTag[]
+
+  @@map("tags")
+}
+
+model UserTag {
+  id      Int  @id @default(autoincrement())
+  user_id Int
+  tag_id  Int
+  tag     Tag  @relation(fields: [tag_id], references: [id], onDelete: Cascade)
+  user    User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, tag_id])
+  @@map("user_tags")
+}

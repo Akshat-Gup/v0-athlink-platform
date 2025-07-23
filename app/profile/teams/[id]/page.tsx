@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/components/molecules/card"
-import { getTeamMockData } from "@/lib/mock-profile-data"
+import { getTeamProfile } from "@/lib/services/profile-service"
 import { ProfileTemplate } from "@/components/templates/profile-template"
 import { TeamsHeaderAdapter, TeamsSidebarAdapter } from "@/components/adapters/profile-adapters"
 import { MediaGallery } from "@/components/organisms"
@@ -17,6 +17,7 @@ import {
     StatsSponsors
 } from "@/components/molecules"
 import { use } from "react"
+import { useEffect, useState } from "react"
 
 interface PageProps {
   params: Promise<{
@@ -26,8 +27,55 @@ interface PageProps {
 
 export default function TeamProfilePage({ params }: PageProps) {
   const { id } = use(params)
-  // Get team data from mock data
-  const team = getTeamMockData(id)
+  const [team, setTeam] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchTeam() {
+      try {
+        setLoading(true)
+        const data = await getTeamProfile(id)
+        if (data) {
+          setTeam(data)
+        } else {
+          setError('Team not found')
+        }
+      } catch (err) {
+        console.error('Error fetching team:', err)
+        setError('Failed to load team profile')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTeam()
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+          <p className="mt-4 text-gray-600">Loading team profile...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !team) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Profile Not Found</h1>
+          <p className="text-gray-600">{error || 'This team profile could not be found.'}</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Get team data from database
+  // const team = getTeamMockData(id) // Old mock data approach
 
   const renderOverviewTab = () => (
     <>
