@@ -11,16 +11,27 @@ interface Checkpoint {
 }
 
 interface SidebarSponsorshipProps {
-  currentFunding: number
-  goalFunding: number
-  checkpoints: Checkpoint[]
+  currentFunding?: number
+  goalFunding?: number
+  checkpoints?: Checkpoint[]
   renderProgressBar: (current: number, goal: number) => React.ReactNode
-  title: string
-  subtitle: string
+  title?: string
+  subtitle?: string
   submitButtonText?: string
 }
 
-export function SidebarSponsorship({ currentFunding, goalFunding, checkpoints, renderProgressBar, title, subtitle, submitButtonText = "Submit" }: SidebarSponsorshipProps) {
+export function SidebarSponsorship({ currentFunding = 0, goalFunding = 0, checkpoints = [], renderProgressBar, title = "Sponsorship", subtitle = "Milestones", submitButtonText = "Submit" }: SidebarSponsorshipProps) {
+  if (!checkpoints || checkpoints.length === 0) {
+    return (
+      <Card className="p-6 shadow-xl border-0">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-6 shadow-xl border-0">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -37,10 +48,10 @@ export function SidebarSponsorship({ currentFunding, goalFunding, checkpoints, r
             }`}
           >
             <div className="flex items-center justify-between mb-1">
-              <span className="font-medium text-sm">${checkpoint.amount.toLocaleString()}</span>
+              <span className="font-medium text-sm">${checkpoint.amount?.toLocaleString() || 0}</span>
               {checkpoint.unlocked && <Badge className="bg-green-500">Unlocked</Badge>}
             </div>
-            <p className="text-xs text-gray-600">{checkpoint.reward}</p>
+            <p className="text-xs text-gray-600">{checkpoint.reward || "No reward information"}</p>
           </div>
         ))}
       </div>
@@ -57,11 +68,24 @@ interface Socials {
 }
 
 interface SidebarSocialsProps {
-  socials: Socials
+  socials?: Socials
   title?: string
 }
 
-export function SidebarSocials({ socials, title = "Social Media" }: SidebarSocialsProps) {
+export function SidebarSocials({ socials = {}, title = "Social Media" }: SidebarSocialsProps) {
+  const hasSocials = socials && Object.values(socials).some(social => social);
+  
+  if (!hasSocials) {
+    return (
+      <Card className="p-6 shadow-lg">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-4 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-6 shadow-lg">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>

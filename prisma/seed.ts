@@ -532,17 +532,17 @@ async function main() {
             create: [
               {
                 name: 'Emma Wilson',
-                description: 'Freestyle\\nState Champion',
+                description: 'Freestyle\nState Champion',
                 image_url: 'https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=300&h=300&fit=crop',
               },
               {
                 name: 'Alex Rodriguez',
-                description: 'Butterfly\\nRegional Record Holder',
+                description: 'Butterfly\nRegional Record Holder',
                 image_url: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=300&h=300&fit=crop',
               },
               {
                 name: 'Sofia Martinez',
-                description: 'Backstroke\\nJunior National Champion',
+                description: 'Backstroke\nJunior National Champion',
                 image_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop',
               },
             ],

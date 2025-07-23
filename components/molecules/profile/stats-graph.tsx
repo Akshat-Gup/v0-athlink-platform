@@ -9,13 +9,24 @@ interface StatsGraphDataItem {
 }
 
 interface StatsGraphProps {
-  data: Array<StatsGraphDataItem>
-  title: string
-  dataKey: string
-  color: string
+  data?: Array<StatsGraphDataItem>
+  title?: string
+  dataKey?: string
+  color?: string
 }
 
-export function StatsGraph({ data, title, dataKey, color }: StatsGraphProps) {
+export function StatsGraph({ data = [], title = "Statistics", dataKey = "value", color = "#10b981" }: StatsGraphProps) {
+  if (!data || data.length === 0) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-16 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -32,11 +43,22 @@ export function StatsGraph({ data, title, dataKey, color }: StatsGraphProps) {
 }
 
 interface StatsLineGraphProps {
-  data: Array<{ month: string; ranking: number; }>
+  data?: Array<{ month: string; ranking: number; }>
   title?: string
 }
 
-export function StatsLineGraph({ data, title }: StatsLineGraphProps) {
+export function StatsLineGraph({ data = [], title = "Performance Trend" }: StatsLineGraphProps) {
+  if (!data || data.length === 0) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-16 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>

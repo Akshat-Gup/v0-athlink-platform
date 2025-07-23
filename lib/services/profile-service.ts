@@ -104,6 +104,24 @@ export async function getTalentProfile(id: string) {
         return acc
       }, {} as Record<string, any[]>),
       
+      // Upcoming competitions (temporary mock data - should be moved to database)
+      upcomingCompetitions: [
+        {
+          id: 1,
+          tournament: "Wimbledon Qualifier",
+          date: "August 2024",
+          location: "London, UK",
+          image: "https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=300&h=200&fit=crop",
+        },
+        {
+          id: 2,
+          tournament: "Olympic Trials",
+          date: "September 2024", 
+          location: "Paris, France",
+          image: "https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?w=300&h=200&fit=crop",
+        },
+      ],
+      
       // Performance data
       performanceData: user.talent_profile.performance_data.map(p => ({
         month: p.month,

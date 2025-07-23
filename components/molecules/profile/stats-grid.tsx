@@ -11,11 +11,22 @@ interface ScheduleItem {
 }
 
 interface StatsScheduleProps {
-  schedule: ScheduleItem[]
+  schedule?: ScheduleItem[]
   title?: string
 }
 
-export function StatsSchedule({ schedule, title }: StatsScheduleProps) {
+export function StatsSchedule({ schedule = [], title = "Schedule" }: StatsScheduleProps) {
+  if (!schedule || schedule.length === 0) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -25,12 +36,12 @@ export function StatsSchedule({ schedule, title }: StatsScheduleProps) {
             <div className="flex items-center gap-3 mb-3">
               <Clock className="h-5 w-5 text-green-500" />
               <h4 className="font-semibold text-md">
-                Day {item.day} <span className="text-gray-500 font-normal">({item.date})</span>
+                Day {item.day || "N/A"} <span className="text-gray-500 font-normal">({item.date || "No date"})</span>
               </h4>
             </div>
             <ul className="space-y-2 pl-8 list-disc text-gray-700">
-              {item.events.map((eventItem, index) => (
-                <li key={index}>{eventItem}</li>
+              {(item.events || []).map((eventItem, index) => (
+                <li key={index}>{eventItem || "No event details"}</li>
               ))}
             </ul>
           </div>
@@ -41,15 +52,26 @@ export function StatsSchedule({ schedule, title }: StatsScheduleProps) {
 }
 
 interface StatsGridProps {
-  stats: Array<{
+  stats?: Array<{
     label: string
     value: string
     icon: string
   }>
-  title: string
+  title?: string
 }
 
-export function StatsGrid({ stats, title }: StatsGridProps) {
+export function StatsGrid({ stats = [], title = "Statistics" }: StatsGridProps) {
+  if (!stats || stats.length === 0) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -59,9 +81,9 @@ export function StatsGrid({ stats, title }: StatsGridProps) {
             key={index}
             className="flex-shrink-0 bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 min-w-[120px] sm:min-w-[140px] text-center shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-200 cursor-pointer"
           >
-            <div className="text-xl sm:text-2xl mb-2 text-gray-600">{stat.icon}</div>
-            <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{stat.value}</div>
-            <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">{stat.label}</div>
+            <div className="text-xl sm:text-2xl mb-2 text-gray-600">{stat.icon || "📊"}</div>
+            <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">{stat.value || "N/A"}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wide font-medium">{stat.label || "No data"}</div>
           </div>
         ))}
       </div>
@@ -70,23 +92,34 @@ export function StatsGrid({ stats, title }: StatsGridProps) {
 }
 
 interface StatsListProps {
-  stats: Array<{
+  stats?: Array<{
     icon: LucideIcon | string
     text: string
     label?: string
     value?: string
   }>
-  title: string
+  title?: string
 }
 
-export function StatsList({ stats, title }: StatsListProps) {
+export function StatsList({ stats = [], title = "Stats" }: StatsListProps) {
+  if (!stats || !Array.isArray(stats) || stats.length === 0) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-6">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-6">{title}</h3>
       <div className="space-y-4">
         {stats.map((stat, index) => {
           // Handle different data formats
-          const displayText = stat.text || `${stat.value}` || `${stat.label}: ${stat.value}`
+          const displayText = stat.text || `${stat.value}` || `${stat.label}: ${stat.value}` || "No data available"
           const IconComponent = stat.icon as LucideIcon
           
           return (

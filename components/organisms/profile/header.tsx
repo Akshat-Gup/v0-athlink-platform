@@ -11,7 +11,7 @@ import { QrCode, Copy, Link as LinkIcon, Twitter, Instagram } from "lucide-react
 import { useState } from "react";
 
 interface EventHeaderProps {
-  event: {
+  event?: {
     id: number
     name: string
     location: string
@@ -25,10 +25,18 @@ interface EventHeaderProps {
       startDate: string
     }
   }
-  onShareClick: () => void
+  onShareClick?: () => void
 }
 
 export function EventHeader({ event, onShareClick }: EventHeaderProps) {
+  if (!event) {
+    return (
+      <div className="p-8 text-center text-gray-500">
+        <p>Event information unavailable</p>
+      </div>
+    )
+  }
+
   return (
     <>
       <Link href="/discover">
@@ -56,14 +64,14 @@ export function EventHeader({ event, onShareClick }: EventHeaderProps) {
             <div className="bg-white rounded-full shadow-xl border-2 sm:border-4 border-white flex items-center pr-2 sm:pr-3 lg:pr-4">
               <Image
                 src={event.image || "/placeholder.svg"}
-                alt={event.name}
+                alt={event.name || "Event"}
                 width={128}
                 height={128}
                 className="rounded-full object-cover w-16 h-16 sm:w-24 sm:h-24 lg:w-32 lg:h-32"
               />
               <div className="flex items-center gap-1 sm:gap-2 ml-2 sm:ml-3 lg:ml-4">
-                <span className="text-lg sm:text-xl lg:text-2xl">{event.country}</span>
-                <span className="text-lg sm:text-xl lg:text-2xl">{event.category}</span>
+                <span className="text-lg sm:text-xl lg:text-2xl">{event.country || "🌍"}</span>
+                <span className="text-lg sm:text-xl lg:text-2xl">{event.category || "📅"}</span>
               </div>
             </div>
           </div>
@@ -74,23 +82,23 @@ export function EventHeader({ event, onShareClick }: EventHeaderProps) {
         <div className="flex items-center">
           <div>
             <div className="flex items-center gap-2 sm:gap-3 mb-2">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{event.name}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{event.name || "Event Name Unavailable"}</h1>
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-gray-600">
               <div className="flex items-center">
                 <Star className="h-4 w-4 fill-current text-gray-900 mr-1" />
-                <span className="text-sm">{event.rating}</span>
+                <span className="text-sm">{event.rating || "N/A"}</span>
               </div>
               <div className="flex items-center">
                 <MapPin className="h-4 w-4 mr-1" />
-                <span className="text-sm">{event.location}</span>
+                <span className="text-sm">{event.location || "Location unavailable"}</span>
               </div>
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-1" />
-                <span className="text-sm">{event.eventDetails.startDate}</span>
+                <span className="text-sm">{event.eventDetails?.startDate || "Date unavailable"}</span>
               </div>
               <Badge variant="secondary" className="text-xs">
-                {event.status}
+                {event.status || "Status unavailable"}
               </Badge>
             </div>
           </div>

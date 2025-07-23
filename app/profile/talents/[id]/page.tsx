@@ -1,10 +1,9 @@
 "use client"
 
 import { Card } from "@/components/molecules/card"
-import { getTalentProfile } from "@/lib/services/profile-service"
 import { ProfileTemplate } from "@/components/templates/profile-template"
 import { TalentHeaderAdapter, TalentSidebarAdapter } from "@/components/adapters/profile-adapters"
-import { MediaGallery } from "@/components/organisms"
+import MediaGallery from "@/components/organisms/profile/media-gallery"
 import { 
     StatsList,
     StatsGrid,
@@ -36,14 +35,16 @@ export default function TalentProfilePage({ params }: PageProps) {
     async function fetchTalent() {
       try {
         setLoading(true)
-        const data = await getTalentProfile(id)
-        if (data) {
-          setTalent(data)
-        } else {
-          setError('Talent not found')
+        const response = await fetch(`/api/profile/talents/${id}`)
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
+        
+        const data = await response.json()
+        setTalent(data)
       } catch (err) {
-        console.error('Error fetching talent:', err)
+        console.error('Error fetching talent profile:', err)
         setError('Failed to load talent profile')
       } finally {
         setLoading(false)
@@ -85,23 +86,24 @@ export default function TalentProfilePage({ params }: PageProps) {
         <p className="text-gray-600 text-sm sm:text-base">{talent.bio}</p>
       </Card>
 
-      <StatsList stats={talent.talentDetailsData} title="Quick Facts" />
-      <StatsGrid stats={talent.demographics} title="Demographics" />
-      <StatsGrid stats={talent.performanceStats} title="Performance Stats" />
-      <StatsLineGraph title="Ranking Progress" data={talent.performanceData} />
-      <StatsGraph title="Monthly Wins" data={talent.performanceData} dataKey="wins" color="#10b981" />
-      <StatsProfile title="Team" participants={talent.teamList} emptyText="No team members found" />
+      {talent.demographics && <StatsGrid stats={talent.demographics} title="Demographics" />}
+      {talent.performanceStats && <StatsGrid stats={talent.performanceStats} title="Performance Stats" />}
+      {talent.performanceData && <StatsLineGraph title="Ranking Progress" data={talent.performanceData} />}
+      {talent.performanceData && <StatsGraph title="Monthly Wins" data={talent.performanceData} dataKey="wins" color="#10b981" />}
+      {talent.teamList && <StatsProfile title="Team" participants={talent.teamList} emptyText="No team members found" />}
     </>
   )
 
   const renderResultsTab = () => (
     <>
-    <AchievementsSection 
-      achievements={talent.achievementsList} 
-      title="Achievements" 
-    />
-    <UpcomingCompetitions competitions={talent.upcomingCompetitions} title="Upcoming Competitions" />
-    <PastResults results={talent.pastResults} title="Past Results" />
+    {talent.achievementsList && (
+      <AchievementsSection 
+        achievements={talent.achievementsList} 
+        title="Achievements" 
+      />
+    )}
+    {talent.upcomingCompetitions && <UpcomingCompetitions competitions={talent.upcomingCompetitions} title="Upcoming Competitions" />}
+    {talent.pastResults && <PastResults results={talent.pastResults} title="Past Results" />}
     </>
   )
 

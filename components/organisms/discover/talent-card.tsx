@@ -7,7 +7,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 interface TalentCardProps {
-  item: {
+  item?: {
     id: number
     name: string
     image: string
@@ -24,8 +24,8 @@ interface TalentCardProps {
   }
   showTalentType?: boolean
   onTalentTypeClick?: (talentType: string) => void
-  onFavoriteToggle: (id: number, e: React.MouseEvent) => void
-  isFavorite: boolean
+  onFavoriteToggle?: (id: number, e: React.MouseEvent) => void
+  isFavorite?: boolean
   animationDelay?: number
 }
 
@@ -34,9 +34,19 @@ export function TalentCard({
   showTalentType = true,
   onTalentTypeClick,
   onFavoriteToggle,
-  isFavorite,
+  isFavorite = false,
   animationDelay = 0
 }: TalentCardProps) {
+  if (!item) {
+    return (
+      <Card className="p-4 h-full">
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   const renderProgressBar = (current: number, goal: number) => {
     const percentage = (current / goal) * 100
     return (
@@ -58,7 +68,7 @@ export function TalentCard({
       <div className="relative mb-4 -mx-4 -mt-4">
         <Image
           src={item.image || "/placeholder.svg"}
-          alt={item.name}
+          alt={item.name || "Talent"}
           width={400}
           height={300}
           className="w-full h-48 object-cover rounded-t-lg"
@@ -69,17 +79,19 @@ export function TalentCard({
             onClick={(e) => {
               e.preventDefault()
               e.stopPropagation()
-              onTalentTypeClick?.(item.talentType.toLowerCase().replace(/\s+/g, "-"))
+              if (onTalentTypeClick && item.talentType) {
+                onTalentTypeClick(item.talentType.toLowerCase().replace(/\s+/g, "-"))
+              }
             }}
           >
-            {item.talentType}
+            {item.talentType || "Unknown Type"}
           </Badge>
         )}
         <Button
           size="icon"
           variant="ghost"
           className="absolute top-3 right-3 bg-white/80 hover:bg-white rounded-full h-8 w-8 transition-transform hover:scale-110"
-          onClick={(e) => onFavoriteToggle(item.id, e)}
+          onClick={(e) => onFavoriteToggle && onFavoriteToggle(item.id, e)}
         >
           <Heart
             className={`h-4 w-4 transition-all ${
@@ -89,19 +101,19 @@ export function TalentCard({
         </Button>
       </div>
       
-      <Link href={`/profile/${item.category}s/${item.id}`} className="flex flex-col flex-1">
+      <Link href={`/profile/${item.category || 'talent'}s/${item.id}`} className="flex flex-col flex-1">
         <CardContent className="p-0 px-4 flex flex-col flex-1">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-gray-900 truncate">{item.name}</h3>
+            <h3 className="font-semibold text-gray-900 truncate">{item.name || "Name unavailable"}</h3>
             <div className="flex items-center">
               <Star className="h-4 w-4 fill-current text-gray-900" />
-              <span className="text-sm text-gray-900 ml-1">{item.rating}</span>
+              <span className="text-sm text-gray-900 ml-1">{item.rating || "N/A"}</span>
             </div>
           </div>
           <p className="text-gray-600 text-sm mb-1">
-            {item.sport} in {item.location}
+            {item.sport || "Sport unavailable"} in {item.location || "Location unavailable"}
           </p>
-          <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements}</p>
+          <p className="text-gray-600 text-sm mb-3 flex-1">{item.achievements || "No achievements listed"}</p>
 
           <div className="mt-auto">
             {item.currentFunding && item.goalFunding ? (
@@ -113,7 +125,11 @@ export function TalentCard({
                 <span className="font-semibold text-gray-900">{item.price}</span>
                 <span className="text-gray-600 text-sm ml-1">{item.period}</span>
               </div>
-            ) : null}
+            ) : (
+              <div className="mb-4 text-gray-500 text-sm">
+                Pricing information unavailable
+              </div>
+            )}
 
             <Button variant="outline" size="sm" className="w-full bg-transparent">
               View Profile

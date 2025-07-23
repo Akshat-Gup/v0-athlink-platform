@@ -1,7 +1,6 @@
 "use client"
 
 import { Card } from "@/components/molecules/card"
-import { getTeamProfile } from "@/lib/services/profile-service"
 import { ProfileTemplate } from "@/components/templates/profile-template"
 import { TeamsHeaderAdapter, TeamsSidebarAdapter } from "@/components/adapters/profile-adapters"
 import { MediaGallery } from "@/components/organisms"
@@ -35,14 +34,16 @@ export default function TeamProfilePage({ params }: PageProps) {
     async function fetchTeam() {
       try {
         setLoading(true)
-        const data = await getTeamProfile(id)
-        if (data) {
-          setTeam(data)
-        } else {
-          setError('Team not found')
+        const response = await fetch(`/api/profile/teams/${id}`)
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
+        
+        const data = await response.json()
+        setTeam(data)
       } catch (err) {
-        console.error('Error fetching team:', err)
+        console.error('Error fetching team profile:', err)
         setError('Failed to load team profile')
       } finally {
         setLoading(false)
@@ -84,20 +85,20 @@ export default function TeamProfilePage({ params }: PageProps) {
         <p className="text-gray-600 text-sm sm:text-base">{team.bio}</p>
       </Card>
 
-      <StatsGrid stats={team.teamStats} title="Team Information" />
-      <StatsGrid stats={team.performanceStats} title="Performance Stats" />
-      <StatsLineGraph title="Season Performance" data={team.performanceData} />
-      <UpcomingGames games={team.upcomingGames} title="Upcoming Games" />
-      <StatsSponsors title="Current Sponsors" sponsors={team.sponsors} />
+      {team.teamStats && <StatsGrid stats={team.teamStats} title="Team Information" />}
+      {team.performanceStats && <StatsGrid stats={team.performanceStats} title="Performance Stats" />}
+      {team.performanceData && <StatsLineGraph title="Season Performance" data={team.performanceData} />}
+      {team.upcomingGames && <UpcomingGames games={team.upcomingGames} title="Upcoming Games" />}
+      {team.sponsors && <StatsSponsors title="Current Sponsors" sponsors={team.sponsors} />}
     </>
   )
 
   const renderRosterTab = () => (
-    <TeamRoster roster={team.roster} title="Team Roster" />
+    team.roster ? <TeamRoster roster={team.roster} title="Team Roster" /> : <div>No roster available</div>
   )
 
   const renderResultsTab = () => (
-    <RecentResults results={team.recentResults} title="Recent Results" />
+    team.recentResults ? <RecentResults results={team.recentResults} title="Recent Results" /> : <div>No results available</div>
   )
 
   const tabs = [

@@ -1,10 +1,9 @@
 "use client"
 
 import { Card } from "@/components/molecules/card"
-import { getEventProfile } from "@/lib/services/profile-service"
 import { ProfileTemplate } from "@/components/templates/profile-template"
 import { EventHeaderAdapter, EventSidebarAdapter } from "@/components/adapters/profile-adapters"
-import { MediaGallery } from "@/components/organisms"
+import MediaGallery from "@/components/organisms/profile/media-gallery"
 import { 
     StatsList,
     StatsGraph,
@@ -31,14 +30,16 @@ export default function EventProfilePage({ params }: PageProps) {
     async function fetchEvent() {
       try {
         setLoading(true)
-        const data = await getEventProfile(id)
-        if (data) {
-          setEvent(data)
-        } else {
-          setError('Event not found')
+        const response = await fetch(`/api/profile/events/${id}`)
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
         }
+        
+        const data = await response.json()
+        setEvent(data)
       } catch (err) {
-        console.error('Error fetching event:', err)
+        console.error('Error fetching event profile:', err)
         setError('Failed to load event profile')
       } finally {
         setLoading(false)
@@ -80,16 +81,16 @@ export default function EventProfilePage({ params }: PageProps) {
         <p className="text-gray-600 text-sm sm:text-base">{event.bio}</p>
       </Card>
       
-      <StatsList stats={event.eventDetailsData} title="Event Details" />
-      <StatsList stats={event.sponsorshipImpactData} title="Sponsorship Impact" />
-      <StatsProfile title="Featured Participants" participants={event.featuredParticipants} />
-      <StatsGraph title="Ticket Sales Progress" data={event.ticketSales} dataKey="sold" color="#22c55e" />
-      <StatsSponsors title="Current Sponsors" sponsors={event.sponsors} />
+      {event.eventStats && <StatsList stats={event.eventStats} title="Event Details" />}
+      {event.sponsorshipStats && <StatsList stats={event.sponsorshipStats} title="Sponsorship Impact" />}
+      {event.featuredParticipants && <StatsProfile title="Featured Participants" participants={event.featuredParticipants} />}
+      {event.ticketSales && <StatsGraph title="Ticket Sales Progress" data={event.ticketSales} dataKey="sold" color="#22c55e" />}
+      {event.sponsors && <StatsSponsors title="Current Sponsors" sponsors={event.sponsors} />}
     </>
   )
 
   const renderScheduleTab = () => (
-    <StatsSchedule title="Event Schedule" schedule={event.schedule} />
+    event.schedule ? <StatsSchedule title="Event Schedule" schedule={event.schedule} /> : <div>No schedule available</div>
   )
 
   const tabs = [

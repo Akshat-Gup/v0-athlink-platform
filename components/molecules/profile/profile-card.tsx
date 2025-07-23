@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/molecules"
 import { Achievement } from "@/lib/database-schemas";
 
 interface AchievementsSectionProps {
-  achievements: {
+  achievements?: {
     id: number
     title: string
     description: string
@@ -14,10 +14,12 @@ interface AchievementsSectionProps {
     type: "gold" | "silver" | "bronze" | "tournament" | "ranking" | "special"
     image?: string
   }[]
-  title: string
+  title?: string
 }
 
-const getAchievementIcon = (type: AchievementsSectionProps["achievements"][number]["type"]) => {
+type AchievementType = "gold" | "silver" | "bronze" | "tournament" | "ranking" | "special";
+
+const getAchievementIcon = (type: AchievementType) => {
   switch (type) {
     case "gold":
       return <Trophy className="h-5 w-5 text-yellow-500" />
@@ -36,7 +38,7 @@ const getAchievementIcon = (type: AchievementsSectionProps["achievements"][numbe
   }
 }
 
-const getAchievementBadgeColor = (type: Achievement["type"]) => {
+const getAchievementBadgeColor = (type: AchievementType) => {
   switch (type) {
     case "gold":
       return "bg-yellow-100 text-yellow-800 border-yellow-200"
@@ -55,7 +57,18 @@ const getAchievementBadgeColor = (type: Achievement["type"]) => {
   }
 }
 
-export function AchievementsSection({ achievements, title }: AchievementsSectionProps) {
+export function AchievementsSection({ achievements = [], title = "Achievements" }: AchievementsSectionProps) {
+  if (!achievements || achievements.length === 0) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -72,10 +85,10 @@ export function AchievementsSection({ achievements, title }: AchievementsSection
                   {achievement.type.charAt(0).toUpperCase() + achievement.type.slice(1)}
                 </Badge>
               </div>
-              <span className="text-xs text-gray-500">{achievement.date}</span>
+              <span className="text-xs text-gray-500">{achievement.date || "No date"}</span>
             </div>
-            <h4 className="font-semibold text-gray-900 mb-2">{achievement.title}</h4>
-            <p className="text-sm text-gray-600">{achievement.description}</p>
+            <h4 className="font-semibold text-gray-900 mb-2">{achievement.title || "No title"}</h4>
+            <p className="text-sm text-gray-600">{achievement.description || "No description"}</p>
           </div>
         ))}
       </div>
@@ -100,16 +113,27 @@ interface PastResult {
 }
 
 interface UpcomingCompetitionsProps {
-  competitions: Competition[];
-  title: string;
+  competitions?: Competition[];
+  title?: string;
 }
 
 interface PastResultsProps {
-  results: Record<string, PastResult[]>;
-  title: string;
+  results?: Record<string, PastResult[]>;
+  title?: string;
 }
 
-export function UpcomingCompetitions({ competitions, title }: UpcomingCompetitionsProps) {
+export function UpcomingCompetitions({ competitions = [], title = "Upcoming Competitions" }: UpcomingCompetitionsProps) {
+  if (!competitions || competitions.length === 0) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -118,14 +142,14 @@ export function UpcomingCompetitions({ competitions, title }: UpcomingCompetitio
           <Card key={comp.id} className="p-4">
             <Image
               src={comp.image || "/placeholder.svg"}
-              alt={comp.tournament}
+              alt={comp.tournament || "Tournament"}
               width={300}
               height={200}
               className="w-full h-32 object-cover rounded-lg mb-3"
             />
-            <h4 className="font-semibold">{comp.tournament}</h4>
-            <p className="text-sm text-gray-600">{comp.date}</p>
-            <p className="text-sm text-gray-600">{comp.location}</p>
+            <h4 className="font-semibold">{comp.tournament || "No tournament name"}</h4>
+            <p className="text-sm text-gray-600">{comp.date || "No date"}</p>
+            <p className="text-sm text-gray-600">{comp.location || "No location"}</p>
           </Card>
         ))}
       </div>
@@ -133,7 +157,20 @@ export function UpcomingCompetitions({ competitions, title }: UpcomingCompetitio
   );
 }
 
-export function PastResults({ results, title }: PastResultsProps) {
+export function PastResults({ results = {}, title = "Past Results" }: PastResultsProps) {
+  const hasResults = results && Object.keys(results).length > 0 && Object.values(results).some(yearResults => yearResults.length > 0);
+  
+  if (!hasResults) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -148,13 +185,13 @@ export function PastResults({ results, title }: PastResultsProps) {
                   <div key={result.id} className="p-4 border rounded-xl bg-white flex flex-col relative">
                     <Image
                       src={result.image || "/placeholder.svg"}
-                      alt={result.tournament}
+                      alt={result.tournament || "Tournament"}
                       width={300}
                       height={200}
                       className="w-full h-32 object-cover rounded-lg mb-3"
                     />
-                    <h4 className="font-semibold pr-12">{result.tournament}</h4>
-                    <p className="text-sm text-gray-600">{result.date}</p>
+                    <h4 className="font-semibold pr-12">{result.tournament || "No tournament name"}</h4>
+                    <p className="text-sm text-gray-600">{result.date || "No date"}</p>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center cursor-pointer transition-colors">
@@ -162,7 +199,7 @@ export function PastResults({ results, title }: PastResultsProps) {
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>{result.result}</p>
+                        <p>{result.result || "No result information"}</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
@@ -186,11 +223,22 @@ interface Game {
 }
 
 interface UpcomingGamesProps {
-  games: Game[];
-  title: string;
+  games?: Game[];
+  title?: string;
 }
 
-export function UpcomingGames({ games, title }: UpcomingGamesProps) {
+export function UpcomingGames({ games = [], title = "Upcoming Games" }: UpcomingGamesProps) {
+  if (!games || games.length === 0) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -199,15 +247,15 @@ export function UpcomingGames({ games, title }: UpcomingGamesProps) {
           <Card key={game.id} className="p-4">
             <Image
               src={game.image || "/placeholder.svg"}
-              alt={game.opponent}
+              alt={game.opponent || "Opponent"}
               width={300}
               height={200}
               className="w-full h-32 object-cover rounded-lg mb-3"
             />
-            <h4 className="font-semibold">vs {game.opponent}</h4>
-            <p className="text-sm text-gray-600">{game.date}</p>
-            <p className="text-sm text-gray-600">{game.location}</p>
-            <p className="text-sm text-gray-600">{game.time}</p>
+            <h4 className="font-semibold">vs {game.opponent || "Unknown opponent"}</h4>
+            <p className="text-sm text-gray-600">{game.date || "No date"}</p>
+            <p className="text-sm text-gray-600">{game.location || "No location"}</p>
+            <p className="text-sm text-gray-600">{game.time || "No time"}</p>
           </Card>
         ))}
       </div>
@@ -225,11 +273,22 @@ interface RecentResult {
 }
 
 interface RecentResultsProps {
-  results: RecentResult[];
-  title: string;
+  results?: RecentResult[];
+  title?: string;
 }
 
-export function RecentResults({ results, title }: RecentResultsProps) {
+export function RecentResults({ results = [], title = "Recent Results" }: RecentResultsProps) {
+  if (!results || results.length === 0) {
+    return (
+      <Card className="p-4 sm:p-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p>Information unavailable</p>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-4 sm:p-6">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -238,17 +297,17 @@ export function RecentResults({ results, title }: RecentResultsProps) {
           <div key={result.id} className="flex items-center gap-4 p-4 border rounded-xl">
             <Image
               src={result.image || "/placeholder.svg"}
-              alt={result.opponent}
+              alt={result.opponent || "Opponent"}
               width={80}
               height={60}
               className="w-20 h-15 object-cover rounded-lg"
             />
             <div className="flex-1">
-              <h4 className="font-semibold">vs {result.opponent}</h4>
-              <p className="text-sm text-gray-600">{result.date}</p>
-              <p className="text-sm text-gray-600">{result.location}</p>
+              <h4 className="font-semibold">vs {result.opponent || "Unknown opponent"}</h4>
+              <p className="text-sm text-gray-600">{result.date || "No date"}</p>
+              <p className="text-sm text-gray-600">{result.location || "No location"}</p>
             </div>
-            <Badge className="bg-green-500">{result.result}</Badge>
+            <Badge className="bg-green-500">{result.result || "No result"}</Badge>
           </div>
         ))}
       </div>
