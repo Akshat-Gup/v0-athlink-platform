@@ -2,6 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/atoms/button"
 import { cn } from "@/lib/utils"
+import { LandingSignIn } from "@/components/atoms"
 
 interface NavigationProps {
   activeTab: "landing" | "pricing"
@@ -51,9 +52,7 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
         </nav>
 
         <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 px-2 py-2 backdrop-blur">
-          <Button variant="ghost" className="rounded-full text-gray-600">
-            Sign In
-          </Button>
+          <LandingSignIn />
           <Button className="rounded-full bg-gray-900 text-white hover:bg-gray-800">Get Started</Button>
         </div>
       </div>

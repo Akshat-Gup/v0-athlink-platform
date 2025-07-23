@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/organisms/sheet"
 import { Heart, Menu, User, CalendarIcon, Trophy, Building, Users, Search, X } from "lucide-react"
 import { TalentItem } from "@/hooks/use-discover-data"
+import { DiscoverSignIn, MobileSignIn} from "@/components/atoms"
 
 interface DiscoverHeaderProps {
   showFavorites: boolean
@@ -136,12 +137,7 @@ export function DiscoverHeader({
                   {showSearchOverlay ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
                 </Button>
               )}
-              <Button
-                variant="ghost"
-                className="text-sm font-medium px-4 text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg shadow-green-500/25 animate-shimmer"
-              >
-                Sign In
-              </Button>
+              <DiscoverSignIn />
               <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
                 <DialogTrigger asChild>
                   <Button
@@ -256,12 +252,7 @@ export function DiscoverHeader({
                       {showSearchOverlay ? "Close Search" : "Search"}
                     </Button>
                   )}
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg shadow-green-500/25 animate-shimmer"
-                  >
-                    Sign In
-                  </Button>
+                  <MobileSignIn />
                   <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
                     <DialogTrigger asChild>
                       <Button
