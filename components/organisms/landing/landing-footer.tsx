@@ -11,7 +11,14 @@ export function LandingFooter({ onTabChange }: LandingFooterProps) {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="mb-6 flex items-center">
-            <Image src="/athlink-logo.png" alt="Athlink" width={24} height={24} className="mr-3" />
+            <Image
+              src="/athlink-logo.png"
+              alt="Athlink"
+              width={24}
+              height={24}
+              className="mr-3"
+              style={{ width: "auto", height: "auto" }}
+            />
             <span className="text-xl font-bold text-gray-900">Athlink</span>
           </div>
           <p className="text-gray-600">Connecting talents with ideal sponsors for mutual success.</p>

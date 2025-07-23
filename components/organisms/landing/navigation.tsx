@@ -17,7 +17,13 @@ export function Navigation({ activeTab, onTabChange }: NavigationProps) {
           href="/discover"
           className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-white/80 p-2 backdrop-blur"
         >
-          <Image src="/athlink-logo.png" alt="Athlink" width={20} height={20} />
+          <Image
+            src="/athlink-logo.png"
+            alt="Athlink"
+            width={20}
+            height={20}
+            style={{ width: "auto", height: "auto" }}
+          />
         </Link>
 
         <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center space-x-2 rounded-full border border-gray-200 bg-white/80 px-3 py-2 backdrop-blur md:flex">

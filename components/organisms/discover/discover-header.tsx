@@ -48,7 +48,7 @@ export function DiscoverHeader({
           {/* Logo Island */}
           <div className="bg-white rounded-full shadow-lg border border-gray-200 p-2 h-12 w-12 flex items-center justify-center">
             <Link href="/landing">
-              <Image src="/athlink-logo.png" alt="Athlink" width={20} height={20} />
+              <Image src="/athlink-logo.png" alt="Athlink" width={20} height={20} style={{ width: "auto", height: "auto" }} />
             </Link>
           </div>
 
