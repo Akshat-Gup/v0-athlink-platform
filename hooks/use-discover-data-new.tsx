@@ -196,9 +196,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     })
   }
 
-  const shouldShowSection = (fit: string): boolean => {
-    const sectionItems = getItemsByFit(fit)
-    
+  const shouldShowSection = (sectionItems: TalentItem[]): boolean => {
     if (filters.searchMode === "search" && filters.searchQuery) {
       return sectionItems.length > 0
     }

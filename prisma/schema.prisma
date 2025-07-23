@@ -1,0 +1,787 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Core User Profile
+model User {
+  id                   Int      @id @default(autoincrement())
+  name                 String
+  email                String   @unique
+  primary_sport        String
+  base_location_id     Int
+  country_code         String
+  country_flag         String
+  team_emoji           String
+  rating               Float
+  rating_source        String?
+  rating_last_updated  DateTime?
+  bio                  String
+  profile_image_id     Int?
+  cover_image_id       Int?
+  category             String   // talent, coach, facility, organization
+  talent_type_id       Int?
+  verification_status  String   // verified, pending, unverified
+  years_experience     Int
+  is_active            Boolean  @default(true)
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  // Relations
+  base_location        Location @relation(fields: [base_location_id], references: [id])
+  talent_type          TalentType? @relation(fields: [talent_type_id], references: [id])
+  profile_image        UploadedFile? @relation("ProfileImage", fields: [profile_image_id], references: [id])
+  cover_image          UploadedFile? @relation("CoverImage", fields: [cover_image_id], references: [id])
+  
+  // User relationships
+  sports               UserSport[]
+  leagues              UserLeague[]
+  ratings              UserRating[]
+  fields               UserFieldValue[]
+  social_media         UserSocialMedia[]
+  achievements         Achievement[]
+  event_participations EventParticipant[]
+  team_memberships     TeamMembership[]
+  team_tags            TeamTalentTag[]
+  campaigns            Campaign[]
+  notifications        Notification[]
+  performance_history  UserPerformanceHistory[]
+  custom_fields        CustomFieldValue[]
+  
+  // Owned entities
+  owned_teams          Team[]
+  organized_events     Event[]
+  uploaded_files       UploadedFile[]
+  media_items          MediaItem[]
+
+  @@map("users")
+}
+
+// Location System
+model Location {
+  id                 Int      @id @default(autoincrement())
+  place_id           String?
+  name               String
+  formatted_address  String
+  city               String
+  state_province     String?
+  country            String
+  country_code       String
+  postal_code        String?
+  latitude           Float
+  longitude          Float
+  timezone           String?
+  location_type      String   // city, venue, facility, region, custom
+  external_data      String?  // JSON
+  is_verified        Boolean  @default(false)
+  last_verified      DateTime
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  // Relations
+  users              User[]
+  teams              Team[]
+  events             Event[]
+  campaigns          Campaign[]
+
+  @@map("locations")
+}
+
+// Talent Types
+model TalentType {
+  id           Int    @id @default(autoincrement())
+  type_key     String @unique
+  type_name    String
+  description  String?
+  icon         String
+  is_active    Boolean @default(true)
+  created_at   DateTime @default(now())
+
+  // Relations
+  users        User[]
+
+  @@map("talent_types")
+}
+
+// Sports System
+model Sport {
+  id                 Int     @id @default(autoincrement())
+  sport_key          String  @unique
+  sport_name         String
+  description        String?
+  icon               String
+  is_team_sport      Boolean
+  is_individual_sport Boolean
+  is_active          Boolean @default(true)
+  created_at         DateTime @default(now())
+
+  // Relations
+  leagues            League[]
+  user_sports        UserSport[]
+  teams              Team[]
+  events             Event[]
+  
+  @@map("sports")
+}
+
+model League {
+  id           Int      @id @default(autoincrement())
+  league_key   String   @unique
+  league_name  String
+  sport_id     Int
+  description  String?
+  logo_file_id Int?
+  website_url  String?
+  country_code String?
+  level        String   // professional, amateur, youth, college, international
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+
+  // Relations
+  sport        Sport @relation(fields: [sport_id], references: [id])
+  logo_file    UploadedFile? @relation(fields: [logo_file_id], references: [id])
+  user_leagues UserLeague[]
+  teams        Team[]
+  events       Event[]
+
+  @@map("leagues")
+}
+
+// User-Sport junction
+model UserSport {
+  id               Int      @id @default(autoincrement())
+  user_id          Int
+  sport_id         Int
+  skill_level      String   // beginner, intermediate, advanced, professional, elite
+  years_experience Int
+  is_primary       Boolean  @default(false)
+  current_rating   Float?
+  rating_source    String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  // Relations
+  user             User @relation(fields: [user_id], references: [id])
+  sport            Sport @relation(fields: [sport_id], references: [id])
+
+  @@unique([user_id, sport_id])
+  @@map("user_sports")
+}
+
+// User-League junction
+model UserLeague {
+  id                   Int      @id @default(autoincrement())
+  user_id              Int
+  league_id            Int
+  participation_status String   // active, former, aspiring, qualified
+  start_date           DateTime?
+  end_date             DateTime?
+  current_ranking      Int?
+  best_ranking         Int?
+  total_earnings       Float?
+  notes                String?
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  // Relations
+  user                 User @relation(fields: [user_id], references: [id])
+  league               League @relation(fields: [league_id], references: [id])
+
+  @@unique([user_id, league_id])
+  @@map("user_leagues")
+}
+
+// File Upload System
+model UploadedFile {
+  id           Int      @id @default(autoincrement())
+  filename     String
+  original_name String
+  mime_type    String
+  file_size    Int
+  file_path    String
+  uploaded_by  Int
+  is_public    Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  // Relations
+  uploader     User @relation(fields: [uploaded_by], references: [id])
+  
+  // Files can be used as profile images, cover images, logos, etc.
+  profile_users User[] @relation("ProfileImage")
+  cover_users   User[] @relation("CoverImage")
+  league_logos  League[]
+  team_logos    Team[] @relation("TeamLogo")
+  team_covers   Team[] @relation("TeamCover")
+  event_images  Event[]
+  media_items   MediaItem[]
+  campaign_images Campaign[]
+
+  @@map("uploaded_files")
+}
+
+// Teams System
+model Team {
+  id               Int      @id @default(autoincrement())
+  name             String
+  description      String?
+  team_type        String   // professional, club, academy, national, college, recreational
+  sport_id         Int
+  league_id        Int?
+  location_id      Int
+  logo_file_id     Int?
+  cover_image_id   Int?
+  website_url      String?
+  founded_date     DateTime?
+  owner_user_id    Int?
+  is_recruiting    Boolean  @default(false)
+  max_members      Int?
+  venue_name       String?
+  venue_address    String?
+  is_active        Boolean  @default(true)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  // Relations
+  sport            Sport @relation(fields: [sport_id], references: [id])
+  league           League? @relation(fields: [league_id], references: [id])
+  location         Location @relation(fields: [location_id], references: [id])
+  logo_file        UploadedFile? @relation("TeamLogo", fields: [logo_file_id], references: [id])
+  cover_image      UploadedFile? @relation("TeamCover", fields: [cover_image_id], references: [id])
+  owner            User? @relation(fields: [owner_user_id], references: [id])
+  
+  // Team relationships
+  memberships      TeamMembership[]
+  talent_tags      TeamTalentTag[]
+  event_participations TeamEventParticipation[]
+  achievements     Achievement[]
+  campaigns        Campaign[]
+
+  @@map("teams")
+}
+
+// Team Membership
+model TeamMembership {
+  id                  Int      @id @default(autoincrement())
+  team_id             Int
+  user_id             Int
+  role                String   // player, captain, coach, manager, staff, scout
+  membership_status   String   // active, inactive, pending, invited, declined, alumni
+  start_date          DateTime
+  end_date            DateTime?
+  jersey_number       String?
+  position            String?
+  is_starter          Boolean  @default(false)
+  invited_by_user_id  Int?
+  notes               String?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  // Relations
+  team                Team @relation(fields: [team_id], references: [id])
+  user                User @relation(fields: [user_id], references: [id])
+
+  @@unique([team_id, user_id])
+  @@map("team_memberships")
+}
+
+// Team Talent Tags (for recruitment)
+model TeamTalentTag {
+  id          Int      @id @default(autoincrement())
+  team_id     Int
+  talent_id   Int
+  tagged_by   Int
+  fit_type_id Int?
+  notes       String?
+  created_at  DateTime @default(now())
+
+  // Relations
+  team        Team @relation(fields: [team_id], references: [id])
+  talent      User @relation(fields: [talent_id], references: [id])
+
+  @@unique([team_id, talent_id])
+  @@map("team_talent_tags")
+}
+
+// Events System
+model EventType {
+  id           Int     @id @default(autoincrement())
+  type_key     String  @unique
+  type_name    String
+  description  String?
+  icon         String
+  is_active    Boolean @default(true)
+  created_at   DateTime @default(now())
+
+  // Relations
+  events       Event[]
+
+  @@map("event_types")
+}
+
+model Event {
+  id                    Int      @id @default(autoincrement())
+  name                  String
+  description           String?
+  event_type_id         Int
+  location_id           Int
+  start_date            DateTime
+  end_date              DateTime?
+  registration_deadline DateTime?
+  sport_id              Int
+  league_id             Int?
+  level                 String   // professional, amateur, youth, college, international, recreational
+  organizer_user_id     Int?
+  organizer_name        String?
+  max_participants      Int?
+  registration_fee      Float?
+  prize_pool            Float?
+  website_url           String?
+  featured_image_id     Int?
+  venue_name            String?
+  venue_address         String?
+  status                String   // draft, published, registration_open, registration_closed, in_progress, completed, cancelled
+  is_featured           Boolean  @default(false)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  // Relations
+  event_type            EventType @relation(fields: [event_type_id], references: [id])
+  location              Location @relation(fields: [location_id], references: [id])
+  sport                 Sport @relation(fields: [sport_id], references: [id])
+  league                League? @relation(fields: [league_id], references: [id])
+  organizer             User? @relation(fields: [organizer_user_id], references: [id])
+  featured_image        UploadedFile? @relation(fields: [featured_image_id], references: [id])
+  
+  // Event relationships
+  participants          EventParticipant[]
+  team_participations   TeamEventParticipation[]
+  results               EventResult[]
+  achievements          Achievement[]
+  campaigns             Campaign[]
+
+  @@map("events")
+}
+
+// Event Participation
+model EventParticipant {
+  id                    Int      @id @default(autoincrement())
+  event_id              Int
+  user_id               Int
+  team_id               Int?
+  registration_date     DateTime @default(now())
+  participation_status  String   // registered, confirmed, withdrew, no_show, completed
+  registration_fee_paid Boolean  @default(false)
+  notes                 String?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  // Relations
+  event                 Event @relation(fields: [event_id], references: [id])
+  user                  User @relation(fields: [user_id], references: [id])
+  result                EventResult?
+
+  @@unique([event_id, user_id])
+  @@map("event_participants")
+}
+
+// Team Event Participation
+model TeamEventParticipation {
+  id                    Int      @id @default(autoincrement())
+  event_id              Int
+  team_id               Int
+  registered_by_user_id Int
+  registration_date     DateTime @default(now())
+  participation_status  String   // registered, confirmed, withdrew, no_show, completed
+  registration_fee_paid Boolean  @default(false)
+  notes                 String?
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  // Relations
+  event                 Event @relation(fields: [event_id], references: [id])
+  team                  Team @relation(fields: [team_id], references: [id])
+
+  @@unique([event_id, team_id])
+  @@map("team_event_participations")
+}
+
+// Event Results
+model EventResult {
+  id                Int      @id @default(autoincrement())
+  event_id          Int
+  participant_id    Int      @unique
+  position          Int?
+  score             Float?
+  time_result       String?
+  points            Int?
+  prize_money       Float?
+  notes             String?
+  is_verified       Boolean  @default(false)
+  verified_by       Int?
+  verified_at       DateTime?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  event             Event @relation(fields: [event_id], references: [id])
+  participant       EventParticipant @relation(fields: [participant_id], references: [id])
+  
+  // Result stats
+  stats             EventResultStat[]
+  achievements      Achievement[]
+
+  @@map("event_results")
+}
+
+// Event Result Stats
+model EventStatField {
+  id           Int     @id @default(autoincrement())
+  field_key    String  @unique
+  field_name   String
+  field_type   String  // number, time, percentage, text
+  field_unit   String?
+  is_active    Boolean @default(true)
+  created_at   DateTime @default(now())
+
+  // Relations
+  stats        EventResultStat[]
+
+  @@map("event_stat_fields")
+}
+
+model EventResultStat {
+  id              Int      @id @default(autoincrement())
+  result_id       Int
+  field_id        Int
+  stat_value      String
+  created_at      DateTime @default(now())
+
+  // Relations
+  result          EventResult @relation(fields: [result_id], references: [id])
+  field           EventStatField @relation(fields: [field_id], references: [id])
+
+  @@unique([result_id, field_id])
+  @@map("event_result_stats")
+}
+
+// Achievements System
+model Achievement {
+  id                     Int      @id @default(autoincrement())
+  user_id                Int?
+  team_id                Int?
+  event_id               Int?
+  title                  String
+  description            String?
+  achievement_date       DateTime
+  achievement_type       String   // competition, milestone, recognition, award
+  linked_event_result_id Int?
+  is_verified            Boolean  @default(false)
+  verified_by            Int?
+  verified_at            DateTime?
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+
+  // Relations
+  user                   User? @relation(fields: [user_id], references: [id])
+  team                   Team? @relation(fields: [team_id], references: [id])
+  event                  Event? @relation(fields: [event_id], references: [id])
+  linked_event_result    EventResult? @relation(fields: [linked_event_result_id], references: [id])
+
+  @@map("achievements")
+}
+
+// Rating System
+model RatingProvider {
+  id               Int     @id @default(autoincrement())
+  provider_key     String  @unique
+  provider_name    String
+  sport_id         Int?
+  api_endpoint     String?
+  api_key_required Boolean @default(false)
+  update_frequency String  // real_time, daily, weekly, monthly
+  is_active        Boolean @default(true)
+  created_at       DateTime @default(now())
+
+  // Relations
+  user_ratings     UserRating[]
+
+  @@map("rating_providers")
+}
+
+model UserRating {
+  id                   Int      @id @default(autoincrement())
+  user_id              Int
+  rating_provider_id   Int
+  current_rating       Float
+  previous_rating      Float?
+  best_rating          Float?
+  rating_date          DateTime
+  external_player_id   String?
+  additional_data      String?  // JSON
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  // Relations
+  user                 User @relation(fields: [user_id], references: [id])
+  provider             RatingProvider @relation(fields: [rating_provider_id], references: [id])
+
+  @@unique([user_id, rating_provider_id])
+  @@map("user_ratings")
+}
+
+// User Fields System
+model UserFieldDefinition {
+  id                     Int      @id @default(autoincrement())
+  field_key              String   @unique
+  field_label            String
+  field_type             String   // text, number, date, select, boolean, measurement, percentage, currency, ratio
+  field_icon             String
+  field_unit             String?
+  field_options          String?  // JSON array for select fields
+  field_section          String   // demographics, quick_facts, physical_stats, performance_stats, career_stats
+  applicable_categories  String   // JSON array: talent, coach, facility, organization
+  is_required            Boolean  @default(false)
+  display_order          Int      @default(0)
+  is_active              Boolean  @default(true)
+  created_at             DateTime @default(now())
+
+  // Relations
+  field_values           UserFieldValue[]
+
+  @@map("user_field_definitions")
+}
+
+model UserFieldValue {
+  id               Int      @id @default(autoincrement())
+  user_id          Int
+  field_definition_id Int
+  field_value      String
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  // Relations
+  user             User @relation(fields: [user_id], references: [id])
+  definition       UserFieldDefinition @relation(fields: [field_definition_id], references: [id])
+
+  @@unique([user_id, field_definition_id])
+  @@map("user_field_values")
+}
+
+// Social Media System
+model SocialMediaPlatform {
+  id                   Int     @id @default(autoincrement())
+  platform_name        String  @unique
+  platform_display_name String
+  platform_icon        String
+  platform_color       String
+  base_url             String
+  is_active            Boolean @default(true)
+
+  // Relations
+  user_social_media    UserSocialMedia[]
+
+  @@map("social_media_platforms")
+}
+
+model UserSocialMedia {
+  id              Int      @id @default(autoincrement())
+  user_id         Int
+  platform_id     Int
+  username        String
+  follower_count  Int?
+  is_verified     Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  // Relations
+  user            User @relation(fields: [user_id], references: [id])
+  platform        SocialMediaPlatform @relation(fields: [platform_id], references: [id])
+
+  @@unique([user_id, platform_id])
+  @@map("user_social_media")
+}
+
+// Performance History
+model UserPerformanceHistory {
+  id                  Int      @id @default(autoincrement())
+  user_id             Int
+  record_date         DateTime
+  metric_type         String   // ranking, wins, tournaments_played, rating
+  metric_value        Float
+  event_id            Int?
+  rating_provider_id  Int?
+  notes               String?
+  created_at          DateTime @default(now())
+
+  // Relations
+  user                User @relation(fields: [user_id], references: [id])
+
+  @@map("user_performance_history")
+}
+
+// Campaign System
+model Campaign {
+  id                Int      @id @default(autoincrement())
+  user_id           Int
+  title             String
+  description       String
+  goal_amount       Float
+  current_amount    Float    @default(0)
+  currency          String   @default("USD")
+  campaign_type     String   // sponsorship, equipment, training, event_participation, team_funding, general
+  start_date        DateTime
+  end_date          DateTime?
+  duration_days     Int?
+  status            String   // active, completed, paused, cancelled
+  featured_image_id Int?
+  linked_event_id   Int?
+  linked_team_id    Int?
+  location_id       Int?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  user              User @relation(fields: [user_id], references: [id])
+  featured_image    UploadedFile? @relation(fields: [featured_image_id], references: [id])
+  linked_event      Event? @relation(fields: [linked_event_id], references: [id])
+  linked_team       Team? @relation(fields: [linked_team_id], references: [id])
+  location          Location? @relation(fields: [location_id], references: [id])
+  
+  // Campaign relationships
+  checkpoints       CampaignCheckpoint[]
+  contributions     CampaignContribution[]
+
+  @@map("campaigns")
+}
+
+model CampaignCheckpoint {
+  id                  Int      @id @default(autoincrement())
+  campaign_id         Int
+  amount              Float
+  reward_description  String
+  is_unlocked         Boolean  @default(false)
+  unlocked_at         DateTime?
+  display_order       Int
+  created_at          DateTime @default(now())
+
+  // Relations
+  campaign            Campaign @relation(fields: [campaign_id], references: [id])
+
+  @@map("campaign_checkpoints")
+}
+
+model CampaignContribution {
+  id                   Int      @id @default(autoincrement())
+  campaign_id          Int
+  contributor_name     String?
+  contributor_email    String?
+  contributor_user_id  Int?
+  amount               Float
+  message              String?
+  is_anonymous         Boolean  @default(false)
+  payment_status       String   // pending, completed, failed, refunded
+  payment_method       String
+  created_at           DateTime @default(now())
+
+  // Relations
+  campaign             Campaign @relation(fields: [campaign_id], references: [id])
+
+  @@map("campaign_contributions")
+}
+
+// Media System
+model MediaCategory {
+  id                     Int     @id @default(autoincrement())
+  category_name          String  @unique
+  category_display_name  String
+  applicable_entities    String  // JSON array: user, event, achievement, team, campaign
+  is_active              Boolean @default(true)
+
+  // Relations
+  media_items            MediaItem[]
+
+  @@map("media_categories")
+}
+
+model MediaItem {
+  id                Int      @id @default(autoincrement())
+  uploaded_file_id  Int
+  title             String
+  description       String?
+  category_id       Int
+  uploaded_by_user_id Int
+  view_count        Int?     @default(0)
+  like_count        Int?     @default(0)
+  is_featured       Boolean  @default(false)
+  display_order     Int?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  // Relations
+  file              UploadedFile @relation(fields: [uploaded_file_id], references: [id])
+  category          MediaCategory @relation(fields: [category_id], references: [id])
+  uploaded_by       User @relation(fields: [uploaded_by_user_id], references: [id])
+
+  @@map("media_items")
+}
+
+// Custom Fields System
+model CustomFieldDefinition {
+  id            Int     @id @default(autoincrement())
+  field_key     String  @unique
+  field_name    String
+  field_type    String  // text, number, date, select, boolean, file, location
+  field_options String? // JSON
+  is_required   Boolean @default(false)
+  is_active     Boolean @default(true)
+  created_at    DateTime @default(now())
+
+  // Relations
+  field_values  CustomFieldValue[]
+
+  @@map("custom_field_definitions")
+}
+
+model CustomFieldValue {
+  id                   Int      @id @default(autoincrement())
+  user_id              Int
+  field_definition_id  Int
+  field_value          String?
+  file_id              Int?
+  location_id          Int?
+  created_at           DateTime @default(now())
+  updated_at           DateTime @updatedAt
+
+  // Relations
+  user                 User @relation(fields: [user_id], references: [id])
+  definition           CustomFieldDefinition @relation(fields: [field_definition_id], references: [id])
+
+  @@unique([user_id, field_definition_id])
+  @@map("custom_field_values")
+}
+
+// Notifications System
+model Notification {
+  id                   Int      @id @default(autoincrement())
+  user_id              Int
+  title                String
+  message              String
+  notification_type    String   // team_invitation, event_registration, achievement, campaign_update, talent_tag, rating_update, location_update, system
+  related_entity_type  String?
+  related_entity_id    Int?
+  is_read              Boolean  @default(false)
+  action_url           String?
+  created_at           DateTime @default(now())
+
+  // Relations
+  user                 User @relation(fields: [user_id], references: [id])
+
+  @@map("notifications")
+}

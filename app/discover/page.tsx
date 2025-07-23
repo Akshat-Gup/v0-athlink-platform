@@ -22,6 +22,24 @@ export default function DiscoverPage() {
     startDate: state.startDate,
     endDate: state.endDate,
   })
+
+  // Show loading state
+  if (data.loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-lg">Loading discover data...</div>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (data.error) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="text-lg text-red-600">Error: {data.error}</div>
+      </div>
+    )
+  }
   
   return (
     <DiscoverTemplate

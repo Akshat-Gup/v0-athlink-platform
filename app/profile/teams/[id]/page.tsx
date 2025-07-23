@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/components/molecules/card"
-import { getTeamMockData } from "@/lib/mock-profile-data"
+import { getTeamDataServer } from "@/lib/services/data-service"
 import { ProfileTemplate } from "@/components/templates/profile-template"
 import { TeamsHeaderAdapter, TeamsSidebarAdapter } from "@/components/adapters/profile-adapters"
 import { MediaGallery } from "@/components/organisms"
@@ -16,7 +16,7 @@ import {
     RecentResults,
     StatsSponsors
 } from "@/components/molecules"
-import { use } from "react"
+import { use, useState, useEffect } from "react"
 
 interface PageProps {
   params: Promise<{
@@ -26,8 +26,55 @@ interface PageProps {
 
 export default function TeamProfilePage({ params }: PageProps) {
   const { id } = use(params)
-  // Get team data from mock data
-  const team = getTeamMockData(id)
+  const [team, setTeam] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchTeamData() {
+      try {
+        setLoading(true)
+        // For client-side, use the client data service
+        const response = await fetch(`/api/teams/${id}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch team data')
+        }
+        const teamData = await response.json()
+        setTeam(teamData)
+      } catch (err) {
+        console.error('Error fetching team data:', err)
+        setError('Failed to load team data')
+        // Fallback to mock data
+        const { getTeamMockData } = await import("@/lib/mock-profile-data")
+        setTeam(getTeamMockData(id))
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTeamData()
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <p className="mt-4 text-lg">Loading team profile...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !team) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-lg text-red-600">{error || 'Team not found'}</p>
+        </div>
+      </div>
+    )
+  }
 
   const renderOverviewTab = () => (
     <>
