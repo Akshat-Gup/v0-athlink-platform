@@ -5,8 +5,12 @@ import { DiscoverHeader } from "@/components/organisms/discover/discover-header"
 import { DiscoverSearchBar } from "@/components/organisms/discover/discover-search-bar"
 import { TalentGrid } from "@/components/organisms/discover/talent-grid"
 import { TalentItem } from "@/hooks/use-discover-data"
+import { Session } from "next-auth"
 
 interface DiscoverTemplateProps {
+  // Auth
+  session: Session | null
+  
   // State props
   activeTab: string
   setActiveTab: (tab: string) => void
@@ -62,6 +66,7 @@ interface DiscoverTemplateProps {
 
 export function DiscoverTemplate(props: DiscoverTemplateProps) {
   const {
+    session,
     activeTab,
     setActiveTab,
     searchMode,
@@ -117,6 +122,7 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
   return (
     <div className="min-h-screen bg-white">
       <DiscoverHeader
+        session={session}
         showFavorites={showFavorites}
         setShowFavorites={setShowFavorites}
         showJoinModal={showJoinModal}

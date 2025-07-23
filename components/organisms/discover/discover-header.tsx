@@ -7,10 +7,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Heart, Menu, User, CalendarIcon, Trophy, Building, Users, Search, X } from "lucide-react"
 import { TalentItem } from "@/hooks/use-discover-data"
 import { DiscoverSignIn, MobileSignIn} from "@/components/atoms"
-import { auth } from "@/auth"
 import { handleSignOut, handleSignIn } from "app/api/auth/actions";
+import { Session } from "next-auth"
 
 interface DiscoverHeaderProps {
+  session: Session | null
   showFavorites: boolean
   setShowFavorites: (show: boolean) => void
   showJoinModal: boolean
@@ -24,7 +25,8 @@ interface DiscoverHeaderProps {
   setActiveTab: (tab: string) => void
 }
 
-export async function DiscoverHeader({
+export function DiscoverHeader({
+  session,
   showFavorites,
   setShowFavorites,
   showJoinModal,
@@ -37,7 +39,6 @@ export async function DiscoverHeader({
   activeTab,
   setActiveTab,
 }: DiscoverHeaderProps) {
-  const session = await auth();
 
   return (
     <>
