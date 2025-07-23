@@ -1,5 +1,3 @@
-"use client"
-
 import React from "react"
 import Link from "next/link"
 import Image from "next/image"
@@ -9,6 +7,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Heart, Menu, User, CalendarIcon, Trophy, Building, Users, Search, X } from "lucide-react"
 import { TalentItem } from "@/hooks/use-discover-data"
 import { DiscoverSignIn, MobileSignIn} from "@/components/atoms"
+import { auth } from "@/auth"
+import { handleSignOut, handleSignIn } from "app/api/auth/actions";
 
 interface DiscoverHeaderProps {
   showFavorites: boolean
@@ -24,7 +24,7 @@ interface DiscoverHeaderProps {
   setActiveTab: (tab: string) => void
 }
 
-export function DiscoverHeader({
+export async function DiscoverHeader({
   showFavorites,
   setShowFavorites,
   showJoinModal,
@@ -37,6 +37,8 @@ export function DiscoverHeader({
   activeTab,
   setActiveTab,
 }: DiscoverHeaderProps) {
+  const session = await auth();
+
   return (
     <>
       {/* Floating Header Islands */}
@@ -137,7 +139,32 @@ export function DiscoverHeader({
                   {showSearchOverlay ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
                 </Button>
               )}
-              <DiscoverSignIn />
+                {session && session?.user ? (
+                <>
+                  <span className="text-sm font-medium px-4 text-gray-900 bg-gray-100 rounded-full border border-gray-200 mr-2 flex items-center">
+                  {session.user.name}
+                  </span>
+                  <form action={handleSignOut}>
+                  <Button
+                    type="submit"
+                    variant="ghost"
+                    className="text-sm font-medium px-4 text-gray-900 bg-white hover:bg-gray-50 rounded-full border border-gray-200"
+                  >
+                    Sign Out
+                  </Button>
+                  </form>
+                </>
+                ) : (
+                <form action={() => handleSignIn('google')}>
+                  <Button
+                  type="submit"
+                  variant="ghost"
+                  className="text-sm font-medium px-4 text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg shadow-green-500/25 animate-shimmer"
+                  >
+                  Sign In
+                  </Button>
+                </form>
+                )}
               <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
                 <DialogTrigger asChild>
                   <Button
