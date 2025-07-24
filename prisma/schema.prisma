@@ -44,6 +44,8 @@ model User {
   talent_profile      TalentProfile?
   team_profile        TeamProfile?
   user_tags           UserTag[]
+  favorites           Favorite[] @relation("UserFavorites")
+  favorited_by        Favorite[] @relation("FavoritedBy")
   cover_image         File?             @relation("CoverImage", fields: [cover_image_id], references: [id])
   profile_image       File?             @relation("ProfileImage", fields: [profile_image_id], references: [id])
   talent_type         TalentType?       @relation(fields: [talent_type_id], references: [id])
@@ -501,4 +503,18 @@ model SponsorshipRequest {
   perk_tier        PerkTier? @relation(fields: [perk_tier_id], references: [id], onDelete: SetNull)
 
   @@map("sponsorship_requests")
+}
+
+model Favorite {
+  id               Int      @id @default(autoincrement())
+  user_id          Int      // User who added to favorites
+  profile_id       Int      // Profile being favorited
+  profile_type     String   // 'talent', 'team', or 'event'
+  created_at       DateTime @default(now())
+  
+  user             User     @relation("UserFavorites", fields: [user_id], references: [id], onDelete: Cascade)
+  favorited_user   User     @relation("FavoritedBy", fields: [profile_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, profile_id]) // Prevent duplicate favorites
+  @@map("favorites")
 }

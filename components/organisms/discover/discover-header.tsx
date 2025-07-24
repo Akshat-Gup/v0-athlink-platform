@@ -22,7 +22,8 @@ interface DiscoverHeaderProps {
   showSearchOverlay: boolean
   setShowSearchOverlay: (show: boolean) => void
   favorites: number[]
-  setFavorites: (favorites: number[]) => void
+  setFavorites?: (favorites: number[]) => void
+  toggleFavorite?: (id: number, e?: React.MouseEvent) => Promise<void>
   allItems: TalentItem[]
   isScrolled: boolean
   activeTab: string
@@ -39,6 +40,7 @@ export function DiscoverHeader({
   setShowSearchOverlay,
   favorites,
   setFavorites,
+  toggleFavorite,
   allItems,
   isScrolled,
   activeTab,
@@ -70,10 +72,15 @@ export function DiscoverHeader({
   }, [user, session])
 
   // Handle removing items from favorites
-  const handleRemoveFromFavorites = (itemId: number) => {
-    const updatedFavorites = favorites.filter(id => id !== itemId)
-    setFavorites(updatedFavorites)
-    localStorage.setItem('athlink-favorites', JSON.stringify(updatedFavorites))
+  const handleRemoveFromFavorites = async (itemId: number) => {
+    if (toggleFavorite) {
+      await toggleFavorite(itemId)
+    } else if (setFavorites) {
+      // Fallback to old localStorage system
+      const updatedFavorites = favorites.filter(id => id !== itemId)
+      setFavorites(updatedFavorites)
+      localStorage.setItem('athlink-favorites', JSON.stringify(updatedFavorites))
+    }
   }
 
   return (

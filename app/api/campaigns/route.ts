@@ -2,46 +2,101 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '../../../auth'
 import { prisma } from '../../../lib/prisma'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const status = searchParams.get('status')
+    const athleteId = searchParams.get('athlete_id')
+    const limit = parseInt(searchParams.get('limit') || '10')
+    const offset = parseInt(searchParams.get('offset') || '0')
+    const ownOnly = searchParams.get('own_only') === 'true'
+
     const session = await auth()
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    let where: any = {}
+
+    // If requesting own campaigns only, require authentication
+    if (ownOnly) {
+      if (!session?.user?.email) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email }
+      })
+
+      if (!user) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      }
+
+      where.athlete_id = user.id
+    } else {
+      // Public campaigns - apply filters
+      if (status) where.status = status
+      if (athleteId) where.athlete_id = parseInt(athleteId)
     }
 
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    // Fetch campaigns for this user (athlete's own campaigns)
     const campaigns = await prisma.campaign.findMany({
-      where: {
-        athlete_id: user.id
-      },
+      where,
       include: {
+        athlete: {
+          select: {
+            id: true,
+            name: true,
+            primary_sport: true,
+            profile_image: true,
+            country_flag: true,
+          }
+        },
         perk_tiers: {
-          orderBy: {
-            amount: 'asc'
+          where: { is_active: true },
+          orderBy: { amount: 'asc' }
+        },
+        sponsorship_requests: {
+          where: { status: 'ACCEPTED' },
+          select: {
+            amount: true,
+            sponsor: {
+              select: { name: true, profile_image: true }
+            }
           }
         },
         _count: {
           select: {
-            sponsorship_requests: true
+            sponsorship_requests: {
+              where: { status: 'PENDING' }
+            }
           }
         }
       },
-      orderBy: {
-        created_at: 'desc'
+      orderBy: { created_at: 'desc' },
+      take: limit,
+      skip: offset
+    })
+
+    // Calculate remaining goal and additional metrics for each campaign
+    const campaignsWithMetrics = campaigns.map((campaign: any) => {
+      const acceptedAmount = campaign.sponsorship_requests.reduce(
+        (sum: number, req: any) => sum + req.amount, 0
+      )
+      const remaining_goal = Math.max(0, campaign.funding_goal - acceptedAmount)
+      const progress_percentage = (acceptedAmount / campaign.funding_goal) * 100
+
+      return {
+        ...campaign,
+        current_funding: acceptedAmount,
+        remaining_goal,
+        progress_percentage: Math.round(progress_percentage * 100) / 100,
+        accepted_sponsorships: campaign.sponsorship_requests,
+        pending_requests_count: campaign._count.sponsorship_requests,
+        is_fully_funded: remaining_goal <= 0,
+        sponsors_count: campaign.sponsorship_requests.length
       }
     })
 
-    return NextResponse.json({ campaigns })
+    return NextResponse.json({
+      campaigns: campaignsWithMetrics,
+      total: campaigns.length
+    })
 
   } catch (error) {
     console.error('Error fetching campaigns:', error)
@@ -86,20 +141,30 @@ export async function POST(request: NextRequest) {
         athlete_id: user.id,
         title,
         description,
-        funding_goal,
+        funding_goal: parseFloat(funding_goal),
         deadline: deadline ? new Date(deadline) : null,
         perk_tiers: {
           create: perk_tiers.map((tier: any) => ({
             tier_name: tier.tier_name,
-            amount: tier.amount,
+            amount: parseFloat(tier.amount),
             description: tier.description,
-            deliverables: tier.deliverables,
-            max_sponsors: tier.max_sponsors
+            deliverables: JSON.stringify(tier.deliverables || {}),
+            max_sponsors: tier.max_sponsors || null
           }))
         }
       },
       include: {
-        perk_tiers: true
+        perk_tiers: {
+          orderBy: { amount: 'asc' }
+        },
+        athlete: {
+          select: {
+            id: true,
+            name: true,
+            primary_sport: true,
+            profile_image: true
+          }
+        }
       }
     })
 

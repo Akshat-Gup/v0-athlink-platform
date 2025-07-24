@@ -58,7 +58,7 @@ interface DiscoverTemplateProps {
   brandAmbassadorItems: TalentItem[]
   
   // Functions
-  toggleFavorite: (id: number, e: React.MouseEvent) => void
+  toggleFavorite: (id: number, e?: React.MouseEvent) => Promise<void>
   getLeaguesForSport: (sport: string) => string[]
   getItemsByFit: (fit: string) => TalentItem[]
   getFilteredItems: () => TalentItem[]
@@ -133,6 +133,7 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
         setShowSearchOverlay={setShowSearchOverlay}
         favorites={favorites}
         setFavorites={setFavorites}
+        toggleFavorite={toggleFavorite}
         allItems={allItems}
         isScrolled={isScrolled}
         activeTab={activeTab}

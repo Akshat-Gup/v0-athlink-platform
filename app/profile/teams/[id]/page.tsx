@@ -4,6 +4,7 @@ import { Card } from "@/components/molecules/card"
 import { ProfileTemplate } from "@/components/templates/profile-template"
 import { TeamsHeaderAdapter, TeamsSidebarAdapter } from "@/components/adapters/profile-adapters"
 import { MediaGallery } from "@/components/organisms"
+import { CampaignList } from "@/components/organisms/campaigns/campaign-list"
 import { 
     StatsList,
     StatsGrid,
@@ -101,6 +102,19 @@ export default function TeamProfilePage({ params }: PageProps) {
     team.recentResults ? <RecentResults results={team.recentResults} title="Recent Results" /> : <div>No results available</div>
   )
 
+  const renderCampaignsTab = () => (
+    <div className="space-y-6">
+      <CampaignList 
+        profileId={id} 
+        profileType="team"
+        status="active"
+        onCampaignSelect={(campaign) => {
+          console.log('Selected campaign:', campaign)
+        }}
+      />
+    </div>
+  )
+
   const tabs = [
     {
       id: "overview",
@@ -116,6 +130,11 @@ export default function TeamProfilePage({ params }: PageProps) {
       id: "results",
       label: "Results", 
       content: renderResultsTab()
+    },
+    {
+      id: "campaigns",
+      label: "Campaigns",
+      content: renderCampaignsTab()
     },
     {
       id: "media",

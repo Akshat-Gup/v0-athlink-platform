@@ -27,12 +27,25 @@ export function DiscoverClientPage({ session }: DiscoverClientPageProps) {
     startDate: state.startDate,
     endDate: state.endDate,
   })
+
+  // Convert the new favorites system to the format expected by the template
+  const favoritesArray = data.allItems.filter(item => data.isFavorited(item.id)).map(item => item.id)
+  
+  const handleToggleFavorite = async (id: number, e?: React.MouseEvent): Promise<void> => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    await data.toggleFavorite(id)
+  }
   
   return (
     <DiscoverTemplate
       session={session}
       {...state}
       {...data}
+      favorites={favoritesArray}
+      toggleFavorite={handleToggleFavorite}
     />
   )
 }

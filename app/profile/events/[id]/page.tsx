@@ -4,6 +4,7 @@ import { Card } from "@/components/molecules/card"
 import { ProfileTemplate } from "@/components/templates/profile-template"
 import { EventHeaderAdapter, EventSidebarAdapter } from "@/components/adapters/profile-adapters"
 import MediaGallery from "@/components/organisms/profile/media-gallery"
+import { CampaignList } from "@/components/organisms/campaigns/campaign-list"
 import { 
     StatsList,
     StatsGraph,
@@ -93,6 +94,19 @@ export default function EventProfilePage({ params }: PageProps) {
     event.schedule ? <StatsSchedule title="Event Schedule" schedule={event.schedule} /> : <div>No schedule available</div>
   )
 
+  const renderCampaignsTab = () => (
+    <div className="space-y-6">
+      <CampaignList 
+        profileId={id} 
+        profileType="event"
+        status="active"
+        onCampaignSelect={(campaign) => {
+          console.log('Selected campaign:', campaign)
+        }}
+      />
+    </div>
+  )
+
   const tabs = [
     {
       id: "overview",
@@ -103,6 +117,11 @@ export default function EventProfilePage({ params }: PageProps) {
       id: "schedule", 
       label: "Schedule",
       content: renderScheduleTab()
+    },
+    {
+      id: "campaigns",
+      label: "Campaigns",
+      content: renderCampaignsTab()
     },
     {
       id: "media",

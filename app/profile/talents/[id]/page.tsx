@@ -4,6 +4,8 @@ import { Card } from "@/components/molecules/card"
 import { ProfileTemplate } from "@/components/templates/profile-template"
 import { TalentHeaderAdapter, TalentSidebarAdapter } from "@/components/adapters/profile-adapters"
 import MediaGallery from "@/components/organisms/profile/media-gallery"
+import { CampaignList } from "@/components/organisms/campaigns/campaign-list"
+import { CampaignCreator } from "@/components/organisms/campaigns/campaign-creator"
 import { 
     StatsList,
     StatsGrid,
@@ -107,6 +109,20 @@ export default function TalentProfilePage({ params }: PageProps) {
     </>
   )
 
+  const renderCampaignsTab = () => (
+    <div className="space-y-6">
+      <CampaignList 
+        profileId={id} 
+        profileType="talent"
+        status="active"
+        onCampaignSelect={(campaign) => {
+          // Handle campaign selection - could navigate or show modal
+          console.log('Selected campaign:', campaign)
+        }}
+      />
+    </div>
+  )
+
   const tabs = [
     {
       id: "overview",
@@ -117,6 +133,11 @@ export default function TalentProfilePage({ params }: PageProps) {
       id: "results", 
       label: "Results",
       content: renderResultsTab()
+    },
+    {
+      id: "campaigns",
+      label: "Campaigns",
+      content: renderCampaignsTab()
     },
     {
       id: "media",

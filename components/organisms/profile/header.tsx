@@ -10,6 +10,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from 
 import { QrCode, Copy, Link as LinkIcon, Twitter, Instagram } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useFavorites } from "@/hooks/use-favorites";
 import { ProfileEdit } from "@/components/templates/user/profile-edit";
 
 interface EventHeaderProps {
@@ -33,6 +34,10 @@ interface EventHeaderProps {
 export function EventHeader({ event, onShareClick }: EventHeaderProps) {
   const { user, isAuthenticated } = useAuth();
   const [profileData, setProfileData] = useState<any>(null);
+  const { isFavorited, isLoading, toggleFavorite } = useFavorites(
+    event?.id || 0, 
+    'event'
+  );
 
   // Check if current user owns this profile
   const isOwner = isAuthenticated && event && user?.id === event.id;
@@ -134,8 +139,14 @@ export function EventHeader({ event, onShareClick }: EventHeaderProps) {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <Button variant="outline" className="bg-transparent rounded-full" size="icon">
-            <Heart className="h-4 w-4" />
+          <Button 
+            variant="outline" 
+            className={`bg-transparent rounded-full ${isFavorited ? 'text-red-500 border-red-500' : ''}`}
+            size="icon"
+            onClick={toggleFavorite}
+            disabled={isLoading}
+          >
+            <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
           </Button>
           {isOwner && profileData && (
             <ProfileEdit
@@ -189,6 +200,10 @@ export function TalentHeader({ talent, onShareClick }: TalentHeaderProps) {
   const [showShareModal, setShowShareModal] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const [profileData, setProfileData] = useState<any>(null);
+  const { isFavorited, isLoading, toggleFavorite } = useFavorites(
+    talent?.id || 0, 
+    'talent'
+  );
 
   // Check if current user owns this profile
   const isOwner = isAuthenticated && user?.id === talent.id;
@@ -285,8 +300,14 @@ export function TalentHeader({ talent, onShareClick }: TalentHeaderProps) {
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <Button variant="outline" className="bg-transparent rounded-full" size="icon">
-                <Heart className="h-4 w-4" />
+              <Button 
+                variant="outline" 
+                className={`bg-transparent rounded-full ${isFavorited ? 'text-red-500 border-red-500' : ''}`}
+                size="icon"
+                onClick={toggleFavorite}
+                disabled={isLoading}
+              >
+                <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
               </Button>
               {isOwner && profileData && (
                 <ProfileEdit
@@ -388,6 +409,10 @@ export function TeamHeader({ team, onShareClick }: TeamHeaderProps) {
   const [showShareModal, setShowShareModal] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const [profileData, setProfileData] = useState<any>(null);
+  const { isFavorited, isLoading, toggleFavorite } = useFavorites(
+    team?.id || 0, 
+    'team'
+  );
 
   // Check if current user owns this profile
   const isOwner = isAuthenticated && user?.id === team.id;
@@ -484,8 +509,14 @@ export function TeamHeader({ team, onShareClick }: TeamHeaderProps) {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <Button variant="outline" className="bg-transparent rounded-full" size="icon">
-            <Heart className="h-4 w-4" />
+          <Button 
+            variant="outline" 
+            className={`bg-transparent rounded-full ${isFavorited ? 'text-red-500 border-red-500' : ''}`}
+            size="icon"
+            onClick={toggleFavorite}
+            disabled={isLoading}
+          >
+            <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
           </Button>
           {isOwner && profileData && (
             <ProfileEdit

@@ -56,6 +56,46 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
   
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [favorites, setFavorites] = useState<Set<number>>(new Set())
+
+  // Function to load favorites status for all items
+  const loadFavoritesStatus = async (data: any) => {
+    try {
+      const allItems = [
+        ...data.topTalentItems,
+        ...data.upAndComingItems,
+        ...data.brandAmbassadorItems,
+        ...data.teamItems,
+        ...data.eventItems,
+      ]
+      
+      const favoriteChecks = await Promise.all(
+        allItems.map(async (item: TalentItem) => {
+          try {
+            const response = await fetch(`/api/favorites/check/${item.id}`)
+            if (response.ok) {
+              const result = await response.json()
+              return { id: item.id, isFavorited: result.is_favorited }
+            }
+          } catch (error) {
+            console.error(`Error checking favorite status for item ${item.id}:`, error)
+          }
+          return { id: item.id, isFavorited: false }
+        })
+      )
+      
+      const favoritesSet = new Set<number>()
+      favoriteChecks.forEach(({ id, isFavorited }) => {
+        if (isFavorited) {
+          favoritesSet.add(id)
+        }
+      })
+      
+      setFavorites(favoritesSet)
+    } catch (error) {
+      console.error('Error loading favorites status:', error)
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -96,6 +136,9 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         const result = await response.json()
         console.log('API response:', result)
         setData(result)
+        
+        // Load favorites status for all items
+        await loadFavoritesStatus(result)
       } catch (err) {
         console.error('Error fetching discover data:', err)
         setError('Failed to fetch data')
@@ -181,9 +224,98 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     return leagues[sport.toLowerCase()] || []
   }
   
-  const toggleFavorite = (id: number): void => {
-    console.log('Toggle favorite:', id)
-    // Implementation would update favorites in database
+  const toggleFavorite = async (id: number): Promise<void> => {
+    try {
+      // Find the item to determine its type
+      const item = allItems.find(item => item.id === id)
+      if (!item) {
+        console.error('Item not found for id:', id)
+        return
+      }
+
+      // Determine profile type based on category
+      let profileType: 'talent' | 'team' | 'event' = 'talent'
+      
+      // More flexible type detection
+      if (item.category?.toLowerCase().includes('team') || 
+          teamItems.some(teamItem => teamItem.id === id)) {
+        profileType = 'team'
+      } else if (item.category?.toLowerCase().includes('event') || 
+                eventItems.some(eventItem => eventItem.id === id)) {
+        profileType = 'event'
+      }
+
+      console.log('Toggle favorite for item:', { 
+        id, 
+        category: item.category, 
+        profileType,
+        item 
+      })
+
+      const isFavorited = favorites.has(id)
+
+      if (isFavorited) {
+        // Remove from favorites
+        const response = await fetch(`/api/favorites?profile_id=${id}`, {
+          method: 'DELETE'
+        })
+        
+        if (response.ok) {
+          console.log('Removed from favorites:', id)
+          setFavorites(prev => {
+            const newFavorites = new Set(prev)
+            newFavorites.delete(id)
+            return newFavorites
+          })
+        } else if (response.status === 401) {
+          console.log('User not authenticated')
+        } else {
+          const errorData = await response.text()
+          console.error('Failed to remove from favorites:', {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData
+          })
+        }
+      } else {
+        // Add to favorites
+        const requestBody = {
+          profile_id: id,
+          profile_type: profileType
+        }
+        
+        console.log('Adding to favorites with data:', requestBody)
+        
+        const response = await fetch('/api/favorites', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody)
+        })
+        
+        if (response.ok) {
+          console.log('Added to favorites:', id)
+          setFavorites(prev => new Set([...prev, id]))
+        } else if (response.status === 401) {
+          console.log('User not authenticated')
+        } else {
+          const errorData = await response.text()
+          console.error('Failed to add to favorites:', {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorData
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+    }
+  }
+  
+  // Function to check if an item is favorited
+  const isFavorited = (id: number): boolean => {
+    return favorites.has(id)
   }
   
   const getSportLeagues = (sport: string): string[] => getLeaguesForSport(sport)
@@ -200,6 +332,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     getFilteredItems,
     getLeaguesForSport,
     toggleFavorite,
+    isFavorited,
     getSportLeagues,
     loading,
     error,
