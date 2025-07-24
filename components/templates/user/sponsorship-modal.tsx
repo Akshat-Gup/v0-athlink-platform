@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from "react"
 import { Button } from "@/components/atoms/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/organisms/dialog"

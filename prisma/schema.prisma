@@ -11,6 +11,8 @@ model User {
   id                  Int               @id @default(autoincrement())
   name                String
   email               String            @unique
+  password            String?
+  user_role           String?
   primary_sport       String
   base_location_id    Int
   country_code        String
@@ -34,6 +36,8 @@ model User {
   social_links        SocialLink[]
   sponsors            SponsorRelation[] @relation("SponsoredUser")
   sponsorships        SponsorRelation[] @relation("SponsorUser")
+  sponsor_contributions SponsorContribution[] @relation("SponsorContributions")
+  received_contributions SponsorContribution[] @relation("ReceivedContributions")
   talent_profile      TalentProfile?
   team_profile        TeamProfile?
   user_tags           UserTag[]
@@ -386,21 +390,33 @@ model SocialLink {
 }
 
 model SponsorRelation {
-  id           Int       @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   sponsor_id   Int
   sponsored_id Int
-  amount       Int?
-  tier         String?
-  status       String    @default("PENDING")
-  start_date   DateTime?
-  end_date     DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  sponsored    User      @relation("SponsoredUser", fields: [sponsored_id], references: [id])
-  sponsor      User      @relation("SponsorUser", fields: [sponsor_id], references: [id])
+  amount       Int
+  tier         String
+  status       String   @default("ACTIVE")
+  created_at   DateTime @default(now())
+  sponsor      User     @relation("SponsorUser", fields: [sponsor_id], references: [id], onDelete: Cascade)
+  sponsored    User     @relation("SponsoredUser", fields: [sponsored_id], references: [id], onDelete: Cascade)
 
-  @@unique([sponsor_id, sponsored_id])
   @@map("sponsor_relations")
+}
+
+model SponsorContribution {
+  id           Int      @id @default(autoincrement())
+  sponsor_id   Int
+  recipient_id Int
+  amount       Float
+  currency     String   @default("USD")
+  message      String?
+  status       String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  sponsor      User     @relation("SponsorContributions", fields: [sponsor_id], references: [id], onDelete: Cascade)
+  recipient    User     @relation("ReceivedContributions", fields: [recipient_id], references: [id], onDelete: Cascade)
+
+  @@map("sponsor_contributions")
 }
 
 model Tag {

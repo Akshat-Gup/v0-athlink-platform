@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { SponsorshipTarget } from "@/components/templates/user/sponsorship-modal"
 

@@ -1,4 +1,5 @@
 // Custom hooks
+export * from './use-auth'
 export * from './use-discover-data'
 export * from './use-discover-filters'
 export * from './use-discover-state'
