@@ -2,7 +2,11 @@ import { Button } from "@/components/atoms/button"
 import { Badge } from "@/components/atoms/badge"
 import { Card } from "@/components/molecules/card"
 import { Instagram, Twitter, Youtube, Facebook, ExternalLink } from "lucide-react"
-import React from "react"
+import React, { useState } from "react"
+import { SponsorshipModal } from "@/components/templates/user/sponsorship-modal"
+import { SponsorshipProgress } from "@/components/molecules/profile/sponsorship-progress"
+import { useUserRole } from "@/hooks/use-user-role"
+import { useSponsorshipData } from "@/hooks/use-sponsorship-data"
 
 interface Checkpoint {
   amount: number
@@ -18,9 +22,29 @@ interface SidebarSponsorshipProps {
   title?: string
   subtitle?: string
   submitButtonText?: string
+  profileId?: string
+  profileType?: "talent" | "event" | "team"
 }
 
-export function SidebarSponsorship({ currentFunding = 0, goalFunding = 0, checkpoints = [], renderProgressBar, title = "Sponsorship", subtitle = "Milestones", submitButtonText = "Submit" }: SidebarSponsorshipProps) {
+export function SidebarSponsorship({ 
+  currentFunding = 0, 
+  goalFunding = 0, 
+  checkpoints = [], 
+  renderProgressBar, 
+  title = "Sponsorship", 
+  subtitle = "Milestones", 
+  submitButtonText = "Submit",
+  profileId = "",
+  profileType = "talent"
+}: SidebarSponsorshipProps) {
+  const [isSponsorshipModalOpen, setIsSponsorshipModalOpen] = useState(false)
+  const { selectedUserRole } = useUserRole()
+  const { getTotalContributionForTarget, addContribution } = useSponsorshipData()
+  
+  const isSponsor = selectedUserRole === "Sponsor"
+  
+  // Get user's contribution for this specific profile (not mock data)
+  const userContribution = getTotalContributionForTarget(Number(profileId) || 1, profileType)
   if (!checkpoints || checkpoints.length === 0) {
     return (
       <Card className="p-6 shadow-xl border-0">
@@ -35,27 +59,117 @@ export function SidebarSponsorship({ currentFunding = 0, goalFunding = 0, checkp
   return (
     <Card className="p-6 shadow-xl border-0">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
-      {renderProgressBar(currentFunding, goalFunding)}
+      
+      {/* Enhanced Progress Bar with Sponsorship Progress Component */}
+      <SponsorshipProgress 
+        totalRequested={goalFunding}
+        currentFunding={currentFunding}
+        yourContribution={userContribution}
+        perks={checkpoints.map((checkpoint, index) => {
+          return {
+            id: index + 1,
+            amount: checkpoint.amount,
+            title: checkpoint.reward,
+            description: `Unlock ${checkpoint.reward} when your contribution reaches $${checkpoint.amount.toLocaleString()}`,
+            isUnlocked: userContribution >= checkpoint.amount // Based on user contribution
+          }
+        })}
+      />
+      
+      {/* Sponsorship Checkpoints */}
       <div className="mt-6 space-y-3">
         <h4 className="font-medium text-sm">{subtitle}</h4>
-        {checkpoints.map((checkpoint, index) => (
-          <div
-            key={index}
-            className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-              checkpoint.unlocked 
-                ? "bg-green-50 border-green-200" 
-                : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-            }`}
-          >
-            <div className="flex items-center justify-between mb-1">
-              <span className="font-medium text-sm">${checkpoint.amount?.toLocaleString() || 0}</span>
-              {checkpoint.unlocked && <Badge className="bg-green-500">Unlocked</Badge>}
+        {checkpoints.map((checkpoint, index) => {
+          const isUnlockedByUser = userContribution >= checkpoint.amount
+          return (
+            <div
+              key={index}
+              className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                isUnlockedByUser 
+                  ? "bg-green-50 border-green-200" 
+                  : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-medium text-sm">${checkpoint.amount?.toLocaleString() || 0}</span>
+                {isUnlockedByUser && <Badge className="bg-green-600 text-white">Unlocked</Badge>}
+              </div>
+              <p className="text-xs text-gray-600">{checkpoint.reward || "No reward information"}</p>
             </div>
-            <p className="text-xs text-gray-600">{checkpoint.reward || "No reward information"}</p>
-          </div>
-        ))}
+          )
+        })}
       </div>
-      <Button className="w-full mt-4 bg-green-500 hover:bg-green-600">{submitButtonText}</Button>
+      
+      {/* Conditional button based on user role */}
+      {isSponsor ? (
+        <Button 
+          className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white"
+          onClick={() => setIsSponsorshipModalOpen(true)}
+        >
+          {submitButtonText}
+        </Button>
+      ) : (
+        <Button className="w-full mt-6 bg-gray-400 cursor-not-allowed text-gray-600" disabled>
+          {submitButtonText} (Sponsors Only)
+        </Button>
+      )}
+      
+      {/* Sponsorship Modal */}
+      <SponsorshipModal
+        isOpen={isSponsorshipModalOpen}
+        onOpenChange={setIsSponsorshipModalOpen}
+        sponsorshipData={{
+          targetId: Number(profileId) || 1,
+          targetType: profileType,
+          targetName: title,
+          targetImage: undefined,
+          totalRequested: goalFunding, // Use actual profile goal funding
+          currentFunding: currentFunding, // Use actual profile current funding
+          yourContribution: userContribution, // Use actual user contribution for this profile
+          perks: checkpoints.map((checkpoint, index) => ({
+            id: index + 1,
+            amount: checkpoint.amount,
+            title: checkpoint.reward,
+            description: `Unlock ${checkpoint.reward} when your contribution reaches $${checkpoint.amount.toLocaleString()}`,
+            isUnlocked: userContribution >= checkpoint.amount
+          })),
+          yourPerks: checkpoints.filter((checkpoint, index) => userContribution >= checkpoint.amount).map((checkpoint, index) => ({
+            id: index + 1,
+            amount: checkpoint.amount,
+            title: checkpoint.reward,
+            description: `Unlock ${checkpoint.reward} when your contribution reaches $${checkpoint.amount.toLocaleString()}`,
+            isUnlocked: true
+          }))
+        }}
+        onSponsor={(amount, selectedPerks, customConditions) => {
+          // Add the contribution using the hook
+          addContribution(
+            Number(profileId) || 1,
+            profileType,
+            amount,
+            selectedPerks,
+            customConditions
+          )
+          
+          console.log('Sponsorship contribution added:', { 
+            profileId, 
+            profileType, 
+            amount, 
+            selectedPerks, 
+            customConditions,
+            newTotal: userContribution + amount
+          })
+          
+          // Close the modal
+          setIsSponsorshipModalOpen(false)
+          
+          // In a real app, you might want to show a success message
+          // or refresh the page to show updated data
+          window.location.reload() // Temporary refresh to show updated data
+        }}
+      >
+        <div></div>
+      </SponsorshipModal>
     </Card>
   )
 }

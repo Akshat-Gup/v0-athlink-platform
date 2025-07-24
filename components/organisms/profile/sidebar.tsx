@@ -8,6 +8,7 @@ import { SidebarSocials, SidebarSponsorship } from "@/components/molecules"
 
 interface EventSidebarProps {
   event: {
+    id?: string | number
     currentFunding: number
     goalFunding: number
     checkpoints: Array<{
@@ -33,6 +34,7 @@ interface EventSidebarProps {
 
 interface DefaultSidebarProps {
   item: {
+    id?: string | number
     currentFunding: number
     goalFunding: number
     checkpoints: Array<{
@@ -50,6 +52,8 @@ interface DefaultSidebarProps {
   title: string
   subtitle: string
   submitButtonText?: string
+  profileId?: string
+  profileType?: "talent" | "event" | "team"
 }
 
 export function EventSidebar({ event }: EventSidebarProps) {
@@ -77,6 +81,8 @@ export function EventSidebar({ event }: EventSidebarProps) {
           title="Sponsorship Opportunities"
           subtitle="Sponsorship Packages"
           submitButtonText="Sponsor Event"
+          profileId={event.id?.toString() || ""}
+          profileType="event"
         />
 
         <Card className="p-6 shadow-lg">
@@ -111,7 +117,7 @@ export function EventSidebar({ event }: EventSidebarProps) {
   )
 }
 
-export function DefaultSidebar({ item, title, subtitle, submitButtonText }: DefaultSidebarProps) {
+export function DefaultSidebar({ item, title, subtitle, submitButtonText, profileId, profileType }: DefaultSidebarProps) {
   const renderProgressBar = (current: number, goal: number) => {
     const percentage = (current / goal) * 100
     return (
@@ -136,6 +142,8 @@ export function DefaultSidebar({ item, title, subtitle, submitButtonText }: Defa
           title={title}
           subtitle={subtitle}
           submitButtonText={submitButtonText}
+          profileId={profileId || item.id?.toString() || ""}
+          profileType={profileType}
         />
         <SidebarSocials socials={item.socials} />
       </div>

@@ -17,7 +17,14 @@ export function TalentHeaderAdapter({ profile, onShareClick }: { profile: any; o
 }
 
 export function TalentSidebarAdapter({ profile }: { profile: any }) {
-  return <DefaultSidebar item={profile} title="Campaign Progress" subtitle="Sponsorship Checkpoints" submitButtonText="Support Campaign" />
+  return <DefaultSidebar 
+    item={profile} 
+    title="Campaign Progress" 
+    subtitle="Sponsorship Checkpoints" 
+    submitButtonText="Support Campaign"
+    profileId={profile.id}
+    profileType="talent"
+  />
 }
 
 export function TeamsHeaderAdapter({ profile, onShareClick }: { profile: any; onShareClick: () => void }) {
@@ -25,6 +32,13 @@ export function TeamsHeaderAdapter({ profile, onShareClick }: { profile: any; on
 }
 
 export function TeamsSidebarAdapter({ profile }: { profile: any }) {
-  return <DefaultSidebar item={profile} title="Sponsorship Campaign" subtitle="Sponsorship Packages" submitButtonText="Sponsor Team" />
+  return <DefaultSidebar 
+    item={profile} 
+    title="Sponsorship Campaign" 
+    subtitle="Sponsorship Packages" 
+    submitButtonText="Sponsor Team"
+    profileId={profile.id}
+    profileType="team"
+  />
 }
 
