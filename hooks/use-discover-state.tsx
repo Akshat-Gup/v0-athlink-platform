@@ -10,6 +10,23 @@ export function useDiscoverState() {
   const [showSearchOverlay, setShowSearchOverlay] = useState(false)
   const [favorites, setFavorites] = useState<number[]>([])
   const [isScrolled, setIsScrolled] = useState(false)
+
+  // Load favorites from localStorage on mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('athlink-favorites')
+    if (savedFavorites) {
+      try {
+        setFavorites(JSON.parse(savedFavorites))
+      } catch (error) {
+        console.error('Error loading favorites from localStorage:', error)
+      }
+    }
+  }, [])
+
+  // Save favorites to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('athlink-favorites', JSON.stringify(favorites))
+  }, [favorites])
   
   // Search/Filter state
   const [searchQuery, setSearchQuery] = useState("")
@@ -68,9 +85,11 @@ export function useDiscoverState() {
   const toggleFavorite = (id: number, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setFavorites(prev => 
-      prev.includes(id) ? prev.filter(fav => fav !== id) : [...prev, id]
-    )
+    setFavorites(prev => {
+      const newFavorites = prev.includes(id) ? prev.filter(fav => fav !== id) : [...prev, id]
+      localStorage.setItem('athlink-favorites', JSON.stringify(newFavorites))
+      return newFavorites
+    })
   }
 
   return {
@@ -92,6 +111,7 @@ export function useDiscoverState() {
     
     // User interaction state
     favorites,
+    setFavorites,
     isScrolled,
     
     // Search/filter state

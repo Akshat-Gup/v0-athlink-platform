@@ -5,9 +5,33 @@ import { Button } from "@/components/atoms/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/molecules/card"
 import { Badge } from "@/components/atoms/badge"
 import { signOut } from "next-auth/react"
+import { ProfileEdit } from "../templates/user/profile-edit"
+import { useState, useEffect } from "react"
 
 export function UserProfile() {
   const { user, profile, userRole, loading, isAuthenticated } = useAuth()
+  const [profileData, setProfileData] = useState<any>(null)
+
+  useEffect(() => {
+    // Fetch full profile data including talent/team/event profiles
+    const fetchProfileData = async () => {
+      if (user?.id) {
+        try {
+          const response = await fetch(`/api/profile/${user.id}`)
+          if (response.ok) {
+            const data = await response.json()
+            setProfileData(data)
+          }
+        } catch (error) {
+          console.error("Error fetching profile data:", error)
+        }
+      }
+    }
+
+    if (isAuthenticated && user) {
+      fetchProfileData()
+    }
+  }, [user, isAuthenticated])
 
   if (loading) {
     return (
@@ -34,9 +58,17 @@ export function UserProfile() {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           Welcome, {user.name}!
-          <Button variant="outline" size="sm" onClick={() => signOut()}>
-            Sign Out
-          </Button>
+          <div className="flex gap-2">
+            <ProfileEdit 
+              userId={user.id}
+              talentProfile={profileData?.talent_profile}
+              teamProfile={profileData?.team_profile}
+              eventProfile={profileData?.event_profile}
+            />
+            <Button variant="outline" size="sm" onClick={() => signOut()}>
+              Sign Out
+            </Button>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

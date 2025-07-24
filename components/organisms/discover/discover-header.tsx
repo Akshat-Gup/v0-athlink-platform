@@ -1,15 +1,17 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/atoms/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/organisms/sheet"
-import { Heart, Menu, Search, X, Users, CalendarIcon } from "lucide-react"
+import { Heart, Menu, Search, X, Users, CalendarIcon, Edit } from "lucide-react"
 import { TalentItem } from "@/hooks/use-discover-data"
 import { DiscoverSignIn, MobileSignIn} from "@/components/atoms"
 import { handleSignOut, handleSignIn } from "app/api/auth/actions";
 import { Session } from "next-auth"
 import { JoinRoleSelector, MobileJoinRoleSelector } from "@/components/templates"
+import { ProfileEdit } from "@/components/templates/user/profile-edit"
 import { useUserRole } from "@/hooks"
+import { useAuth } from "@/hooks/use-auth"
 
 interface DiscoverHeaderProps {
   session: Session | null
@@ -20,6 +22,7 @@ interface DiscoverHeaderProps {
   showSearchOverlay: boolean
   setShowSearchOverlay: (show: boolean) => void
   favorites: number[]
+  setFavorites: (favorites: number[]) => void
   allItems: TalentItem[]
   isScrolled: boolean
   activeTab: string
@@ -35,12 +38,43 @@ export function DiscoverHeader({
   showSearchOverlay,
   setShowSearchOverlay,
   favorites,
+  setFavorites,
   allItems,
   isScrolled,
   activeTab,
   setActiveTab,
 }: DiscoverHeaderProps) {
   const { selectedUserRole, handleRoleSelect } = useUserRole()
+  const { user } = useAuth()
+  const [profileData, setProfileData] = useState<any>(null)
+
+  // Fetch user's profile data for editing
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (user?.id) {
+        try {
+          const response = await fetch(`/api/profile/${user.id}`)
+          if (response.ok) {
+            const data = await response.json()
+            setProfileData(data)
+          }
+        } catch (error) {
+          console.error("Error fetching profile data:", error)
+        }
+      }
+    }
+
+    if (session && user) {
+      fetchProfileData()
+    }
+  }, [user, session])
+
+  // Handle removing items from favorites
+  const handleRemoveFromFavorites = (itemId: number) => {
+    const updatedFavorites = favorites.filter(id => id !== itemId)
+    setFavorites(updatedFavorites)
+    localStorage.setItem('athlink-favorites', JSON.stringify(updatedFavorites))
+  }
 
   return (
     <>
@@ -102,34 +136,52 @@ export function DiscoverHeader({
             <div className="flex items-center space-x-2">
               <Sheet open={showFavorites} onOpenChange={setShowFavorites}>
                 <SheetTrigger asChild>
-                  <Button size="icon" variant="ghost" className="rounded-full">
-                    <Heart className="h-4 w-4" />
+                  <Button size="icon" variant="ghost" className="rounded-full relative">
+                    <Heart className={`h-4 w-4 ${favorites.length > 0 ? 'fill-red-500 text-red-500' : ''}`} />
+                    {favorites.length > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                        {favorites.length}
+                      </span>
+                    )}
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left">
                   <SheetHeader>
-                    <SheetTitle>Your Watchlist</SheetTitle>
+                    <SheetTitle>Your Watchlist ({favorites.length})</SheetTitle>
                   </SheetHeader>
                   <div className="mt-6">
                     {favorites.length === 0 ? (
-                      <p className="text-gray-600">No items in your watchlist yet.</p>
+                      <div className="text-center py-8">
+                        <Heart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-600 mb-2">No items in your watchlist yet.</p>
+                        <p className="text-sm text-gray-500">Click the heart icon on profiles to add them here!</p>
+                      </div>
                     ) : (
                       <div className="space-y-4">
                         {allItems
                           .filter((item) => favorites.includes(item.id))
                           .map((item) => (
-                            <div key={item.id} className="flex items-center space-x-3 p-2 border rounded">
+                            <div key={item.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
                               <Image
                                 src={item.image || "/placeholder.svg"}
                                 alt={item.name}
                                 width={40}
                                 height={40}
-                                className="rounded"
+                                className="rounded-full"
                               />
-                              <div>
+                              <div className="flex-1">
                                 <p className="font-medium text-sm">{item.name}</p>
                                 <p className="text-xs text-gray-600">{item.sport}</p>
+                                <p className="text-xs text-gray-500">{item.location}</p>
                               </div>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleRemoveFromFavorites(item.id)}
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
                             </div>
                           ))}
                       </div>
@@ -141,6 +193,18 @@ export function DiscoverHeader({
                 <Button size="icon" variant="ghost" className="rounded-full" onClick={() => setShowSearchOverlay(!showSearchOverlay)}>
                   {showSearchOverlay ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
                 </Button>
+              )}
+              {session && session?.user && (
+                <ProfileEdit 
+                  userId={user?.id}
+                  talentProfile={profileData?.talent_profile}
+                  teamProfile={profileData?.team_profile}
+                  eventProfile={profileData?.event_profile}
+                >
+                  <Button size="icon" variant="ghost" className="rounded-full" title="Edit Profile">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                </ProfileEdit>
               )}
                 {session && session?.user ? (
                 <>
@@ -200,34 +264,47 @@ export function DiscoverHeader({
                   <Sheet open={showFavorites} onOpenChange={setShowFavorites}>
                     <SheetTrigger asChild>
                       <Button variant="ghost" className="w-full justify-start">
-                        <Heart className="h-4 w-4 mr-2" />
-                        Watchlist
+                        <Heart className={`h-4 w-4 mr-2 ${favorites.length > 0 ? 'fill-red-500 text-red-500' : ''}`} />
+                        Watchlist {favorites.length > 0 && `(${favorites.length})`}
                       </Button>
                     </SheetTrigger>
                     <SheetContent side="left">
                       <SheetHeader>
-                        <SheetTitle>Your Watchlist</SheetTitle>
+                        <SheetTitle>Your Watchlist ({favorites.length})</SheetTitle>
                       </SheetHeader>
                       <div className="mt-6">
                         {favorites.length === 0 ? (
-                          <p className="text-gray-600">No items in your watchlist yet.</p>
+                          <div className="text-center py-8">
+                            <Heart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                            <p className="text-gray-600 mb-2">No items in your watchlist yet.</p>
+                            <p className="text-sm text-gray-500">Click the heart icon on profiles to add them here!</p>
+                          </div>
                         ) : (
                           <div className="space-y-4">
                             {allItems
                               .filter((item) => favorites.includes(item.id))
                               .map((item) => (
-                                <div key={item.id} className="flex items-center space-x-3 p-2 border rounded">
+                                <div key={item.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
                                   <Image
                                     src={item.image || "/placeholder.svg"}
                                     alt={item.name}
                                     width={40}
                                     height={40}
-                                    className="rounded"
+                                    className="rounded-full"
                                   />
-                                  <div>
+                                  <div className="flex-1">
                                     <p className="font-medium text-sm">{item.name}</p>
                                     <p className="text-xs text-gray-600">{item.sport}</p>
+                                    <p className="text-xs text-gray-500">{item.location}</p>
                                   </div>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => handleRemoveFromFavorites(item.id)}
+                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
                                 </div>
                               ))}
                           </div>
@@ -240,6 +317,19 @@ export function DiscoverHeader({
                       {showSearchOverlay ? <X className="h-4 w-4 mr-2" /> : <Search className="h-4 w-4 mr-2" />}
                       {showSearchOverlay ? "Close Search" : "Search"}
                     </Button>
+                  )}
+                  {session && session?.user && (
+                    <ProfileEdit 
+                      userId={user?.id}
+                      talentProfile={profileData?.talent_profile}
+                      teamProfile={profileData?.team_profile}
+                      eventProfile={profileData?.event_profile}
+                    >
+                      <Button variant="ghost" className="w-full justify-start">
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Profile
+                      </Button>
+                    </ProfileEdit>
                   )}
                   <MobileSignIn />
                   <MobileJoinRoleSelector

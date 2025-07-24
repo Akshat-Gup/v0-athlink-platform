@@ -38,6 +38,9 @@ model User {
   sponsorships        SponsorRelation[] @relation("SponsorUser")
   sponsor_contributions SponsorContribution[] @relation("SponsorContributions")
   received_contributions SponsorContribution[] @relation("ReceivedContributions")
+  campaigns           Campaign[] @relation("CampaignOwner")
+  sponsorship_requests SponsorshipRequest[] @relation("SponsorshipSponsor")
+  received_requests   SponsorshipRequest[] @relation("SponsorshipAthlete")
   talent_profile      TalentProfile?
   team_profile        TeamProfile?
   user_tags           UserTag[]
@@ -438,4 +441,64 @@ model UserTag {
 
   @@unique([user_id, tag_id])
   @@map("user_tags")
+}
+
+model Campaign {
+  id               Int      @id @default(autoincrement())
+  athlete_id       Int
+  title            String
+  description      String?
+  funding_goal     Float
+  current_funding  Float    @default(0)
+  status           String   @default("OPEN") // OPEN, PAUSED, COMPLETED, CANCELLED
+  deadline         DateTime?
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  
+  athlete          User     @relation("CampaignOwner", fields: [athlete_id], references: [id], onDelete: Cascade)
+  perk_tiers       PerkTier[]
+  sponsorship_requests SponsorshipRequest[]
+
+  @@map("campaigns")
+}
+
+model PerkTier {
+  id               Int      @id @default(autoincrement())
+  campaign_id      Int
+  tier_name        String   // "Tier 1", "Tier 2", etc.
+  amount           Float
+  description      String
+  deliverables     String   // JSON string with deliverable details
+  max_sponsors     Int?     // Optional limit on number of sponsors
+  current_sponsors Int      @default(0)
+  is_active        Boolean  @default(true)
+  created_at       DateTime @default(now())
+  
+  campaign         Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+  sponsorship_requests SponsorshipRequest[]
+
+  @@map("perk_tiers")
+}
+
+model SponsorshipRequest {
+  id               Int      @id @default(autoincrement())
+  campaign_id      Int
+  sponsor_id       Int
+  athlete_id       Int
+  perk_tier_id     Int?     // NULL if custom offer
+  amount           Float
+  custom_perks     String?  // JSON string for custom deliverables
+  message          String?
+  status           String   @default("PENDING") // PENDING, ACCEPTED, REJECTED, CANCELLED, COMPLETED
+  is_custom        Boolean  @default(false)
+  escrow_status    String   @default("HELD") // HELD, RELEASED, RETURNED
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  
+  campaign         Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+  sponsor          User     @relation("SponsorshipSponsor", fields: [sponsor_id], references: [id], onDelete: Cascade)
+  athlete          User     @relation("SponsorshipAthlete", fields: [athlete_id], references: [id], onDelete: Cascade)
+  perk_tier        PerkTier? @relation(fields: [perk_tier_id], references: [id], onDelete: SetNull)
+
+  @@map("sponsorship_requests")
 }

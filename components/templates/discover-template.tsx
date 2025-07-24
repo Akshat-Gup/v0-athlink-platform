@@ -23,6 +23,7 @@ interface DiscoverTemplateProps {
   showSearchOverlay: boolean
   setShowSearchOverlay: (show: boolean) => void
   favorites: number[]
+  setFavorites: (favorites: number[]) => void
   isScrolled: boolean
   
   // Search/Filter props
@@ -78,6 +79,7 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
     showSearchOverlay,
     setShowSearchOverlay,
     favorites,
+    setFavorites,
     isScrolled,
     searchQuery,
     setSearchQuery,
@@ -130,6 +132,7 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
         showSearchOverlay={showSearchOverlay}
         setShowSearchOverlay={setShowSearchOverlay}
         favorites={favorites}
+        setFavorites={setFavorites}
         allItems={allItems}
         isScrolled={isScrolled}
         activeTab={activeTab}

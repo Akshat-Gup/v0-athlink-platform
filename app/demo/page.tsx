@@ -2,6 +2,10 @@ import { UserProfile } from "@/components/auth/user-profile"
 import { UserRoleManager } from "@/components/auth/user-role-manager"
 import { JoinRoleSelector } from "@/components/templates"
 import { SponsorContribution } from "@/components/templates"
+import { CampaignCreation } from "@/components/templates"
+import { CampaignDisplay } from "@/components/templates"
+import { SponsorCampaignBrowser } from "@/components/templates"
+import { SponsorshipRequestManager } from "@/components/templates/athlete/sponsorship-request-manager"
 import { Button } from "@/components/atoms/button"
 
 export default function DemoPage() {
@@ -9,25 +13,70 @@ export default function DemoPage() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="w-full max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-gray-900">Authentication & Role Demo</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Athlete-Sponsor Campaign Demo</h1>
           <p className="text-gray-600">
-            Test the login system, role management, and sponsor contributions with any user email and password <strong>12345678</strong>
+            Test the complete campaign system: athletes create campaigns, sponsors make offers with escrow protection
           </p>
         </div>
         
         {/* Action Buttons */}
-        <div className="flex justify-center gap-4">
+        <div className="flex flex-wrap justify-center gap-4">
           <JoinRoleSelector>
             <Button variant="outline">Change Role</Button>
           </JoinRoleSelector>
           <SponsorContribution>
             <Button className="bg-green-600 hover:bg-green-700">Manage Contributions</Button>
           </SponsorContribution>
+          <CampaignCreation>
+            <Button className="bg-blue-600 hover:bg-blue-700">Create Campaign</Button>
+          </CampaignCreation>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <UserProfile />
           <UserRoleManager />
+        </div>
+        
+        {/* Campaign System Demo */}
+        <div className="space-y-8">
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4">🎯 Campaign System Features</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-medium text-green-600 mb-2">For Athletes (Talent Role)</h3>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Create sponsorship campaigns with funding goals</li>
+                  <li>• Set multiple sponsorship tiers with default perks</li>
+                  <li>• Receive sponsor offers with escrow protection</li>
+                  <li>• Accept/reject custom sponsorship terms</li>
+                  <li>• Track campaign progress and sponsors</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-medium text-blue-600 mb-2">For Sponsors (Sponsor Role)</h3>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Browse active athlete campaigns</li>
+                  <li>• Choose from preset sponsorship tiers</li>
+                  <li>• Make custom offers with negotiated terms</li>
+                  <li>• Funds held in escrow until completion</li>
+                  <li>• Track sponsorship commitments</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Campaign Components */}
+          <CampaignDisplay limit={3} />
+          
+          <div className="bg-green-50 rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">💰 Sponsorship Requests (Athlete View)</h2>
+            <SponsorshipRequestManager />
+          </div>
+          
+          <div className="bg-gray-50 rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">🔍 Browse Campaigns (Sponsor View)</h2>
+            <SponsorCampaignBrowser />
+          </div>
         </div>
         
         <div className="bg-white rounded-lg p-6 shadow-sm">
