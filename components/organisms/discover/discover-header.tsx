@@ -8,7 +8,7 @@ import { TalentItem } from "@/hooks/use-discover-data"
 import { DiscoverSignIn, MobileSignIn} from "@/components/atoms"
 import { handleSignOut, handleSignIn } from "app/api/auth/actions";
 import { Session } from "next-auth"
-import { JoinRoleSelector, MobileJoinRoleSelector } from "@/components/organisms"
+import { JoinRoleSelector, MobileJoinRoleSelector } from "@/components/templates"
 import { useUserRole } from "@/hooks"
 
 interface DiscoverHeaderProps {
