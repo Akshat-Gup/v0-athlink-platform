@@ -1,14 +1,15 @@
-import React from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/atoms/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/organisms/dialog"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/organisms/sheet"
-import { Heart, Menu, User, CalendarIcon, Trophy, Building, Users, Search, X } from "lucide-react"
+import { Heart, Menu, Search, X, Users, CalendarIcon } from "lucide-react"
 import { TalentItem } from "@/hooks/use-discover-data"
 import { DiscoverSignIn, MobileSignIn} from "@/components/atoms"
 import { handleSignOut, handleSignIn } from "app/api/auth/actions";
 import { Session } from "next-auth"
+import { JoinRoleSelector, MobileJoinRoleSelector } from "@/components/organisms"
+import { useUserRole } from "@/hooks"
 
 interface DiscoverHeaderProps {
   session: Session | null
@@ -39,6 +40,7 @@ export function DiscoverHeader({
   activeTab,
   setActiveTab,
 }: DiscoverHeaderProps) {
+  const { selectedUserRole, handleRoleSelect } = useUserRole()
 
   return (
     <>
@@ -166,60 +168,19 @@ export function DiscoverHeader({
                   </Button>
                 </form>
                 )}
-              <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="text-sm font-medium px-4 text-gray-900 bg-white hover:bg-gray-50 rounded-full border border-gray-200"
-                  >
-                    Join
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl p-8">
-                  <DialogHeader className="text-center mb-8">
-                    <DialogTitle className="text-2xl font-semibold">What would you like to join as?</DialogTitle>
-                  </DialogHeader>
-                  <div className="grid grid-cols-3 gap-6 mb-8">
-                    <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
-                      <div className="flex flex-col items-center text-center space-y-4">
-                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                          <User className="h-10 w-10 text-gray-600" />
-                        </div>
-                        <h3 className="text-lg font-medium">Talent</h3>
-                      </div>
-                    </div>
-                    <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
-                      <div className="flex flex-col items-center text-center space-y-4">
-                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                          <CalendarIcon className="h-10 w-10 text-gray-600" />
-                        </div>
-                        <h3 className="text-lg font-medium">Event Leader</h3>
-                      </div>
-                    </div>
-                    <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
-                      <div className="flex flex-col items-center text-center space-y-4">
-                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                          <Trophy className="h-10 w-10 text-gray-600" />
-                        </div>
-                        <h3 className="text-lg font-medium">Team Leader</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="border-t pt-6">
-                    <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
-                      <div className="flex flex-col items-center text-center space-y-4">
-                        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                          <Building className="h-10 w-10 text-gray-600" />
-                        </div>
-                        <h3 className="text-lg font-medium">Sponsor</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-end mt-8">
-                    <Button className="bg-black text-white hover:bg-gray-800 px-8 py-2 rounded-lg">Next</Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <JoinRoleSelector 
+                isOpen={showJoinModal} 
+                onOpenChange={setShowJoinModal}
+                onRoleSelect={handleRoleSelect}
+                currentRole={selectedUserRole}
+              >
+                <Button
+                  variant="ghost"
+                  className="text-sm font-medium px-4 text-gray-900 bg-white hover:bg-gray-50 rounded-full border border-gray-200"
+                >
+                  {selectedUserRole ? `${selectedUserRole}` : "Join"}
+                </Button>
+              </JoinRoleSelector>
             </div>
           </div>
 
@@ -281,60 +242,19 @@ export function DiscoverHeader({
                     </Button>
                   )}
                   <MobileSignIn />
-                  <Dialog open={showJoinModal} onOpenChange={setShowJoinModal}>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-start text-gray-900 bg-white hover:bg-gray-50 rounded-full border border-gray-200"
-                      >
-                        Join
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl p-8">
-                      <DialogHeader className="text-center mb-8">
-                        <DialogTitle className="text-2xl font-semibold">What would you like to join as?</DialogTitle>
-                      </DialogHeader>
-                      <div className="grid grid-cols-3 gap-6 mb-8">
-                        <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
-                          <div className="flex flex-col items-center text-center space-y-4">
-                            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                              <User className="h-10 w-10 text-gray-600" />
-                            </div>
-                            <h3 className="text-lg font-medium">Talent</h3>
-                          </div>
-                        </div>
-                        <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
-                          <div className="flex flex-col items-center text-center space-y-4">
-                            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                              <CalendarIcon className="h-10 w-10 text-gray-600" />
-                            </div>
-                            <h3 className="text-lg font-medium">Event Leader</h3>
-                          </div>
-                        </div>
-                        <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
-                          <div className="flex flex-col items-center text-center space-y-4">
-                            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                              <Trophy className="h-10 w-10 text-gray-600" />
-                            </div>
-                            <h3 className="text-lg font-medium">Team Leader</h3>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="border-t pt-6">
-                        <div className="border-2 border-gray-200 rounded-2xl p-8 hover:border-gray-400 cursor-pointer transition-colors">
-                          <div className="flex flex-col items-center text-center space-y-4">
-                            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                              <Building className="h-10 w-10 text-gray-600" />
-                            </div>
-                            <h3 className="text-lg font-medium">Sponsor</h3>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex justify-end mt-8">
-                        <Button className="bg-black text-white hover:bg-gray-800 px-8 py-2 rounded-lg">Next</Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  <MobileJoinRoleSelector
+                    isOpen={showJoinModal} 
+                    onOpenChange={setShowJoinModal}
+                    onRoleSelect={handleRoleSelect}
+                    currentRole={selectedUserRole}
+                  >
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start text-gray-900 bg-white hover:bg-gray-50 rounded-full border border-gray-200"
+                    >
+                      {selectedUserRole ? `${selectedUserRole}` : "Join"}
+                    </Button>
+                  </MobileJoinRoleSelector>
                 </div>
               </SheetContent>
             </Sheet>
