@@ -2,13 +2,15 @@
 
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
-import { ArrowLeft, Star, MapPin, Heart, Share, MessageCircle, Sparkles, Calendar, BarChart } from "lucide-react";
+import { ArrowLeft, Star, MapPin, Heart, Share, MessageCircle, Sparkles, Calendar, BarChart, Edit } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { TooltipProvider } from "@/components/molecules";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/organisms";
 import { QrCode, Copy, Link as LinkIcon, Twitter, Instagram } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { ProfileEdit } from "@/components/templates/user/profile-edit";
 
 interface EventHeaderProps {
   event?: {
@@ -29,6 +31,33 @@ interface EventHeaderProps {
 }
 
 export function EventHeader({ event, onShareClick }: EventHeaderProps) {
+  const { user, isAuthenticated } = useAuth();
+  const [profileData, setProfileData] = useState<any>(null);
+
+  // Check if current user owns this profile
+  const isOwner = isAuthenticated && event && user?.id === event.id;
+
+  // Fetch profile data for editing if user is the owner
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (isOwner && user?.id) {
+        try {
+          const response = await fetch(`/api/profile/${user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setProfileData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      }
+    };
+
+    if (isOwner) {
+      fetchProfileData();
+    }
+  }, [isOwner, user?.id]);
+
   if (!event) {
     return (
       <div className="p-8 text-center text-gray-500">
@@ -108,6 +137,18 @@ export function EventHeader({ event, onShareClick }: EventHeaderProps) {
           <Button variant="outline" className="bg-transparent rounded-full" size="icon">
             <Heart className="h-4 w-4" />
           </Button>
+          {isOwner && profileData && (
+            <ProfileEdit
+              userId={event.id}
+              talentProfile={profileData.talent_profile}
+              teamProfile={profileData.team_profile}
+              eventProfile={profileData.event_profile}
+            >
+              <Button variant="outline" className="bg-transparent rounded-full" size="icon">
+                <Edit className="h-4 w-4" />
+              </Button>
+            </ProfileEdit>
+          )}
           <Button variant="outline" className="bg-transparent text-sm px-3 sm:px-4" onClick={onShareClick}>
             <Share className="h-4 w-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Share</span>
@@ -146,6 +187,32 @@ interface TalentHeaderProps {
 
 export function TalentHeader({ talent, onShareClick }: TalentHeaderProps) {
   const [showShareModal, setShowShareModal] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+  const [profileData, setProfileData] = useState<any>(null);
+
+  // Check if current user owns this profile
+  const isOwner = isAuthenticated && user?.id === talent.id;
+
+  // Fetch profile data for editing if user is the owner
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (isOwner && user?.id) {
+        try {
+          const response = await fetch(`/api/profile/${user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setProfileData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      }
+    };
+
+    if (isOwner) {
+      fetchProfileData();
+    }
+  }, [isOwner, user?.id]);
 
   return (
     <>
@@ -221,6 +288,18 @@ export function TalentHeader({ talent, onShareClick }: TalentHeaderProps) {
               <Button variant="outline" className="bg-transparent rounded-full" size="icon">
                 <Heart className="h-4 w-4" />
               </Button>
+              {isOwner && profileData && (
+                <ProfileEdit
+                  userId={talent.id}
+                  talentProfile={profileData.talent_profile}
+                  teamProfile={profileData.team_profile}
+                  eventProfile={profileData.event_profile}
+                >
+                  <Button variant="outline" className="bg-transparent rounded-full" size="icon">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                </ProfileEdit>
+              )}
               <Dialog open={showShareModal} onOpenChange={setShowShareModal}>
                 <DialogTrigger asChild>
                   <Button
@@ -307,6 +386,32 @@ interface TeamHeaderProps {
 
 export function TeamHeader({ team, onShareClick }: TeamHeaderProps) {
   const [showShareModal, setShowShareModal] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+  const [profileData, setProfileData] = useState<any>(null);
+
+  // Check if current user owns this profile
+  const isOwner = isAuthenticated && user?.id === team.id;
+
+  // Fetch profile data for editing if user is the owner
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (isOwner && user?.id) {
+        try {
+          const response = await fetch(`/api/profile/${user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setProfileData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      }
+    };
+
+    if (isOwner) {
+      fetchProfileData();
+    }
+  }, [isOwner, user?.id]);
 
   return (
     <>
@@ -382,6 +487,18 @@ export function TeamHeader({ team, onShareClick }: TeamHeaderProps) {
           <Button variant="outline" className="bg-transparent rounded-full" size="icon">
             <Heart className="h-4 w-4" />
           </Button>
+          {isOwner && profileData && (
+            <ProfileEdit
+              userId={team.id}
+              talentProfile={profileData.talent_profile}
+              teamProfile={profileData.team_profile}
+              eventProfile={profileData.event_profile}
+            >
+              <Button variant="outline" className="bg-transparent rounded-full" size="icon">
+                <Edit className="h-4 w-4" />
+              </Button>
+            </ProfileEdit>
+          )}
           <Dialog open={showShareModal} onOpenChange={setShowShareModal}>
             <DialogTrigger asChild>
               <Button
