@@ -42,6 +42,7 @@ export async function getTalentProfile(id: string) {
     // Transform data to match the existing mock data structure
     const profile = {
       id: user.id,
+      email: user.email, // Add email for ownership verification
       name: user.name,
       sport: user.primary_sport,
       location: `${user.base_location.city}, ${user.base_location.state}`,
@@ -200,6 +201,7 @@ export async function getTeamProfile(id: string) {
 
     const profile = {
       id: user.id,
+      email: user.email, // Add email for ownership verification
       name: user.name,
       sport: user.primary_sport,
       location: `${user.base_location.city}, ${user.base_location.state}`,
@@ -353,6 +355,7 @@ export async function getEventProfile(id: string) {
 
     const profile = {
       id: user.id,
+      email: user.email, // Add email for ownership verification
       name: user.name,
       sport: user.primary_sport,
       location: `${user.event_profile.location.city}, ${user.event_profile.location.state}`,

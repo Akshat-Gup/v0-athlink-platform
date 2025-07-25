@@ -276,14 +276,6 @@ async function main() {
               { month: 'Jun', ranking: 12, wins: 6 },
             ],
           },
-          checkpoints: {
-            create: [
-              { amount: 1000, reward: 'Social media shoutout + signed photo', unlocked: true },
-              { amount: 2500, reward: 'Logo on training gear + monthly updates', unlocked: true },
-              { amount: 5000, reward: 'Logo on competition outfit + VIP event access', unlocked: false },
-              { amount: 7500, reward: 'Personal training session + exclusive content', unlocked: false },
-            ],
-          },
         },
       },
       social_links: {
@@ -312,6 +304,51 @@ async function main() {
         ],
       },
     },
+  })
+
+  // Create Sarah Chen's campaign
+  await prisma.campaign.create({
+    data: {
+      athlete_id: sarahChen.id,
+      title: "Tennis Career Development Campaign",
+      description: "Support my journey to the Olympics and help me achieve my tennis dreams. Your sponsorship will cover training, equipment, and travel expenses for upcoming tournaments.",
+      funding_goal: 5000,
+      current_funding: 2500,
+      deadline: new Date('2024-12-31'),
+      status: 'ACTIVE',
+      perk_tiers: {
+        create: [
+          {
+            tier_name: 'Supporter',
+            amount: 1000,
+            description: 'Get a social media shoutout and signed photo from Sarah',
+            deliverables: JSON.stringify(['Signed photo', 'Social media mention']),
+            max_sponsors: 50
+          },
+          {
+            tier_name: 'Training Partner',
+            amount: 2500,
+            description: 'Logo on training gear plus monthly progress updates',
+            deliverables: JSON.stringify(['Logo placement', 'Monthly updates', 'Training photos']),
+            max_sponsors: 20
+          },
+          {
+            tier_name: 'Competition Sponsor',
+            amount: 5000,
+            description: 'Logo on competition outfit and VIP event access',
+            deliverables: JSON.stringify(['Competition logo', 'VIP access', 'Meet & greet']),
+            max_sponsors: 10
+          },
+          {
+            tier_name: 'Elite Partner',
+            amount: 7500,
+            description: 'Personal training session and exclusive content access',
+            deliverables: JSON.stringify(['Personal session', 'Exclusive content', 'All previous benefits']),
+            max_sponsors: 5
+          }
+        ]
+      }
+    }
   })
 
   // Create Marcus Johnson (Basketball talent)
@@ -344,13 +381,6 @@ async function main() {
               { label: 'PPG', value: '18.5', icon: '🎯', category: 'PERFORMANCE' },
               { label: 'APG', value: '7.2', icon: '🤝', category: 'PERFORMANCE' },
               { label: 'RPG', value: '4.1', icon: '🏀', category: 'PERFORMANCE' },
-            ],
-          },
-          checkpoints: {
-            create: [
-              { amount: 2000, reward: 'Training gear sponsorship', unlocked: true },
-              { amount: 4000, reward: 'Equipment package + social media', unlocked: true },
-              { amount: 8000, reward: 'Full season sponsorship', unlocked: false },
             ],
           },
         },
@@ -464,14 +494,6 @@ async function main() {
               { month: 'Jun', ranking: 2, wins: 3 },
             ],
           },
-          checkpoints: {
-            create: [
-              { amount: 5000, reward: 'Team logo on social media + team photo', unlocked: true },
-              { amount: 10000, reward: 'Logo on practice jerseys + facility tour', unlocked: true },
-              { amount: 15000, reward: 'Logo on game jerseys + VIP game tickets', unlocked: true },
-              { amount: 25000, reward: 'Naming rights to training facility + exclusive events', unlocked: false },
-            ],
-          },
         },
       },
       social_links: {
@@ -564,14 +586,6 @@ async function main() {
                 date: 'July 17, 2024',
                 events: ['50m Freestyle Sprints', '400m Individual Medley', 'Awards Ceremony'],
               },
-            ],
-          },
-          checkpoints: {
-            create: [
-              { amount: 25000, reward: 'Logo on event materials + social media mentions', unlocked: true },
-              { amount: 50000, reward: 'Logo on pool deck + VIP hospitality', unlocked: true },
-              { amount: 75000, reward: 'Title sponsorship + naming rights', unlocked: true },
-              { amount: 100000, reward: 'Exclusive presenting sponsor + premium benefits', unlocked: false },
             ],
           },
           ticket_sales: {
@@ -702,8 +716,6 @@ async function main() {
       amount: 2500,
       tier: 'Gold Sponsor',
       status: 'ACTIVE',
-      start_date: new Date('2024-01-01'),
-      end_date: new Date('2024-12-31'),
     },
   })
 

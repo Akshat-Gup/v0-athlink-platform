@@ -5,6 +5,8 @@ import { Badge } from "@/components/atoms/badge"
 import { Card } from "@/components/molecules/card"
 import { Progress } from "@/components/atoms/progress"
 import { SidebarSocials, SidebarSponsorship } from "@/components/molecules"
+import { Session } from "next-auth"
+import { useState, useEffect } from "react"
 
 interface EventSidebarProps {
   event: {
@@ -54,6 +56,8 @@ interface DefaultSidebarProps {
   submitButtonText?: string
   profileId?: string
   profileType?: "talent" | "event" | "team"
+  session?: Session | null
+  profileOwnerId?: string | number
 }
 
 export function EventSidebar({ event }: EventSidebarProps) {
@@ -117,7 +121,39 @@ export function EventSidebar({ event }: EventSidebarProps) {
   )
 }
 
-export function DefaultSidebar({ item, title, subtitle, submitButtonText, profileId, profileType }: DefaultSidebarProps) {
+export function DefaultSidebar({ item, title, subtitle, submitButtonText, profileId, profileType, session, profileOwnerId }: DefaultSidebarProps) {
+  const [campaignData, setCampaignData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetchCampaignData = async () => {
+    try {
+      setLoading(true)
+      // Fetch campaign data for this profile
+      const response = await fetch(`/api/campaigns/profile/${profileId || item.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setCampaignData(data)
+      }
+    } catch (error) {
+      console.error('Error fetching campaign data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (profileId || item.id) {
+      fetchCampaignData()
+    } else {
+      setLoading(false)
+    }
+  }, [profileId, item.id])
+
+  // Refresh campaign data after updates
+  const handleCampaignUpdated = async () => {
+    await fetchCampaignData()
+  }
+
   const renderProgressBar = (current: number, goal: number) => {
     const percentage = (current / goal) * 100
     return (
@@ -144,6 +180,10 @@ export function DefaultSidebar({ item, title, subtitle, submitButtonText, profil
           submitButtonText={submitButtonText}
           profileId={profileId || item.id?.toString() || ""}
           profileType={profileType}
+          session={session}
+          profileOwnerId={profileOwnerId}
+          campaignData={campaignData}
+          onCampaignUpdated={handleCampaignUpdated}
         />
         <SidebarSocials socials={item.socials} />
       </div>

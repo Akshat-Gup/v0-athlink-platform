@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
@@ -6,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Heart, Menu, Search, X, Users, CalendarIcon, Edit } from "lucide-react"
 import { TalentItem } from "@/hooks/use-discover-data"
 import { DiscoverSignIn, MobileSignIn} from "@/components/atoms"
-import { handleSignOut, handleSignIn } from "app/api/auth/actions";
+import { handleSignOut } from "app/api/auth/actions";
 import { Session } from "next-auth"
 import { JoinRoleSelector, MobileJoinRoleSelector } from "@/components/templates"
 import { ProfileEdit } from "@/components/templates/user/profile-edit"
@@ -229,15 +231,14 @@ export function DiscoverHeader({
                   </form>
                 </>
                 ) : (
-                <form action={() => handleSignIn('google')}>
+                <Link href="/login">
                   <Button
-                  type="submit"
                   variant="ghost"
                   className="text-sm font-medium px-4 text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg shadow-green-500/25 animate-shimmer"
                   >
                   Sign In
                   </Button>
-                </form>
+                </Link>
                 )}
               <JoinRoleSelector 
                 isOpen={showJoinModal} 

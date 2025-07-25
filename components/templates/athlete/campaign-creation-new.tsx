@@ -225,8 +225,6 @@ export function CampaignCreation({ children, onCampaignCreated, editCampaign }: 
       const url = isEditMode ? `/api/campaigns/${editCampaign.id}` : '/api/campaigns'
       const method = isEditMode ? 'PUT' : 'POST'
       
-      console.log('Submitting campaign:', { url, method, isEditMode })
-      
       const response = await fetch(url, {
         method,
         headers: {
@@ -247,11 +245,8 @@ export function CampaignCreation({ children, onCampaignCreated, editCampaign }: 
         }),
       })
 
-      console.log('Response status:', response.status, response.ok)
-
       if (response.ok) {
         const result = await response.json()
-        console.log('Campaign update result:', result)
         toast({
           title: isEditMode ? "Campaign Updated!" : "Campaign Created!",
           description: isEditMode 
@@ -260,7 +255,6 @@ export function CampaignCreation({ children, onCampaignCreated, editCampaign }: 
         })
         
         setIsOpen(false)
-        console.log('Calling onCampaignCreated with:', result.campaign)
         onCampaignCreated?.(result.campaign)
       } else {
         const error = await response.json()

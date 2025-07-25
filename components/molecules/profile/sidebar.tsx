@@ -1,16 +1,21 @@
 import { Button } from "@/components/atoms/button"
 import { Badge } from "@/components/atoms/badge"
 import { Card } from "@/components/molecules/card"
-import { Instagram, Twitter, Youtube, Facebook, ExternalLink } from "lucide-react"
-import React, { useState } from "react"
+import { Instagram, Twitter, Youtube, Facebook, ExternalLink, Edit, Plus } from "lucide-react"
+import React, { useState, useEffect } from "react"
 import { SponsorshipModal } from "@/components/templates/user/sponsorship-modal"
 import { SponsorshipProgress } from "@/components/molecules/profile/sponsorship-progress"
+import { CampaignCreation } from "@/components/templates/athlete/campaign-creation"
 import { useUserRole } from "@/hooks/use-user-role"
 import { useSponsorshipData } from "@/hooks/use-sponsorship-data"
+import { useCampaignData } from "@/hooks/use-campaign-data"
+import { useAuth } from "@/hooks/use-auth"
+import { Session } from "next-auth"
 
 interface Checkpoint {
   amount: number
   reward: string
+  description?: string
   unlocked: boolean
 }
 
@@ -24,6 +29,24 @@ interface SidebarSponsorshipProps {
   submitButtonText?: string
   profileId?: string
   profileType?: "talent" | "event" | "team"
+  session?: Session | null
+  profileOwnerId?: string | number // ID of the profile owner to check ownership
+  campaignData?: {
+    id: number
+    title: string
+    description: string
+    funding_goal: number
+    current_funding: number
+    deadline?: string
+    perk_tiers: Array<{
+      tier_name: string
+      amount: number
+      description: string
+      deliverables: any
+      max_sponsors: number
+    }>
+  } // Campaign data for this profile (for visitors viewing someone else's profile)
+  onCampaignUpdated?: () => void // Callback to refresh campaign data
 }
 
 export function SidebarSponsorship({ 
@@ -35,17 +58,60 @@ export function SidebarSponsorship({
   subtitle = "Milestones", 
   submitButtonText = "Submit",
   profileId = "",
-  profileType = "talent"
+  profileType = "talent",
+  session = null,
+  profileOwnerId = undefined,
+  campaignData = null,
+  onCampaignUpdated
 }: SidebarSponsorshipProps) {
   const [isSponsorshipModalOpen, setIsSponsorshipModalOpen] = useState(false)
   const { selectedUserRole } = useUserRole()
+  const { user } = useAuth()
   const { getTotalContributionForTarget, addContribution } = useSponsorshipData()
+  const { getUserActiveCampaign, fetchUserCampaigns } = useCampaignData()
   
   const isSponsor = selectedUserRole === "Sponsor"
   
+  // Check if the current user is the owner of this profile
+  const isProfileOwner = session?.user?.email && (
+    session.user.email === profileOwnerId || 
+    session.user.id === profileOwnerId ||
+    user?.email === profileOwnerId ||
+    user?.id === profileOwnerId
+  )
+  
+  // Get user's active campaign for editing (only for profile owners)
+  const activeCampaign = isProfileOwner ? getUserActiveCampaign() : null
+  
+  // Use the provided campaign data (for visitors) or the user's own campaign (for owners)
+  const displayCampaign = campaignData || activeCampaign
+  
+  // Use campaign data if available, otherwise fall back to props
+  const campaignCheckpoints = displayCampaign?.perk_tiers?.map(tier => ({
+    amount: tier.amount,
+    reward: tier.tier_name,
+    description: tier.description,
+    unlocked: false // Will be determined by user contribution
+  })) || []
+  
+  const campaignGoal = displayCampaign?.funding_goal || goalFunding
+  const campaignCurrent = displayCampaign?.current_funding || currentFunding
+  
+  // Use campaign checkpoints if available, otherwise use props
+  const finalCheckpoints = campaignCheckpoints.length > 0 ? campaignCheckpoints : checkpoints
+
+  // Refresh campaigns after campaign creation/update
+  const handleCampaignUpdated = async (campaign: any) => {
+    await fetchUserCampaigns() // Refresh user campaigns
+    onCampaignUpdated?.() // Call parent refresh function
+  }
+  
   // Get user's contribution for this specific profile (not mock data)
   const userContribution = getTotalContributionForTarget(Number(profileId) || 1, profileType)
-  if (!checkpoints || checkpoints.length === 0) {
+  
+  // Check if this profile has campaign data
+  const hasCampaignData = finalCheckpoints && finalCheckpoints.length > 0 && campaignGoal > 0
+  if (!hasCampaignData && !isProfileOwner) {
     return (
       <Card className="p-6 shadow-xl border-0">
         <h3 className="text-lg font-semibold mb-4">{title}</h3>
@@ -56,16 +122,48 @@ export function SidebarSponsorship({
     )
   }
 
+  if (!hasCampaignData && isProfileOwner) {
+    return (
+      <Card className="p-6 shadow-xl border-0">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="text-center py-8 text-gray-500">
+          <p className="mb-4">No campaign set up yet</p>
+          <p className="text-sm text-gray-400 mb-6">Create a sponsorship campaign to attract sponsors and showcase your goals.</p>
+          
+          {/* Campaign Creation Modal */}
+          <CampaignCreation onCampaignCreated={handleCampaignUpdated}>
+            <Button 
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Create Campaign
+            </Button>
+          </CampaignCreation>
+        </div>
+      </Card>
+    )
+  }
+
   return (
     <Card className="p-6 shadow-xl border-0">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
       
+      {/* Campaign Title and Description */}
+      {displayCampaign && (
+        <div className="pb-4">
+          <h4 className="font-semibold text-black-900 mb-2">{displayCampaign.title}</h4>
+          {displayCampaign.description && (
+            <p className="text-sm text-black-800 leading-relaxed">{displayCampaign.description}</p>
+          )}
+        </div>
+      )}
+      
       {/* Enhanced Progress Bar with Sponsorship Progress Component */}
       <SponsorshipProgress 
-        totalRequested={goalFunding}
-        currentFunding={currentFunding}
+        totalRequested={campaignGoal}
+        currentFunding={campaignCurrent}
         yourContribution={userContribution}
-        perks={checkpoints.map((checkpoint, index) => {
+        perks={finalCheckpoints.map((checkpoint, index) => {
           return {
             id: index + 1,
             amount: checkpoint.amount,
@@ -79,7 +177,7 @@ export function SidebarSponsorship({
       {/* Sponsorship Checkpoints */}
       <div className="mt-6 space-y-3">
         <h4 className="font-medium text-sm">{subtitle}</h4>
-        {checkpoints.map((checkpoint, index) => {
+        {finalCheckpoints.map((checkpoint, index) => {
           const isUnlockedByUser = userContribution >= checkpoint.amount
           return (
             <div
@@ -94,14 +192,50 @@ export function SidebarSponsorship({
                 <span className="font-medium text-sm">${checkpoint.amount?.toLocaleString() || 0}</span>
                 {isUnlockedByUser && <Badge className="bg-green-600 text-white">Unlocked</Badge>}
               </div>
-              <p className="text-xs text-gray-600">{checkpoint.reward || "No reward information"}</p>
+              <p className="text-xs text-gray-600 font-medium mb-1">{checkpoint.reward || "No reward information"}</p>
+              {checkpoint.description && (
+                <p className="text-xs text-gray-500">{checkpoint.description}</p>
+              )}
             </div>
           )
         })}
       </div>
       
-      {/* Conditional button based on user role */}
-      {isSponsor ? (
+      {/* Conditional button based on user role and ownership */}
+      {isProfileOwner ? (
+        <CampaignCreation 
+          editCampaign={displayCampaign ? {
+            id: displayCampaign.id,
+            title: displayCampaign.title,
+            description: displayCampaign.description,
+            funding_goal: displayCampaign.funding_goal,
+            deadline: displayCampaign.deadline,
+            perk_tiers: displayCampaign.perk_tiers.map(tier => ({
+              tier_name: tier.tier_name,
+              amount: tier.amount,
+              description: tier.description,
+              deliverables: typeof tier.deliverables === 'string' 
+                ? (() => {
+                    try {
+                      return JSON.parse(tier.deliverables)
+                    } catch {
+                      return { custom: tier.deliverables }
+                    }
+                  })()
+                : tier.deliverables,
+              max_sponsors: tier.max_sponsors
+            }))
+          } : null}
+          onCampaignCreated={handleCampaignUpdated}
+        >
+          <Button 
+            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            Edit Campaign
+          </Button>
+        </CampaignCreation>
+      ) : isSponsor ? (
         <Button 
           className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white"
           onClick={() => setIsSponsorshipModalOpen(true)}
@@ -123,17 +257,17 @@ export function SidebarSponsorship({
           targetType: profileType,
           targetName: title,
           targetImage: undefined,
-          totalRequested: goalFunding, // Use actual profile goal funding
-          currentFunding: currentFunding, // Use actual profile current funding
+          totalRequested: campaignGoal, // Use campaign goal funding
+          currentFunding: campaignCurrent, // Use campaign current funding
           yourContribution: userContribution, // Use actual user contribution for this profile
-          perks: checkpoints.map((checkpoint, index) => ({
+          perks: finalCheckpoints.map((checkpoint, index) => ({
             id: index + 1,
             amount: checkpoint.amount,
             title: checkpoint.reward,
             description: `Unlock ${checkpoint.reward} when your contribution reaches $${checkpoint.amount.toLocaleString()}`,
             isUnlocked: userContribution >= checkpoint.amount
           })),
-          yourPerks: checkpoints.filter((checkpoint, index) => userContribution >= checkpoint.amount).map((checkpoint, index) => ({
+          yourPerks: finalCheckpoints.filter((checkpoint, index) => userContribution >= checkpoint.amount).map((checkpoint, index) => ({
             id: index + 1,
             amount: checkpoint.amount,
             title: checkpoint.reward,

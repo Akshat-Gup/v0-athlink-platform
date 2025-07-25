@@ -20,6 +20,7 @@ import {
 } from "@/components/molecules"
 import { use } from "react"
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 
 interface PageProps {
   params: Promise<{
@@ -32,18 +33,26 @@ export default function TalentProfilePage({ params }: PageProps) {
   const [talent, setTalent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { data: session } = useSession()
 
   useEffect(() => {
     async function fetchTalent() {
       try {
         setLoading(true)
+        console.log('Fetching talent profile for ID:', id)
         const response = await fetch(`/api/profile/talents/${id}`)
         
+        console.log('Response status:', response.status)
+        console.log('Response ok:', response.ok)
+        
         if (!response.ok) {
+          const errorText = await response.text()
+          console.error('Error response:', errorText)
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         
         const data = await response.json()
+        console.log('Fetched talent data:', data)
         setTalent(data)
       } catch (err) {
         console.error('Error fetching talent profile:', err)
@@ -154,6 +163,7 @@ export default function TalentProfilePage({ params }: PageProps) {
       SidebarComponent={TalentSidebarAdapter}
       tabs={tabs}
       defaultTab="overview"
+      session={session}
     />
   )
 }

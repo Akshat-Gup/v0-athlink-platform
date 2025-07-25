@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/o
 import { QrCode } from "lucide-react"
 import { useState, ReactNode } from "react"
 import { Tooltip, TooltipProvider } from "@/components/molecules/tooltip"
+import { Session } from "next-auth"
 
 // Generic interfaces for profile data
 export interface BaseProfile {
@@ -29,6 +30,7 @@ interface ProfileTemplateProps {
   SidebarComponent: React.ComponentType<any>
   tabs: TabConfig[]
   defaultTab?: string
+  session?: Session | null
 }
 
 export function ProfileTemplate({
@@ -37,7 +39,8 @@ export function ProfileTemplate({
   HeaderComponent,
   SidebarComponent,
   tabs,
-  defaultTab = "overview"
+  defaultTab = "overview",
+  session
 }: ProfileTemplateProps) {
   const [activeTab, setActiveTab] = useState(defaultTab)
   const [showShareModal, setShowShareModal] = useState(false)
@@ -81,7 +84,7 @@ export function ProfileTemplate({
               </div>
             </div>
 
-            <SidebarComponent profile={profile} event={profile} />
+            <SidebarComponent profile={profile} event={profile} session={session} />
           </div>
 
           {/* Share Modal */}

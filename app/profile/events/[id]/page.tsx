@@ -14,6 +14,7 @@ import {
 } from "@/components/molecules"
 import { use } from "react"
 import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 
 interface PageProps {
   params: Promise<{
@@ -26,6 +27,7 @@ export default function EventProfilePage({ params }: PageProps) {
   const [event, setEvent] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { data: session } = useSession()
 
   useEffect(() => {
     async function fetchEvent() {
@@ -138,6 +140,7 @@ export default function EventProfilePage({ params }: PageProps) {
       SidebarComponent={EventSidebarAdapter}
       tabs={tabs}
       defaultTab="overview"
+      session={session}
     />
   )
 }
