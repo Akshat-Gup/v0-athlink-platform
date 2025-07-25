@@ -82,7 +82,7 @@ export default function DemoPage() {
         <div className="bg-white rounded-lg p-6 shadow-sm">
           <h2 className="text-lg font-semibold mb-4">Available Test Accounts</h2>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <p className="font-medium text-blue-600 mb-2">Athletes (Role: Talent)</p>
                 <ul className="space-y-1 text-sm text-gray-600">
@@ -102,12 +102,21 @@ export default function DemoPage() {
                   <li>• maya.patel@example.com (Content Creator)</li>
                 </ul>
               </div>
+              <div>
+                <p className="font-medium text-orange-600 mb-2">Sponsors (Separate Database)</p>
+                <ul className="space-y-1 text-sm text-gray-600">
+                  <li>• sponsor@example.com (TechCorp Sponsors)</li>
+                </ul>
+                <p className="text-xs text-gray-500 mt-2 italic">
+                  * Sponsors use a separate database table and don't appear on discover page
+                </p>
+              </div>
             </div>
             
             <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="p-3 bg-blue-50 rounded-md text-center">
                 <div className="font-medium text-blue-800">Talent</div>
-                <div className="text-xs text-blue-600">7 users</div>
+                <div className="text-xs text-blue-600">6 users</div>
               </div>
               <div className="p-3 bg-green-50 rounded-md text-center">
                 <div className="font-medium text-green-800">Event Leader</div>
@@ -119,7 +128,7 @@ export default function DemoPage() {
               </div>
               <div className="p-3 bg-orange-50 rounded-md text-center">
                 <div className="font-medium text-orange-800">Sponsor</div>
-                <div className="text-xs text-orange-600">0 users</div>
+                <div className="text-xs text-orange-600">1 entity</div>
               </div>
             </div>
             

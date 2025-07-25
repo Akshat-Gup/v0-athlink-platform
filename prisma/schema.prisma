@@ -485,7 +485,8 @@ model PerkTier {
 model SponsorshipRequest {
   id               Int      @id @default(autoincrement())
   campaign_id      Int
-  sponsor_id       Int
+  sponsor_id       Int?     // References User table (legacy sponsors)
+  sponsor_entity_id Int?    // References Sponsor table (new sponsors)
   athlete_id       Int
   perk_tier_id     Int?     // NULL if custom offer
   amount           Float
@@ -498,7 +499,8 @@ model SponsorshipRequest {
   updated_at       DateTime @updatedAt
   
   campaign         Campaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
-  sponsor          User     @relation("SponsorshipSponsor", fields: [sponsor_id], references: [id], onDelete: Cascade)
+  sponsor          User?    @relation("SponsorshipSponsor", fields: [sponsor_id], references: [id], onDelete: Cascade)
+  sponsor_entity   Sponsor? @relation("SponsorRequests", fields: [sponsor_entity_id], references: [id], onDelete: Cascade)
   athlete          User     @relation("SponsorshipAthlete", fields: [athlete_id], references: [id], onDelete: Cascade)
   perk_tier        PerkTier? @relation(fields: [perk_tier_id], references: [id], onDelete: SetNull)
 
@@ -517,4 +519,30 @@ model Favorite {
 
   @@unique([user_id, profile_id]) // Prevent duplicate favorites
   @@map("favorites")
+}
+
+model Sponsor {
+  id                    Int      @id @default(autoincrement())
+  name                  String
+  email                 String   @unique
+  password              String?
+  company_name          String?
+  company_description   String?
+  industry              String?
+  website               String?
+  logo_url              String?
+  contact_name          String?
+  contact_phone         String?
+  budget_range          String?  // "Under $1K", "$1K-$5K", "$5K-$10K", etc.
+  preferred_sports      String?  // JSON array of sports
+  location              String?
+  verification_status   String   @default("UNVERIFIED")
+  is_active             Boolean  @default(true)
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+  
+  // Relations for sponsorship activities (using user_id references)
+  sponsorship_requests  SponsorshipRequest[] @relation("SponsorRequests")
+
+  @@map("sponsors")
 }
