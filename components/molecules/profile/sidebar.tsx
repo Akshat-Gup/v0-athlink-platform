@@ -1,15 +1,20 @@
 import { Button } from "@/components/atoms/button"
 import { Badge } from "@/components/atoms/badge"
 import { Card } from "@/components/molecules/card"
-import { Instagram, Twitter, Youtube, Facebook, ExternalLink, Edit, Plus } from "lucide-react"
+import { Instagram, Twitter, Youtube, Facebook, ExternalLink, Edit, Plus, MessageCircle } from "lucide-react"
 import React, { useState, useEffect } from "react"
+import Link from "next/link"
 import { SponsorshipModal } from "@/components/templates/user/sponsorship-modal"
 import { SponsorshipProgress } from "@/components/molecules/profile/sponsorship-progress"
 import { CampaignCreation } from "@/components/templates/athlete/campaign-creation"
 import { useUserRole } from "@/hooks/use-user-role"
 import { useSponsorshipData } from "@/hooks/use-sponsorship-data"
+import { useCampaignSponsorship } from "@/hooks/use-campaign-sponsorship"
 import { useCampaignData } from "@/hooks/use-campaign-data"
 import { useAuth } from "@/hooks/use-auth"
+import { usePendingRequestsCount } from "@/hooks/use-pending-requests"
+import { useSponsorContributions } from "@/hooks/use-sponsor-contributions"
+import { sponsorshipEvents, SPONSORSHIP_EVENTS } from "@/lib/sponsorship-events"
 import { Session } from "next-auth"
 
 interface Checkpoint {
@@ -61,14 +66,17 @@ export function SidebarSponsorship({
   profileType = "talent",
   session = null,
   profileOwnerId = undefined,
-  campaignData = null,
+  campaignData,
   onCampaignUpdated
 }: SidebarSponsorshipProps) {
   const [isSponsorshipModalOpen, setIsSponsorshipModalOpen] = useState(false)
   const { selectedUserRole } = useUserRole()
   const { user } = useAuth()
-  const { getTotalContributionForTarget, addContribution } = useSponsorshipData()
+  const { getTotalContributionForTarget } = useSponsorshipData()
+  const { submitSponsorshipRequest, isSubmitting } = useCampaignSponsorship()
+  const { count: pendingRequestsCount } = usePendingRequestsCount()
   const { getUserActiveCampaign, fetchUserCampaigns } = useCampaignData()
+  const { getTotalContributionForAthlete, refreshContributions } = useSponsorContributions()
   
   const isSponsor = selectedUserRole === "Sponsor"
   
@@ -105,9 +113,28 @@ export function SidebarSponsorship({
     await fetchUserCampaigns() // Refresh user campaigns
     onCampaignUpdated?.() // Call parent refresh function
   }
+
+  // Listen for sponsorship events to refresh display
+  useEffect(() => {
+    const handleSponsorshipUpdate = () => {
+      console.log('Sponsorship updated - refreshing sidebar display')
+      refreshContributions()
+      onCampaignUpdated?.() // Also refresh campaign data
+    }
+
+    sponsorshipEvents.on(SPONSORSHIP_EVENTS.REQUEST_APPROVED, handleSponsorshipUpdate)
+    sponsorshipEvents.on(SPONSORSHIP_EVENTS.REQUEST_REJECTED, handleSponsorshipUpdate)
+
+    return () => {
+      sponsorshipEvents.off(SPONSORSHIP_EVENTS.REQUEST_APPROVED, handleSponsorshipUpdate)
+      sponsorshipEvents.off(SPONSORSHIP_EVENTS.REQUEST_REJECTED, handleSponsorshipUpdate)
+    }
+  }, [refreshContributions, onCampaignUpdated])
   
-  // Get user's contribution for this specific profile (not mock data)
-  const userContribution = getTotalContributionForTarget(Number(profileId) || 1, profileType)
+  // Get user's contribution for this specific profile (use real database data)
+  const userContribution = isSponsor 
+    ? getTotalContributionForAthlete(Number(profileOwnerId) || Number(profileId) || 1)
+    : getTotalContributionForTarget(Number(profileId) || 1, profileType)
   
   // Check if this profile has campaign data
   const hasCampaignData = finalCheckpoints && finalCheckpoints.length > 0 && campaignGoal > 0
@@ -203,38 +230,56 @@ export function SidebarSponsorship({
       
       {/* Conditional button based on user role and ownership */}
       {isProfileOwner ? (
-        <CampaignCreation 
-          editCampaign={displayCampaign ? {
-            id: displayCampaign.id,
-            title: displayCampaign.title,
-            description: displayCampaign.description,
-            funding_goal: displayCampaign.funding_goal,
-            deadline: displayCampaign.deadline,
-            perk_tiers: displayCampaign.perk_tiers.map(tier => ({
-              tier_name: tier.tier_name,
-              amount: tier.amount,
-              description: tier.description,
-              deliverables: typeof tier.deliverables === 'string' 
-                ? (() => {
-                    try {
-                      return JSON.parse(tier.deliverables)
-                    } catch {
-                      return { custom: tier.deliverables }
-                    }
-                  })()
-                : tier.deliverables,
-              max_sponsors: tier.max_sponsors
-            }))
-          } : null}
-          onCampaignCreated={handleCampaignUpdated}
-        >
-          <Button 
-            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white"
+        <div className="space-y-3">
+          {/* Sponsorship Requests Dashboard Link */}
+          <Link href="/sponsorship-requests">
+            <Button 
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white relative"
+              variant="outline"
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              View Sponsorship Requests
+              {pendingRequestsCount > 0 && (
+                <Badge className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs min-w-[1.5rem] h-6 flex items-center justify-center">
+                  {pendingRequestsCount}
+                </Badge>
+              )}
+            </Button>
+          </Link>
+          
+          <CampaignCreation 
+            editCampaign={displayCampaign ? {
+              id: displayCampaign.id,
+              title: displayCampaign.title,
+              description: displayCampaign.description,
+              funding_goal: displayCampaign.funding_goal,
+              deadline: displayCampaign.deadline,
+              perk_tiers: displayCampaign.perk_tiers.map(tier => ({
+                tier_name: tier.tier_name,
+                amount: tier.amount,
+                description: tier.description,
+                deliverables: typeof tier.deliverables === 'string' 
+                  ? (() => {
+                      try {
+                        return JSON.parse(tier.deliverables)
+                      } catch {
+                        return { custom: tier.deliverables }
+                      }
+                    })()
+                  : tier.deliverables,
+                max_sponsors: tier.max_sponsors
+              }))
+            } : null}
+            onCampaignCreated={handleCampaignUpdated}
           >
-            <Edit className="h-4 w-4 mr-2" />
-            Edit Campaign
-          </Button>
-        </CampaignCreation>
+            <Button 
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Campaign
+            </Button>
+          </CampaignCreation>
+        </div>
       ) : isSponsor ? (
         <Button 
           className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white"
@@ -275,31 +320,50 @@ export function SidebarSponsorship({
             isUnlocked: true
           }))
         }}
-        onSponsor={(amount, selectedPerks, customConditions) => {
-          // Add the contribution using the hook
-          addContribution(
-            Number(profileId) || 1,
-            profileType,
-            amount,
-            selectedPerks,
-            customConditions
-          )
-          
-          console.log('Sponsorship contribution added:', { 
-            profileId, 
-            profileType, 
-            amount, 
-            selectedPerks, 
-            customConditions,
-            newTotal: userContribution + amount
-          })
-          
-          // Close the modal
-          setIsSponsorshipModalOpen(false)
-          
-          // In a real app, you might want to show a success message
-          // or refresh the page to show updated data
-          window.location.reload() // Temporary refresh to show updated data
+        onSponsor={async (amount, selectedPerks, customConditions) => {
+          try {
+            if (!displayCampaign) {
+              console.error('No campaign found for this profile:', { campaignData, activeCampaign, profileId })
+              throw new Error('No campaign found for this profile')
+            }
+
+            console.log('Submitting sponsorship request with:', {
+              campaign_id: displayCampaign.id,
+              athlete_id: Number(profileOwnerId) || Number(profileId) || 1,
+              amount,
+              custom_perks: customConditions,
+              message: customConditions || '',
+              is_custom: !!customConditions
+            })
+
+            // Submit sponsorship request using the campaign data
+            await submitSponsorshipRequest({
+              campaign_id: displayCampaign.id,
+              athlete_id: Number(profileOwnerId) || Number(profileId) || 1,
+              amount,
+              custom_perks: customConditions,
+              message: customConditions || '',
+              is_custom: !!customConditions
+            })
+            
+            console.log('Sponsorship request submitted:', { 
+              campaign_id: displayCampaign.id,
+              athlete_id: Number(profileOwnerId) || Number(profileId) || 1,
+              amount, 
+              selectedPerks, 
+              customConditions
+            })
+            
+            // Close the modal
+            setIsSponsorshipModalOpen(false)
+            
+            // Show success message
+            alert('Sponsorship request submitted! The campaign owner will review your request.')
+            
+          } catch (error) {
+            console.error('Error submitting sponsorship request:', error)
+            alert(`Failed to submit sponsorship request: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          }
         }}
       >
         <div></div>

@@ -32,6 +32,17 @@ export async function getTalentProfile(id: string) {
             sponsor: true,
           },
         },
+        campaigns: {
+          where: {
+            status: { in: ['OPEN', 'ACTIVE'] }
+          },
+          include: {
+            perk_tiers: {
+              orderBy: { amount: 'asc' }
+            }
+          },
+          orderBy: { created_at: 'desc' }
+        },
       },
     })
 
@@ -152,6 +163,25 @@ export async function getTalentProfile(id: string) {
           category: m.category,
         })),
       },
+      
+      // Campaign data for sponsorship requests
+      campaignData: user.campaigns && user.campaigns.length > 0 ? {
+        id: user.campaigns[0].id,
+        title: user.campaigns[0].title,
+        description: user.campaigns[0].description,
+        funding_goal: user.campaigns[0].funding_goal,
+        current_funding: user.campaigns[0].current_funding,
+        deadline: user.campaigns[0].deadline,
+        status: user.campaigns[0].status,
+        perk_tiers: user.campaigns[0].perk_tiers.map(tier => ({
+          id: tier.id,
+          tier_name: tier.tier_name,
+          amount: tier.amount,
+          description: tier.description,
+          deliverables: tier.deliverables,
+          max_sponsors: tier.max_sponsors
+        }))
+      } : null,
     }
 
     return profile

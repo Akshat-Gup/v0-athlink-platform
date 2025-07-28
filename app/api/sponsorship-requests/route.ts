@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const campaign = await prisma.campaign.findFirst({
       where: {
         id: campaign_id,
-        status: 'OPEN'
+        status: { in: ['OPEN', 'ACTIVE'] }
       }
     })
 

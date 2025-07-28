@@ -63,26 +63,53 @@ export function useSponsorshipData() {
     }
   }, [contributions, isLoaded])
 
-  const addContribution = (
+  const addContribution = async (
     targetId: number,
     targetType: SponsorshipTarget,
     amount: number,
     selectedPerks: number[],
     customConditions?: string
   ) => {
-    const newContribution: SponsorshipContribution = {
-      id: Date.now(), // Simple ID generation
-      targetId,
-      targetType,
-      amount,
-      perks: selectedPerks,
-      customConditions,
-      createdAt: new Date().toISOString(),
-      status: customConditions ? "pending" : "approved"
-    }
+    try {
+      // Create contribution request instead of direct contribution
+      const response = await fetch('/api/contribution-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          profile_id: targetId,
+          profile_type: targetType,
+          amount,
+          custom_conditions: customConditions,
+          message: customConditions || ''
+        })
+      })
 
-    setContributions(prev => [...prev, newContribution])
-    return newContribution
+      if (!response.ok) {
+        throw new Error('Failed to submit contribution request')
+      }
+
+      const result = await response.json()
+      
+      // Add to local state as pending
+      const newContribution: SponsorshipContribution = {
+        id: result.contribution_request.id,
+        targetId,
+        targetType,
+        amount,
+        perks: selectedPerks,
+        customConditions,
+        createdAt: new Date().toISOString(),
+        status: "pending" // Always pending now - requires approval
+      }
+
+      setContributions(prev => [...prev, newContribution])
+      return newContribution
+    } catch (error) {
+      console.error('Error submitting contribution request:', error)
+      throw error
+    }
   }
 
   const getContributionsForTarget = (targetId: number, targetType: SponsorshipTarget) => {

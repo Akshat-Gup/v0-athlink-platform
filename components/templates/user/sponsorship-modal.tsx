@@ -38,7 +38,7 @@ interface SponsorshipModalProps {
   isOpen: boolean
   onOpenChange: (open: boolean) => void
   sponsorshipData: SponsorshipData
-  onSponsor: (amount: number, selectedPerks: number[], customConditions?: string) => void
+  onSponsor: (amount: number, selectedPerks: number[], customConditions?: string) => Promise<void>
   children: React.ReactNode
 }
 
@@ -66,14 +66,19 @@ export function SponsorshipModal({
     )
   }
 
-  const handleSponsor = () => {
+  const handleSponsor = async () => {
     const amount = parseFloat(contributionAmount)
     if (amount > 0) {
-      onSponsor(amount, selectedPerks, customConditions || undefined)
-      setContributionAmount("")
-      setSelectedPerks([])
-      setCustomConditions("")
-      onOpenChange(false)
+      try {
+        await onSponsor(amount, selectedPerks, customConditions || undefined)
+        setContributionAmount("")
+        setSelectedPerks([])
+        setCustomConditions("")
+        onOpenChange(false)
+      } catch (error) {
+        console.error('Error submitting sponsorship request:', error)
+        // Error handling is done in the parent component
+      }
     }
   }
 
@@ -183,7 +188,13 @@ export function SponsorshipModal({
 
             {/* Contribution Input */}
             <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Make a Contribution</h3>
+              <h3 className="text-lg font-semibold mb-4">Submit Sponsorship Request</h3>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p className="text-sm text-blue-800">
+                  <strong>Note:</strong> Your sponsorship request will be sent to the campaign owner for approval. 
+                  You'll be notified once they review your request.
+                </p>
+              </div>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="contribution">Contribution Amount</Label>
@@ -295,7 +306,7 @@ export function SponsorshipModal({
             disabled={!contributionAmount || parseFloat(contributionAmount) <= 0}
             className="bg-green-500 hover:bg-green-600 text-white"
           >
-            Contribute ${contributionAmount ? parseFloat(contributionAmount).toLocaleString() : "0"}
+            Submit Request for ${contributionAmount ? parseFloat(contributionAmount).toLocaleString() : "0"}
           </Button>
         </div>
       </DialogContent>

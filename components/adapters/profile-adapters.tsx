@@ -1,6 +1,7 @@
 import { EventHeader as OriginalEventHeader } from "@/components/organisms/profile/header"
 import { EventSidebar as OriginalEventSidebar } from "@/components/organisms/profile/sidebar"
 import { DefaultSidebar as DefaultSidebar } from "@/components/organisms/profile/sidebar"   
+import { SidebarSponsorship, SidebarSocials } from "@/components/molecules/profile/sidebar"
 import { TalentHeader as OriginalTalentHeader } from "@/components/organisms/profile/header"
 import { TeamHeader as OriginalTeamsHeader } from "@/components/organisms/profile/header"
 import { Session } from "next-auth"
@@ -19,16 +20,47 @@ export function TalentHeaderAdapter({ profile, onShareClick }: { profile: any; o
 }
 
 export function TalentSidebarAdapter({ profile, session }: { profile: any; session?: Session | null }) {
-  return <DefaultSidebar 
-    item={profile} 
-    title="Campaign Progress" 
-    subtitle="Sponsorship Checkpoints" 
-    submitButtonText="Support Campaign"
-    profileId={profile.id}
-    profileType="talent"
-    session={session}
-    profileOwnerId={profile.email}
-  />
+  const renderProgressBar = (current: number, goal: number) => {
+    const percentage = (current / goal) * 100
+    return (
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="font-semibold text-gray-900">${current.toLocaleString()}</span>
+          <span className="text-gray-600">of ${goal.toLocaleString()}</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div 
+            className="bg-green-500 h-2 rounded-full transition-all duration-300" 
+            style={{ width: `${Math.min(percentage, 100)}%` }}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <SidebarSponsorship 
+        currentFunding={profile.currentFunding}
+        goalFunding={profile.goalFunding}
+        checkpoints={profile.checkpoints}
+        renderProgressBar={renderProgressBar}
+        title="Campaign Progress" 
+        subtitle="Sponsorship Checkpoints" 
+        submitButtonText="Support Campaign"
+        profileId={profile.id}
+        profileType="talent"
+        session={session}
+        profileOwnerId={profile.email}
+        campaignData={profile.campaignData}
+      />
+      
+      <SidebarSocials 
+        socials={profile.socials}
+        title="Social Media"
+      />
+    </div>
+  )
 }
 
 export function TeamsHeaderAdapter({ profile, onShareClick }: { profile: any; onShareClick: () => void }) {

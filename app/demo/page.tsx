@@ -1,3 +1,5 @@
+"use client"
+
 import { UserProfile } from "@/components/auth/user-profile"
 import { UserRoleManager } from "@/components/auth/user-role-manager"
 import { JoinRoleSelector } from "@/components/templates"
@@ -7,8 +9,11 @@ import { CampaignDisplay } from "@/components/templates"
 import { SponsorCampaignBrowser } from "@/components/templates"
 import { SponsorshipRequestManager } from "@/components/templates/athlete/sponsorship-request-manager"
 import { Button } from "@/components/atoms/button"
+import { useUserRole } from "@/hooks/use-user-role"
 
 export default function DemoPage() {
+  const { selectedUserRole } = useUserRole()
+  const isSponsor = selectedUserRole === "Sponsor"
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -73,10 +78,28 @@ export default function DemoPage() {
             <SponsorshipRequestManager />
           </div>
           
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">🔍 Browse Campaigns (Sponsor View)</h2>
-            <SponsorCampaignBrowser />
-          </div>
+          {isSponsor ? (
+            <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
+              <h2 className="text-xl font-semibold mb-4 text-blue-800">🔍 Browse Campaigns (Sponsor View)</h2>
+              <p className="text-blue-600 text-sm mb-4">✅ You have sponsor role access - you can browse and support campaigns!</p>
+              <SponsorCampaignBrowser />
+            </div>
+          ) : (
+            <div className="bg-gray-50 rounded-lg p-6 border-2 border-gray-300">
+              <h2 className="text-xl font-semibold mb-4 text-gray-700">🔍 Browse Campaigns (Sponsor View)</h2>
+              <div className="text-center py-8">
+                <p className="text-gray-600 mb-4">🚫 Sponsor role required to access campaign browsing</p>
+                <p className="text-sm text-gray-500 mb-4">
+                  To browse and support athlete campaigns, please change your role to "Sponsor" using the button above.
+                </p>
+                <JoinRoleSelector>
+                  <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                    Change to Sponsor Role
+                  </Button>
+                </JoinRoleSelector>
+              </div>
+            </div>
+          )}
         </div>
         
         <div className="bg-white rounded-lg p-6 shadow-sm">

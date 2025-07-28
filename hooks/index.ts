@@ -1,11 +1,13 @@
 // Custom hooks
 export * from './use-auth'
+export * from './use-campaign-sponsorship'
 export * from './use-discover-data'
 export * from './use-discover-filters'
 export * from './use-discover-state'
 export * from './use-favorites'
 export * from './use-mobile'
 export * from './use-mouse-position'
+export * from './use-pending-requests'
 export * from './use-toast'
 export * from './use-user-role'
 export * from './use-sponsorship-data'
