@@ -76,7 +76,7 @@ export function SidebarSponsorship({
   const { submitSponsorshipRequest, isSubmitting } = useCampaignSponsorship()
   const { count: pendingRequestsCount } = usePendingRequestsCount()
   const { getUserActiveCampaign, fetchUserCampaigns } = useCampaignData()
-  const { getTotalContributionForAthlete, refreshContributions } = useSponsorContributions()
+  const { getTotalContributionForAthlete, refreshContributions, contributions } = useSponsorContributions()
   
   const isSponsor = selectedUserRole === "Sponsor"
   
@@ -135,6 +135,13 @@ export function SidebarSponsorship({
   const userContribution = isSponsor 
     ? getTotalContributionForAthlete(Number(profileOwnerId) || Number(profileId) || 1)
     : getTotalContributionForTarget(Number(profileId) || 1, profileType)
+  
+  // Get custom perks for sponsors (approved custom sponsorship requests)
+  const customPerks = isSponsor ? contributions.filter(contribution => 
+    contribution.athlete_id === (Number(profileOwnerId) || Number(profileId) || 1) && 
+    contribution.status === 'ACCEPTED' && 
+    contribution.custom_perks
+  ) : []
   
   // Check if this profile has campaign data
   const hasCampaignData = finalCheckpoints && finalCheckpoints.length > 0 && campaignGoal > 0
@@ -227,6 +234,28 @@ export function SidebarSponsorship({
           )
         })}
       </div>
+      
+      {/* Custom Perks Section for Sponsors */}
+      {isSponsor && customPerks.length > 0 && (
+        <div className="mt-6 space-y-3">
+          <h4 className="font-medium text-sm">Your Custom Perks</h4>
+          {customPerks.map((perk, index) => (
+            <div
+              key={`custom-${perk.id}`}
+              className="p-3 rounded-lg border bg-blue-50 border-blue-200"
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-medium text-sm">${perk.amount?.toLocaleString() || 0}</span>
+                <Badge className="bg-blue-600 text-white">Custom Approved</Badge>
+              </div>
+              <p className="text-xs text-blue-800 font-medium mb-1">Custom Sponsorship</p>
+              {perk.custom_perks && (
+                <p className="text-xs text-blue-700">{perk.custom_perks}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
       
       {/* Conditional button based on user role and ownership */}
       {isProfileOwner ? (

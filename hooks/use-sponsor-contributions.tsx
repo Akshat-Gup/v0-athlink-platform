@@ -11,6 +11,7 @@ interface SponsorContribution {
   amount: number
   status: string
   created_at: string
+  custom_perks?: string
   campaign: {
     title: string
   }

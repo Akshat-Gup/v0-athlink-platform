@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma'
-import { UserCategory } from '@prisma/client'
 
 export interface DiscoverItem {
   id: number
@@ -66,6 +65,17 @@ export async function getDiscoverData(filters: {
             tag: true,
           },
         },
+        campaigns: {
+          where: {
+            status: {
+              in: ['OPEN', 'ACTIVE']
+            }
+          },
+          orderBy: {
+            created_at: 'desc'
+          },
+          take: 1
+        }
       },
       where: {
         is_active: true,
@@ -123,16 +133,30 @@ export async function getDiscoverData(filters: {
         ...tags.map(tag => tag.toLowerCase()),
       ].filter(Boolean)
 
+      // Get funding data from active campaign if available, otherwise fall back to profile data
+      const activeCampaign = user.campaigns[0] // Get the most recent active campaign
+      let currentFunding: number | undefined
+      let goalFunding: number | undefined
+
+      if (activeCampaign) {
+        currentFunding = Number(activeCampaign.current_funding)
+        goalFunding = Number(activeCampaign.funding_goal)
+      } else {
+        // Fall back to profile data
+        currentFunding = user.talent_profile?.current_funding || user.team_profile?.current_funding || user.event_profile?.current_funding || undefined
+        goalFunding = user.talent_profile?.goal_funding || user.team_profile?.goal_funding || user.event_profile?.goal_funding || undefined
+      }
+
       return {
         id: user.id,
         name: user.name,
         sport: user.primary_sport,
         location: `${location.city}, ${location.state || location.country}`,
         rating: user.rating,
-        currentFunding: user.talent_profile?.current_funding || user.team_profile?.current_funding || user.event_profile?.current_funding,
-        goalFunding: user.talent_profile?.goal_funding || user.team_profile?.goal_funding || user.event_profile?.goal_funding,
-        price: user.talent_profile?.price,
-        period: user.talent_profile?.period,
+        currentFunding,
+        goalFunding,
+        price: user.talent_profile?.price || undefined,
+        period: user.talent_profile?.period || undefined,
         image: profileImage,
         achievements,
         category,
