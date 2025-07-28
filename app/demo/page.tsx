@@ -103,12 +103,18 @@ export default function DemoPage() {
                 </ul>
               </div>
               <div>
-                <p className="font-medium text-orange-600 mb-2">Sponsors (Separate Database)</p>
+                <p className="font-medium text-orange-600 mb-2">Sponsors (Role: Sponsor)</p>
                 <ul className="space-y-1 text-sm text-gray-600">
-                  <li>• sponsor@example.com (TechCorp Sponsors)</li>
+                  <li>• sponsors@techcorp.com (TechCorp - Technology)</li>
+                  <li>• partnerships@athletegear.com (AthleteGear - Equipment)</li>
+                  <li>• sponsorships@powerboost.com (PowerBoost - Energy)</li>
+                  <li>• sponsors@fitnesspro.com (FitnessPro - Fitness Gear)</li>
+                  <li>• partnerships@velocitysports.com (Velocity - Nutrition)</li>
+                  <li>• athlete.support@championfs.com (Champion - Financial)</li>
+                  <li>• sponsorships@sportstech.io (SportsTech - Technology)</li>
                 </ul>
                 <p className="text-xs text-gray-500 mt-2 italic">
-                  * Sponsors use a separate database table and don't appear on discover page
+                  * Sponsors have separate accounts but don't appear on the discover page
                 </p>
               </div>
             </div>
@@ -128,7 +134,7 @@ export default function DemoPage() {
               </div>
               <div className="p-3 bg-orange-50 rounded-md text-center">
                 <div className="font-medium text-orange-800">Sponsor</div>
-                <div className="text-xs text-orange-600">1 entity</div>
+                <div className="text-xs text-orange-600">7 users</div>
               </div>
             </div>
             

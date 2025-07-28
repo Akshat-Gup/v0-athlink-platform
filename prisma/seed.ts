@@ -197,6 +197,7 @@ async function main() {
       rating_source: 'WTA',
       bio: 'Professional tennis player with 8 years of competitive experience. Currently training for the upcoming Olympic qualifiers and seeking sponsorship to support my journey to represent my country at the highest level.',
       category: 'TALENT',
+      user_role: 'talent',
       talent_type_id: talentTypes[0].id, // Athlete
       verification_status: 'VERIFIED',
       years_experience: 8,
@@ -364,6 +365,7 @@ async function main() {
       rating: 4.89,
       bio: 'Point guard with exceptional court vision and leadership skills. Currently playing in the regional league while seeking opportunities to advance to professional basketball.',
       category: 'TALENT',
+      user_role: 'talent',
       talent_type_id: talentTypes[0].id, // Athlete
       verification_status: 'VERIFIED',
       years_experience: 6,
@@ -407,6 +409,7 @@ async function main() {
       rating: 4.8,
       bio: 'Professional basketball team competing in the regional league. We\'re a diverse group of talented athletes working together to achieve excellence on and off the court.',
       category: 'TALENT',
+      user_role: 'talent',
       talent_type_id: talentTypes[3].id, // Athletic Team
       verification_status: 'VERIFIED',
       years_experience: 6,
@@ -520,6 +523,7 @@ async function main() {
       rating: 4.9,
       bio: 'The premier swimming championship bringing together the best swimmers from across the nation. This three-day tournament features intense competition, entertainment, and networking opportunities for players, fans, and sponsors alike.',
       category: 'TALENT',
+      user_role: 'event_manager',
       talent_type_id: talentTypes[5].id, // Championship Event
       verification_status: 'VERIFIED',
       years_experience: 1,
@@ -689,6 +693,7 @@ async function main() {
         rating: userData.rating,
         bio: `Professional ${userData.primary_sport.toLowerCase()} athlete seeking sponsorship opportunities.`,
         category: 'TALENT',
+        user_role: userData.talent_type_id === talentTypes[1].id ? 'content_creator' : 'talent',
         talent_type_id: userData.talent_type_id || talentTypes[0].id, // Default to Athlete
         verification_status: 'VERIFIED',
         years_experience: Math.floor(Math.random() * 10) + 2,
@@ -708,18 +713,209 @@ async function main() {
 
   console.log('👥 Created sample users and profiles')
 
-  // Create some sponsor relationships
-  await prisma.sponsorRelation.create({
+  // Create sponsor users
+  const techCorpSponsor = await prisma.user.create({
     data: {
-      sponsor_id: thunderHawks.id,
-      sponsored_id: sarahChen.id,
-      amount: 2500,
-      tier: 'Gold Sponsor',
-      status: 'ACTIVE',
+      name: 'TechCorp Sponsors',
+      email: 'sponsors@techcorp.com',
+      primary_sport: 'Multi-Sport',
+      base_location_id: locations[6].id, // New York
+      country_code: 'US',
+      country_flag: '🇺🇸',
+      team_emoji: '🏢',
+      rating: 4.9,
+      bio: 'Leading technology company dedicated to supporting athletes and sports events. We invest in the future of sports and help athletes achieve their dreams.',
+      category: 'SPONSOR',
+      user_role: 'sponsor',
+      verification_status: 'VERIFIED',
+      years_experience: 10,
     },
   })
 
-  console.log('🤝 Created sponsor relationships')
+  const athleteGearSponsor = await prisma.user.create({
+    data: {
+      name: 'AthleteGear Inc',
+      email: 'partnerships@athletegear.com',
+      primary_sport: 'Multi-Sport',
+      base_location_id: locations[0].id, // Los Angeles
+      country_code: 'US',
+      country_flag: '🇺🇸',
+      team_emoji: '🎽',
+      rating: 4.85,
+      bio: 'Premium sports equipment and apparel company. We partner with athletes to provide top-quality gear and financial support.',
+      category: 'SPONSOR',
+      user_role: 'sponsor',
+      verification_status: 'VERIFIED',
+      years_experience: 8,
+    },
+  })
+
+  const energyDrinkSponsor = await prisma.user.create({
+    data: {
+      name: 'PowerBoost Energy',
+      email: 'sponsorships@powerboost.com',
+      primary_sport: 'Multi-Sport',
+      base_location_id: locations[2].id, // Miami
+      country_code: 'US',
+      country_flag: '🇺🇸',
+      team_emoji: '⚡',
+      rating: 4.78,
+      bio: 'Energy drink brand supporting high-performance athletes. We fuel champions and provide comprehensive sponsorship packages.',
+      category: 'SPONSOR',
+      user_role: 'sponsor',
+      verification_status: 'VERIFIED',
+      years_experience: 5,
+    },
+  })
+
+  console.log('🏢 Created sponsor users')
+
+  // Create entries in the Sponsor table
+  await Promise.all([
+    prisma.sponsor.create({
+      data: {
+        name: 'TechCorp Sponsors',
+        email: 'sponsors@techcorp.com',
+        company_name: 'TechCorp Sponsors',
+        company_description: 'Leading technology company dedicated to supporting athletes and sports events. We believe in investing in the future of sports and helping athletes achieve their dreams through strategic partnerships.',
+        industry: 'Technology',
+        website: 'https://techcorp-sponsors.com',
+        contact_name: 'Sarah Johnson',
+        contact_phone: '+1 (555) 123-4567',
+        budget_range: '$10K-$50K',
+        preferred_sports: JSON.stringify(['Tennis', 'Basketball', 'Swimming', 'Soccer', 'Track & Field']),
+        location: 'New York, NY',
+        verification_status: 'VERIFIED',
+        is_active: true,
+      }
+    }),
+    prisma.sponsor.create({
+      data: {
+        name: 'AthleteGear Inc',
+        email: 'partnerships@athletegear.com',
+        company_name: 'AthleteGear Inc',
+        company_description: 'Premium sports equipment and apparel company. We partner with athletes to provide top-quality gear and financial support for training and competition.',
+        industry: 'Sports Equipment',
+        website: 'https://athletegear.com',
+        contact_name: 'Mike Rodriguez',
+        contact_phone: '+1 (555) 987-6543',
+        budget_range: '$5K-$25K',
+        preferred_sports: JSON.stringify(['Tennis', 'Basketball', 'Track & Field']),
+        location: 'Los Angeles, CA',
+        verification_status: 'VERIFIED',
+        is_active: true,
+      }
+    }),
+    prisma.sponsor.create({
+      data: {
+        name: 'PowerBoost Energy',
+        email: 'sponsorships@powerboost.com',
+        company_name: 'PowerBoost Energy',
+        company_description: 'Energy drink brand supporting high-performance athletes. We fuel champions and provide comprehensive sponsorship packages for endurance sports.',
+        industry: 'Food & Beverage',
+        website: 'https://powerboost.com',
+        contact_name: 'Jessica Chen',
+        contact_phone: '+1 (555) 456-7890',
+        budget_range: '$2K-$15K',
+        preferred_sports: JSON.stringify(['Swimming', 'Track & Field', 'Cycling']),
+        location: 'Miami, FL',
+        verification_status: 'VERIFIED',
+        is_active: true,
+      }
+    }),
+  ])
+
+  console.log('🏢 Created sponsor company profiles')
+
+  // Create diverse sponsor relationships and contributions
+  await Promise.all([
+    // TechCorp sponsors Sarah Chen
+    prisma.sponsorRelation.create({
+      data: {
+        sponsor_id: techCorpSponsor.id,
+        sponsored_id: sarahChen.id,
+        amount: 3500,
+        tier: 'Gold Sponsor',
+        status: 'ACTIVE',
+      },
+    }),
+    // AthleteGear sponsors Marcus Johnson
+    prisma.sponsorRelation.create({
+      data: {
+        sponsor_id: athleteGearSponsor.id,
+        sponsored_id: marcusJohnson.id,
+        amount: 2000,
+        tier: 'Silver Sponsor',
+        status: 'ACTIVE',
+      },
+    }),
+    // PowerBoost sponsors Swimming Championship
+    prisma.sponsorRelation.create({
+      data: {
+        sponsor_id: energyDrinkSponsor.id,
+        sponsored_id: swimmingChampionship.id,
+        amount: 5000,
+        tier: 'Event Sponsor',
+        status: 'ACTIVE',
+      },
+    }),
+    // TechCorp also sponsors Thunder Hawks
+    prisma.sponsorRelation.create({
+      data: {
+        sponsor_id: techCorpSponsor.id,
+        sponsored_id: thunderHawks.id,
+        amount: 4500,
+        tier: 'Team Sponsor',
+        status: 'ACTIVE',
+      },
+    }),
+  ])
+
+  // Create sponsor contributions with different amounts
+  await Promise.all([
+    prisma.sponsorContribution.create({
+      data: {
+        sponsor_id: techCorpSponsor.id,
+        recipient_id: sarahChen.id,
+        amount: 3500.00,
+        currency: 'USD',
+        message: 'Supporting your Olympic journey! Best of luck in the qualifiers.',
+        status: 'COMPLETED',
+      },
+    }),
+    prisma.sponsorContribution.create({
+      data: {
+        sponsor_id: athleteGearSponsor.id,
+        recipient_id: marcusJohnson.id,
+        amount: 2000.00,
+        currency: 'USD',
+        message: 'Proud to support rising basketball talent. Keep shooting for the stars!',
+        status: 'COMPLETED',
+      },
+    }),
+    prisma.sponsorContribution.create({
+      data: {
+        sponsor_id: energyDrinkSponsor.id,
+        recipient_id: swimmingChampionship.id,
+        amount: 5000.00,
+        currency: 'USD',
+        message: 'PowerBoost Energy is excited to fuel this amazing championship event!',
+        status: 'COMPLETED',
+      },
+    }),
+    prisma.sponsorContribution.create({
+      data: {
+        sponsor_id: techCorpSponsor.id,
+        recipient_id: thunderHawks.id,
+        amount: 4500.00,
+        currency: 'USD',
+        message: 'Technology meets athletics - supporting the Thunder Hawks for another great season!',
+        status: 'COMPLETED',
+      },
+    }),
+  ])
+
+  console.log('🤝 Created diverse sponsor relationships and contributions')
 
   console.log('✅ Database seeding completed successfully!')
 }

@@ -43,7 +43,7 @@ export async function getDiscoverData(filters: {
   eventItems: DiscoverItem[]
 }> {
   try {
-    // Get all users with their profiles and locations
+    // Get all users with their profiles and locations (excluding sponsors)
     const users = await prisma.user.findMany({
       include: {
         base_location: true,
@@ -70,6 +70,7 @@ export async function getDiscoverData(filters: {
       where: {
         is_active: true,
         verification_status: 'VERIFIED',
+        category: 'TALENT', // Only include talent users, exclude sponsors
       },
     })
 
