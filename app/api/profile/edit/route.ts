@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "../../../../auth"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import { supabaseAdmin } from "../../../../lib/supabase"
 
 export async function PATCH(request: NextRequest) {
   try {
-    const session = await auth()
+    // Get auth header
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const token = authHeader.split(' ')[1]
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+
+    if (authError || !user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
@@ -42,86 +46,96 @@ export async function PATCH(request: NextRequest) {
     } = body
 
     // Get the user from the database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      include: {
-        talent_profile: true,
-        team_profile: true,
-        event_profile: true
-      }
-    })
+    const { data: dbUser, error: userError } = await supabaseAdmin
+      .from('users')
+      .select(`
+        *,
+        talent_profile:talent_profiles(*),
+        team_profile:team_profiles(*),
+        event_profile:event_profiles(*)
+      `)
+      .eq('email', user.email)
+      .single()
 
-    if (!user) {
+    if (userError || !dbUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
     // Update user basic information
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        name: name || user.name,
-        primary_sport: primary_sport || user.primary_sport,
-        bio: bio !== undefined ? bio : user.bio,
-        years_experience: years_experience !== undefined ? years_experience : user.years_experience,
-        country_code: country_code !== undefined ? country_code : user.country_code,
-        team_emoji: team_emoji !== undefined ? team_emoji : user.team_emoji,
-      }
-    })
+    const { data: updatedUser, error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({
+        name: name || dbUser.name,
+        primary_sport: primary_sport || dbUser.primary_sport,
+        bio: bio !== undefined ? bio : dbUser.bio,
+        years_experience: years_experience !== undefined ? years_experience : dbUser.years_experience,
+        country_code: country_code !== undefined ? country_code : dbUser.country_code,
+        team_emoji: team_emoji !== undefined ? team_emoji : dbUser.team_emoji,
+      })
+      .eq('id', dbUser.id)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error("Error updating user:", updateError)
+      return NextResponse.json({ error: "Failed to update user" }, { status: 500 })
+    }
 
     // Update talent profile if user is an athlete
-    if (user.category === "Athlete" || user.talent_profile) {
-      if (user.talent_profile) {
-        await prisma.talentProfile.update({
-          where: { user_id: user.id },
-          data: {
-            current_funding: current_funding !== undefined ? current_funding : user.talent_profile.current_funding,
-            goal_funding: goal_funding !== undefined ? goal_funding : user.talent_profile.goal_funding,
-            price: price !== undefined ? price : user.talent_profile.price,
-            period: period !== undefined ? period : user.talent_profile.period,
-            achievements: achievements !== undefined ? achievements : user.talent_profile.achievements,
-            fit_type: fit_type !== undefined ? fit_type : user.talent_profile.fit_type,
-          }
-        })
+    if (dbUser.category === "Athlete" || dbUser.talent_profile) {
+      if (dbUser.talent_profile) {
+        await supabaseAdmin
+          .from('talent_profiles')
+          .update({
+            current_funding: current_funding !== undefined ? current_funding : dbUser.talent_profile.current_funding,
+            goal_funding: goal_funding !== undefined ? goal_funding : dbUser.talent_profile.goal_funding,
+            price: price !== undefined ? price : dbUser.talent_profile.price,
+            period: period !== undefined ? period : dbUser.talent_profile.period,
+            achievements: achievements !== undefined ? achievements : dbUser.talent_profile.achievements,
+            fit_type: fit_type !== undefined ? fit_type : dbUser.talent_profile.fit_type,
+          })
+          .eq('user_id', dbUser.id)
       } else if (current_funding !== undefined || goal_funding !== undefined || 
                  price !== undefined || period !== undefined || 
                  achievements !== undefined || fit_type !== undefined) {
         // Create talent profile if it doesn't exist and we have talent data
-        await prisma.talentProfile.create({
-          data: {
-            user_id: user.id,
+        await supabaseAdmin
+          .from('talent_profiles')
+          .insert({
+            user_id: dbUser.id,
             current_funding: current_funding || 0,
             goal_funding: goal_funding || 0,
             price: price || "",
             period: period || "",
             achievements: achievements || "",
             fit_type: fit_type || "",
-          }
-        })
+          })
       }
     }
 
     // Update team profile if user is a team
-    if (user.category === "Team" || user.team_profile) {
-      if (user.team_profile) {
-        await prisma.teamProfile.update({
-          where: { user_id: user.id },
-          data: {
-            current_funding: current_funding !== undefined ? current_funding : user.team_profile.current_funding,
-            goal_funding: goal_funding !== undefined ? goal_funding : user.team_profile.goal_funding,
-            league: league !== undefined ? league : user.team_profile.league,
-            wins: wins !== undefined ? wins : user.team_profile.wins,
-            losses: losses !== undefined ? losses : user.team_profile.losses,
-            ranking: ranking !== undefined ? ranking : user.team_profile.ranking,
-            members: members !== undefined ? members : user.team_profile.members,
-          }
-        })
+    if (dbUser.category === "Team" || dbUser.team_profile) {
+      if (dbUser.team_profile) {
+        await supabaseAdmin
+          .from('team_profiles')
+          .update({
+            current_funding: current_funding !== undefined ? current_funding : dbUser.team_profile.current_funding,
+            goal_funding: goal_funding !== undefined ? goal_funding : dbUser.team_profile.goal_funding,
+            league: league !== undefined ? league : dbUser.team_profile.league,
+            wins: wins !== undefined ? wins : dbUser.team_profile.wins,
+            losses: losses !== undefined ? losses : dbUser.team_profile.losses,
+            ranking: ranking !== undefined ? ranking : dbUser.team_profile.ranking,
+            members: members !== undefined ? members : dbUser.team_profile.members,
+          })
+          .eq('user_id', dbUser.id)
       } else if (league !== undefined || wins !== undefined || 
                  losses !== undefined || ranking !== undefined || 
                  members !== undefined) {
         // Create team profile if it doesn't exist and we have team data
-        await prisma.teamProfile.create({
-          data: {
-            user_id: user.id,
+        await supabaseAdmin
+          .from('team_profiles')
+          .insert({
+            user_id: dbUser.id,
             current_funding: current_funding || 0,
             goal_funding: goal_funding || 0,
             league: league || "",
@@ -129,32 +143,39 @@ export async function PATCH(request: NextRequest) {
             losses: losses || 0,
             ranking: ranking,
             members: members || 0,
-          }
-        })
+          })
       }
     }
 
     // Update event profile if user is an event
-    if (user.category === "Event" || user.event_profile) {
-      if (user.event_profile) {
-        await prisma.eventProfile.update({
-          where: { user_id: user.id },
-          data: {
-            venue: venue !== undefined ? venue : user.event_profile.venue,
-            capacity: capacity !== undefined ? capacity.toString() : user.event_profile.capacity,
-            ticket_price: ticket_price !== undefined ? ticket_price.toString() : user.event_profile.ticket_price,
-            organizer: organizer !== undefined ? organizer : user.event_profile.organizer,
-            event_type: event_type !== undefined ? event_type : user.event_profile.event_type,
-          }
-        })
+    if (dbUser.category === "Event" || dbUser.event_profile) {
+      if (dbUser.event_profile) {
+        await supabaseAdmin
+          .from('event_profiles')
+          .update({
+            venue: venue !== undefined ? venue : dbUser.event_profile.venue,
+            capacity: capacity !== undefined ? capacity.toString() : dbUser.event_profile.capacity,
+            ticket_price: ticket_price !== undefined ? ticket_price.toString() : dbUser.event_profile.ticket_price,
+            organizer: organizer !== undefined ? organizer : dbUser.event_profile.organizer,
+            event_type: event_type !== undefined ? event_type : dbUser.event_profile.event_type,
+          })
+          .eq('user_id', dbUser.id)
       } else if (venue !== undefined || capacity !== undefined || 
                  ticket_price !== undefined || organizer !== undefined || 
                  event_type !== undefined) {
+        // Get a default location ID (you may want to handle this differently)
+        const { data: defaultLocation } = await supabaseAdmin
+          .from('locations')
+          .select('id')
+          .limit(1)
+          .single()
+
         // Create event profile if it doesn't exist and we have event data
-        await prisma.eventProfile.create({
-          data: {
-            user_id: user.id,
-            location_id: 1, // Default location ID, should be updated separately
+        await supabaseAdmin
+          .from('event_profiles')
+          .insert({
+            user_id: dbUser.id,
+            location_id: defaultLocation?.id || '00000000-0000-0000-0000-000000000000', // Use default or generate UUID
             venue: venue || "",
             capacity: capacity?.toString() || "0",
             ticket_price: ticket_price?.toString() || "0",
@@ -162,9 +183,8 @@ export async function PATCH(request: NextRequest) {
             event_type: event_type || "",
             start_date: new Date().toISOString(),
             end_date: new Date().toISOString(),
-            duration: "1 day", // Default duration
-          }
-        })
+            duration: "1 day",
+          })
       }
     }
 
@@ -179,7 +199,5 @@ export async function PATCH(request: NextRequest) {
       { error: "Failed to update profile" },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

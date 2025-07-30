@@ -1,29 +1,29 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useAuth } from "./use-auth"
 
 export type UserRole = "Talent" | "Event Leader" | "Team Leader" | "Sponsor"
 
 const USER_ROLE_STORAGE_KEY = "athlink-user-role"
 
 export function useUserRole() {
-  const { data: session, status } = useSession()
+  const { user, loading } = useAuth()
   const [selectedUserRole, setSelectedUserRole] = useState<UserRole | null>(null)
   const [authenticatedUserRole, setAuthenticatedUserRole] = useState<UserRole | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
 
   // Fetch authenticated user's role from database
   useEffect(() => {
-    if (status === "loading") return
+    if (loading) return
 
-    if (status === "authenticated" && session?.user?.email) {
+    if (user?.email) {
       fetchUserRole()
     } else {
       setAuthenticatedUserRole(null)
       loadFromLocalStorage()
     }
-  }, [session, status])
+  }, [user, loading])
 
   const fetchUserRole = async () => {
     try {

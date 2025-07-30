@@ -1,22 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/auth"
-import { prisma } from "@/lib/prisma"
+import { supabase, supabaseAdmin } from "@/lib/supabase"
 
 // GET /api/sponsorships - List sponsorship requests with filters
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.email) {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
@@ -24,103 +21,68 @@ export async function GET(request: NextRequest) {
     const role = searchParams.get('role') // 'sponsor' or 'athlete'
     const campaignId = searchParams.get('campaign_id')
 
-    let where: any = {}
+    let query = supabaseAdmin
+      .from('sponsorship_requests')
+      .select(`
+        *,
+        campaign:campaigns(*),
+        sponsor:users!sponsor_id(id, name, email, profile_image_id),
+        athlete:users!athlete_id(id, name, email, profile_image_id, primary_sport),
+        perk_tier:perk_tiers(*)
+      `)
 
     // Filter by role
     if (role === 'sponsor') {
-      where.sponsor_id = user.id
+      query = query.eq('sponsor_id', user.id)
     } else if (role === 'athlete') {
-      where.athlete_id = user.id
+      query = query.eq('athlete_id', user.id)
     } else {
-      // Return both - requests I made and requests I received
-      where.OR = [
-        { sponsor_id: user.id },
-        { athlete_id: user.id }
-      ]
+      // Default: show requests where user is either sponsor or athlete
+      query = query.or(`sponsor_id.eq.${user.id},athlete_id.eq.${user.id}`)
     }
 
-    // Apply additional filters
-    if (status) where.status = status
-    if (campaignId) where.campaign_id = parseInt(campaignId)
+    // Additional filters
+    if (status) {
+      query = query.eq('status', status)
+    }
+    if (campaignId) {
+      query = query.eq('campaign_id', campaignId)
+    }
 
-    const requests = await prisma.sponsorshipRequest.findMany({
-      where,
-      include: {
-        campaign: {
-          select: {
-            id: true,
-            title: true,
-            funding_goal: true,
-            status: true
-          }
-        },
-        sponsor: {
-          select: {
-            id: true,
-            name: true,
-            profile_image: true,
-            primary_sport: true
-          }
-        },
-        athlete: {
-          select: {
-            id: true,
-            name: true,
-            profile_image: true,
-            primary_sport: true
-          }
-        },
-        perk_tier: {
-          select: {
-            id: true,
-            tier_name: true,
-            amount: true,
-            description: true,
-            deliverables: true
-          }
-        }
-      },
-      orderBy: { created_at: 'desc' }
-    })
+    const { data: sponsorshipRequests, error } = await query
+      .order('created_at', { ascending: false })
 
-    // Add role information for each request
-    const requestsWithRole = requests.map((request: any) => ({
-      ...request,
-      user_role: request.sponsor_id === user.id ? 'sponsor' : 'athlete',
-      is_custom_offer: request.is_custom
-    }))
+    if (error) {
+      console.error('Error fetching sponsorship requests:', error)
+      return NextResponse.json({ error: 'Failed to fetch sponsorship requests' }, { status: 500 })
+    }
 
-    return NextResponse.json({ requests: requestsWithRole })
-
+    return NextResponse.json({ sponsorshipRequests })
   } catch (error) {
-    console.error('Error fetching sponsorship requests:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch sponsorship requests' },
-      { status: 500 }
-    )
+    console.error('Error in sponsorships GET:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
-// POST /api/sponsorships - Create new sponsorship request
+// POST /api/sponsorships - Create a new sponsorship request
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.email) {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
     const {
       campaign_id,
+      athlete_id,
       perk_tier_id,
       amount,
       custom_perks,
@@ -129,145 +91,126 @@ export async function POST(request: NextRequest) {
     } = body
 
     // Validate required fields
-    if (!campaign_id || !amount || amount <= 0) {
-      return NextResponse.json(
-        { error: 'Campaign ID and valid amount are required' },
-        { status: 400 }
-      )
+    if (!campaign_id || !athlete_id || !amount) {
+      return NextResponse.json({
+        error: 'Missing required fields: campaign_id, athlete_id, amount'
+      }, { status: 400 })
     }
 
-    // Fetch campaign to get athlete_id and validate
-    const campaign = await prisma.campaign.findUnique({
-      where: { id: campaign_id },
-      include: {
-        perk_tiers: true,
-        athlete: { select: { id: true, name: true } }
-      }
-    })
+    // Verify the campaign exists
+    const { data: campaign, error: campaignError } = await supabaseAdmin
+      .from('campaigns')
+      .select('*')
+      .eq('id', campaign_id)
+      .single()
 
-    if (!campaign) {
-      return NextResponse.json(
-        { error: 'Campaign not found' },
-        { status: 404 }
-      )
+    if (campaignError || !campaign) {
+      return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
     }
 
-    if (campaign.status !== 'OPEN') {
-      return NextResponse.json(
-        { error: 'Campaign is not accepting sponsorships' },
-        { status: 400 }
-      )
-    }
-
-    // Prevent self-sponsorship
-    if (campaign.athlete_id === user.id) {
-      return NextResponse.json(
-        { error: 'Cannot sponsor your own campaign' },
-        { status: 400 }
-      )
-    }
-
-    // Validate perk tier for non-custom offers
-    if (!is_custom && perk_tier_id) {
-      const perkTier = campaign.perk_tiers.find((tier: any) => tier.id === perk_tier_id)
-      if (!perkTier || !perkTier.is_active) {
-        return NextResponse.json(
-          { error: 'Invalid or inactive perk tier' },
-          { status: 400 }
-        )
-      }
-
-      // Check if perk tier has reached max sponsors
-      if (perkTier.max_sponsors) {
-        const currentSponsors = await prisma.sponsorshipRequest.count({
-          where: {
-            perk_tier_id: perk_tier_id,
-            status: 'ACCEPTED'
-          }
-        })
-
-        if (currentSponsors >= perkTier.max_sponsors) {
-          return NextResponse.json(
-            { error: 'This perk tier is fully subscribed' },
-            { status: 400 }
-          )
-        }
-      }
-    }
-
-    // Create sponsorship request
-    const sponsorshipRequest = await prisma.sponsorshipRequest.create({
-      data: {
+    // Create the sponsorship request
+    const { data: sponsorshipRequest, error } = await supabaseAdmin
+      .from('sponsorship_requests')
+      .insert({
         campaign_id,
         sponsor_id: user.id,
-        athlete_id: campaign.athlete_id,
-        perk_tier_id: is_custom ? null : perk_tier_id,
+        athlete_id,
+        perk_tier_id: perk_tier_id || null,
         amount: parseFloat(amount),
-        custom_perks: is_custom ? JSON.stringify(custom_perks) : null,
+        custom_perks,
         message,
         is_custom,
-        status: is_custom ? 'PENDING' : 'ACCEPTED', // Auto-accept default perks
+        status: 'PENDING',
         escrow_status: 'HELD'
-      },
-      include: {
-        campaign: {
-          select: {
-            id: true,
-            title: true,
-            athlete: {
-              select: { name: true }
-            }
-          }
-        },
-        perk_tier: true,
-        sponsor: {
-          select: {
-            id: true,
-            name: true,
-            profile_image: true
-          }
-        }
-      }
-    })
-
-    // If it's an auto-accepted request, update campaign funding and perk tier
-    if (!is_custom) {
-      await prisma.$transaction(async (tx) => {
-        // Update campaign current funding
-        await tx.campaign.update({
-          where: { id: campaign_id },
-          data: {
-            current_funding: {
-              increment: parseFloat(amount)
-            }
-          }
-        })
-
-        // Update perk tier current sponsors count
-        if (perk_tier_id) {
-          await tx.perkTier.update({
-            where: { id: perk_tier_id },
-            data: {
-              current_sponsors: {
-                increment: 1
-              }
-            }
-          })
-        }
       })
+      .select(`
+        *,
+        campaign:campaigns(*),
+        sponsor:users!sponsor_id(id, name, email, profile_image_id),
+        athlete:users!athlete_id(id, name, email, profile_image_id, primary_sport),
+        perk_tier:perk_tiers(*)
+      `)
+      .single()
+
+    if (error) {
+      console.error('Error creating sponsorship request:', error)
+      return NextResponse.json({ error: 'Failed to create sponsorship request' }, { status: 500 })
     }
 
-    return NextResponse.json({
-      success: true,
-      request: sponsorshipRequest,
-      auto_accepted: !is_custom
-    }, { status: 201 })
-
+    return NextResponse.json({ sponsorshipRequest }, { status: 201 })
   } catch (error) {
-    console.error('Error creating sponsorship request:', error)
-    return NextResponse.json(
-      { error: 'Failed to create sponsorship request' },
-      { status: 500 }
-    )
+    console.error('Error in sponsorships POST:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+// PUT /api/sponsorships - Update sponsorship request status
+export async function PUT(request: NextRequest) {
+  try {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { id, status, escrow_status } = body
+
+    if (!id || !status) {
+      return NextResponse.json({
+        error: 'Missing required fields: id, status'
+      }, { status: 400 })
+    }
+
+    // Verify the user has permission to update this request
+    const { data: existingRequest, error: fetchError } = await supabaseAdmin
+      .from('sponsorship_requests')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (fetchError || !existingRequest) {
+      return NextResponse.json({ error: 'Sponsorship request not found' }, { status: 404 })
+    }
+
+    // Only the athlete can approve/reject, sponsor can cancel
+    if (existingRequest.athlete_id !== user.id && existingRequest.sponsor_id !== user.id) {
+      return NextResponse.json({ error: 'Unauthorized to update this request' }, { status: 403 })
+    }
+
+    // Update the request
+    const updateData: any = { status }
+    if (escrow_status) {
+      updateData.escrow_status = escrow_status
+    }
+
+    const { data: updatedRequest, error } = await supabaseAdmin
+      .from('sponsorship_requests')
+      .update(updateData)
+      .eq('id', id)
+      .select(`
+        *,
+        campaign:campaigns(*),
+        sponsor:users!sponsor_id(id, name, email, profile_image_id),
+        athlete:users!athlete_id(id, name, email, profile_image_id, primary_sport),
+        perk_tier:perk_tiers(*)
+      `)
+      .single()
+
+    if (error) {
+      console.error('Error updating sponsorship request:', error)
+      return NextResponse.json({ error: 'Failed to update sponsorship request' }, { status: 500 })
+    }
+
+    return NextResponse.json({ sponsorshipRequest: updatedRequest })
+  } catch (error) {
+    console.error('Error in sponsorships PUT:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

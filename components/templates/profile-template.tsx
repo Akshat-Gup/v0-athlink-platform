@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/o
 import { QrCode } from "lucide-react"
 import { useState, ReactNode } from "react"
 import { Tooltip, TooltipProvider } from "@/components/molecules/tooltip"
-import { Session } from "next-auth"
+import { Session } from "@supabase/supabase-js"
 
 // Generic interfaces for profile data
 export interface BaseProfile {

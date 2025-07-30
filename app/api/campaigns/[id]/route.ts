@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '../../../../auth'
-import { prisma } from '../../../../lib/prisma'
+import { supabaseAdmin } from '../../../../lib/supabase'
 
 // GET single campaign by ID
 export async function GET(
@@ -88,7 +87,7 @@ export async function PUT(
 ) {
   try {
     const session = await auth()
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -194,9 +193,9 @@ export async function PUT(
       })
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      campaign: updatedCampaign 
+      campaign: updatedCampaign
     })
 
   } catch (error) {
@@ -214,7 +213,7 @@ export async function PATCH(
 ) {
   try {
     const session = await auth()
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -274,7 +273,7 @@ export async function DELETE(
 ) {
   try {
     const session = await auth()
-    
+
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -310,8 +309,8 @@ export async function DELETE(
 
     // Check if campaign has any sponsorship requests
     if (existingCampaign.sponsorship_requests.length > 0) {
-      return NextResponse.json({ 
-        error: 'Cannot delete campaign with existing sponsorship requests. Set status to CANCELLED instead.' 
+      return NextResponse.json({
+        error: 'Cannot delete campaign with existing sponsorship requests. Set status to CANCELLED instead.'
       }, { status: 400 })
     }
 

@@ -5,7 +5,7 @@ import { DiscoverHeader } from "@/components/organisms/discover/discover-header"
 import { DiscoverSearchBar } from "@/components/organisms/discover/discover-search-bar"
 import { TalentGrid } from "@/components/organisms/discover/talent-grid"
 import { TalentItem } from "@/hooks/use-discover-data"
-import { Session } from "next-auth"
+import { Session } from "@supabase/supabase-js"
 
 interface DiscoverTemplateProps {
   // Auth

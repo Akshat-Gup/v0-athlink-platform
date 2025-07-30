@@ -1,262 +1,160 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '../../../auth'
-import { prisma } from '../../../lib/prisma'
+import { supabase, supabaseAdmin } from '../../../lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.email) {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const favorites = await prisma.favorite.findMany({
-      where: { user_id: user.id },
-      include: {
-        favorited_user: {
-          select: {
-            id: true,
-            name: true,
-            primary_sport: true,
-            profile_image_id: true,
-            country_flag: true,
-            rating: true,
-            bio: true,
-            talent_profile: {
-              select: {
-                id: true,
-                current_funding: true,
-                goal_funding: true,
-                achievements: true
-              }
-            },
-            team_profile: {
-              select: {
-                id: true,
-                current_funding: true,
-                goal_funding: true,
-                league: true,
-                wins: true,
-                losses: true,
-                ranking: true
-              }
-            },
-            event_profile: {
-              select: {
-                id: true,
-                current_funding: true,
-                goal_funding: true,
-                start_date: true,
-                end_date: true,
-                venue: true,
-                status: true
-              }
-            }
-          }
-        }
-      },
-      orderBy: { created_at: 'desc' }
-    })
+    const { data: favorites, error } = await supabaseAdmin
+      .from('favorites')
+      .select(`
+        *,
+        favorited_user:users!profile_id(
+          id,
+          name,
+          primary_sport,
+          profile_image_id,
+          country_flag,
+          bio,
+          category,
+          rating,
+          years_experience,
+          verification_status
+        )
+      `)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
 
-    return NextResponse.json({
-      favorites: favorites.map((fav: any) => ({
-        id: fav.id,
-        profile_type: fav.profile_type,
-        created_at: fav.created_at,
-        profile: fav.favorited_user
-      }))
-    })
+    if (error) {
+      console.error('Error fetching favorites:', error)
+      return NextResponse.json({ error: 'Failed to fetch favorites' }, { status: 500 })
+    }
 
+    return NextResponse.json({ favorites })
   } catch (error) {
-    console.error('Error fetching favorites:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('Error in favorites GET:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
     
-    if (!session?.user?.email) {
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
-    console.log('POST /api/favorites - Request body:', body)
-    
     const { profile_id, profile_type } = body
 
     if (!profile_id || !profile_type) {
-      console.log('Missing profile_id or profile_type:', { profile_id, profile_type })
-      return NextResponse.json(
-        { error: 'Profile ID and type are required' },
-        { status: 400 }
-      )
-    }
-
-    if (!['talent', 'team', 'event'].includes(profile_type)) {
-      console.log('Invalid profile_type:', profile_type)
-      return NextResponse.json(
-        { error: 'Invalid profile type' },
-        { status: 400 }
-      )
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
-    if (!user) {
-      console.log('User not found for email:', session.user.email)
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    console.log('User found:', { id: user.id, email: user.email })
-
-    // Check if the profile exists
-    const profileId = parseInt(profile_id)
-    console.log('Checking if profile exists:', { profile_id, profileId })
-    
-    if (isNaN(profileId)) {
-      console.log('Invalid profile_id - not a number:', profile_id)
-      return NextResponse.json({ error: 'Invalid profile ID' }, { status: 400 })
-    }
-    
-    const profileExists = await prisma.user.findUnique({
-      where: { id: profileId }
-    })
-
-    console.log('Profile exists check:', { profileId, exists: !!profileExists })
-
-    if (!profileExists) {
-      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
-    }
-
-    // Prevent users from favoriting themselves
-    if (user.id === profileId) {
-      console.log('User trying to favorite themselves:', { userId: user.id, profileId })
-      return NextResponse.json(
-        { error: 'Cannot favorite your own profile' },
-        { status: 400 }
-      )
+      return NextResponse.json({ 
+        error: 'Missing required fields: profile_id, profile_type' 
+      }, { status: 400 })
     }
 
     // Check if already favorited
-    const existingFavorite = await prisma.favorite.findUnique({
-      where: {
-        user_id_profile_id: {
-          user_id: user.id,
-          profile_id: profileId
-        }
-      }
-    })
+    const { data: existing } = await supabaseAdmin
+      .from('favorites')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('profile_id', profile_id)
+      .single()
 
-    console.log('Existing favorite check:', { exists: !!existingFavorite })
-
-    if (existingFavorite) {
-      return NextResponse.json(
-        { error: 'Profile already favorited' },
-        { status: 409 }
-      )
+    if (existing) {
+      return NextResponse.json({ 
+        error: 'Profile is already in favorites' 
+      }, { status: 400 })
     }
 
-    // Create favorite
-    console.log('Creating favorite:', { user_id: user.id, profile_id: profileId, profile_type })
-    
-    const favorite = await prisma.favorite.create({
-      data: {
+    // Add to favorites
+    const { data: favorite, error } = await supabaseAdmin
+      .from('favorites')
+      .insert({
         user_id: user.id,
-        profile_id: profileId,
+        profile_id,
         profile_type
-      },
-      include: {
-        favorited_user: {
-          select: {
-            id: true,
-            name: true,
-            primary_sport: true,
-            profile_image_id: true
-          }
-        }
-      }
-    })
+      })
+      .select(`
+        *,
+        favorited_user:users!profile_id(
+          id,
+          name,
+          primary_sport,
+          profile_image_id,
+          country_flag,
+          bio,
+          category
+        )
+      `)
+      .single()
 
-    return NextResponse.json({
-      success: true,
-      favorite
-    }, { status: 201 })
+    if (error) {
+      console.error('Error adding to favorites:', error)
+      return NextResponse.json({ error: 'Failed to add to favorites' }, { status: 500 })
+    }
 
+    return NextResponse.json({ favorite }, { status: 201 })
   } catch (error) {
-    console.error('Error adding favorite:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('Error in favorites POST:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.email) {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(request.url)
-    const profile_id = searchParams.get('profile_id')
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { profile_id } = body
 
     if (!profile_id) {
-      return NextResponse.json(
-        { error: 'Profile ID is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ 
+        error: 'Missing required field: profile_id' 
+      }, { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
+    const { error } = await supabaseAdmin
+      .from('favorites')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('profile_id', profile_id)
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (error) {
+      console.error('Error removing from favorites:', error)
+      return NextResponse.json({ error: 'Failed to remove from favorites' }, { status: 500 })
     }
 
-    // Find and delete the favorite
-    const deletedFavorite = await prisma.favorite.deleteMany({
-      where: {
-        user_id: user.id,
-        profile_id: parseInt(profile_id)
-      }
-    })
-
-    if (deletedFavorite.count === 0) {
-      return NextResponse.json(
-        { error: 'Favorite not found' },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Favorite removed'
-    })
-
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error removing favorite:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('Error in favorites DELETE:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

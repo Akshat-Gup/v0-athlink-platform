@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { signIn, getSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/atoms/button"
 import { Input } from "@/components/atoms/input"
@@ -9,6 +8,8 @@ import { Label } from "@/components/atoms/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/molecules/card"
 import { Alert } from "@/components/molecules/alert"
 import { Loader2 } from "lucide-react"
+import { signInWithCredentials, signInWithGoogle } from "@/auth"
+import { useAuth } from "@/hooks/use-auth"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -16,6 +17,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
+  const { user } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,25 +25,13 @@ export function LoginForm() {
     setError("")
 
     try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        setError("Invalid email or password. Please try again.")
-      } else {
-        // Check if sign in was successful
-        const session = await getSession()
-        if (session) {
-          router.push("/discover")
-          router.refresh()
-        }
-      }
+      await signInWithCredentials(email, password)
+      // Redirect after successful login
+      router.push("/discover")
+      router.refresh()
     } catch (error) {
       console.error("Login error:", error)
-      setError("An unexpected error occurred. Please try again.")
+      setError("Invalid email or password. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -50,7 +40,8 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
-      await signIn("google", { callbackUrl: "/discover" })
+      await signInWithGoogle()
+      // Redirect will be handled by the OAuth flow
     } catch (error) {
       console.error("Google sign in error:", error)
       setError("Google sign in failed. Please try again.")

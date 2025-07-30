@@ -1,7 +1,7 @@
-import { prisma } from '@/lib/prisma'
+import { supabaseAdmin } from '@/lib/supabase'
 
 export interface DiscoverItem {
-  id: number
+  id: string
   name: string
   sport: string
   location: string
@@ -43,200 +43,224 @@ export async function getDiscoverData(filters: {
 }> {
   try {
     // Get all users with their profiles and locations (excluding sponsors)
-    const users = await prisma.user.findMany({
-      include: {
-        base_location: true,
-        talent_type: true,
-        talent_profile: true,
-        team_profile: true,
-        event_profile: {
-          include: {
-            location: true,
-          },
-        },
-        media_items: {
-          where: {
-            media_type: 'PHOTO',
-          },
-          take: 1,
-        },
-        user_tags: {
-          include: {
-            tag: true,
-          },
-        },
-        campaigns: {
-          where: {
-            status: {
-              in: ['OPEN', 'ACTIVE']
-            }
-          },
-          orderBy: {
-            created_at: 'desc'
-          },
-          take: 1
-        }
-      },
-      where: {
-        is_active: true,
-        verification_status: 'VERIFIED',
-        category: 'TALENT', // Only include talent users, exclude sponsors
-      },
-    })
+    let query = supabaseAdmin
+      .from('users')
+      .select(`
+        *,
+        base_location:locations!base_location_id(*),
+        talent_type:talent_types!talent_type_id(*),
+        talent_profile:talent_profiles(*),
+        team_profile:team_profiles(*),
+        event_profile:event_profiles(*),
+        user_tags:user_tags(tag:tags(*)),
+        media_items(*)
+      `)
+      .neq('category', 'SPONSOR')
+      .eq('is_active', true)
 
-    // Transform database data to DiscoverItem format
-    const allItems: DiscoverItem[] = users.map(user => {
-      const location = user.event_profile?.location || user.base_location
-      const profileImage = user.media_items[0]?.url || `https://images.unsplash.com/photo-1${Math.floor(Math.random() * 1000000000)}?w=400&h=300&fit=crop`
-      
-      // Determine category based on user data
-      let category = 'talent'
-      let talentType = user.talent_type?.type_name || 'Athlete'
-      
-      if (user.team_profile) {
-        category = 'team'
-        talentType = 'Athletic Team'
-      } else if (user.event_profile) {
-        category = 'event'
-        talentType = 'Championship Event'
+    // Apply filters based on search mode and criteria
+    if (filters.searchMode === 'search' && filters.searchQuery) {
+      // Simple text search across name, bio, primary_sport
+      query = query.or(`name.ilike.%${filters.searchQuery}%,bio.ilike.%${filters.searchQuery}%,primary_sport.ilike.%${filters.searchQuery}%`)
+    }
+
+    if (filters.selectedSport) {
+      query = query.eq('primary_sport', filters.selectedSport)
+    }
+
+    if (filters.selectedRating) {
+      const ratingThreshold = parseFloat(filters.selectedRating)
+      query = query.gte('rating', ratingThreshold)
+    }
+
+    if (filters.selectedExperience) {
+      const experienceThreshold = parseInt(filters.selectedExperience)
+      query = query.gte('years_experience', experienceThreshold)
+    }
+
+    if (filters.selectedLocation) {
+      query = query.eq('base_location.city', filters.selectedLocation)
+    }
+
+    const { data: users, error } = await query
+
+    if (error) {
+      console.error('Error fetching users:', error)
+      throw error
+    }
+
+    if (!users || users.length === 0) {
+      return {
+        topTalentItems: [],
+        upAndComingItems: [],
+        brandAmbassadorItems: [],
+        teamItems: [],
+        eventItems: []
       }
+    }
 
-      // Get achievements
-      let achievements = ''
-      if (user.talent_profile) {
-        achievements = user.talent_profile.achievements
-      } else if (user.team_profile) {
-        achievements = `${user.team_profile.wins} Wins, Ranking #${user.team_profile.ranking}`
-      } else if (user.event_profile) {
-        achievements = `${user.event_profile.event_type} - ${user.event_profile.status}`
-      }
-
-      // Determine fit type
-      let fit = 'top-talent'
-      if (user.talent_profile?.fit_type) {
-        fit = user.talent_profile.fit_type
-      } else if (user.rating < 4.5) {
-        fit = 'up-and-coming'
-      } else if (user.talent_type?.type_key === 'content-creator') {
-        fit = 'brand-ambassador'
-      }
-
-      // Get tags
-      const tags = user.user_tags.map(ut => ut.tag.name)
-      
-      // Generate keywords from various fields
-      const keywords = [
-        user.primary_sport.toLowerCase(),
-        user.base_location.city.toLowerCase(),
-        user.base_location.state?.toLowerCase() || '',
-        ...achievements.toLowerCase().split(' '),
-        ...tags.map(tag => tag.toLowerCase()),
-      ].filter(Boolean)
-
-      // Get funding data from active campaign if available, otherwise fall back to profile data
-      const activeCampaign = user.campaigns[0] // Get the most recent active campaign
-      let currentFunding: number | undefined
-      let goalFunding: number | undefined
-
-      if (activeCampaign) {
-        currentFunding = Number(activeCampaign.current_funding)
-        goalFunding = Number(activeCampaign.funding_goal)
-      } else {
-        // Fall back to profile data
-        currentFunding = user.talent_profile?.current_funding || user.team_profile?.current_funding || user.event_profile?.current_funding || undefined
-        goalFunding = user.talent_profile?.goal_funding || user.team_profile?.goal_funding || user.event_profile?.goal_funding || undefined
-      }
+    // Transform users into DiscoverItems
+    const transformUser = (user: any): DiscoverItem => {
+      const tags = user.user_tags?.map((ut: any) => ut.tag?.name).filter(Boolean) || []
+      const location = user.base_location ? 
+        `${user.base_location.city}, ${user.base_location.country}` : 
+        'Location not specified'
 
       return {
         id: user.id,
         name: user.name,
-        sport: user.primary_sport,
-        location: `${location.city}, ${location.state || location.country}`,
-        rating: user.rating,
-        currentFunding,
-        goalFunding,
-        price: user.talent_profile?.price || undefined,
-        period: user.talent_profile?.period || undefined,
-        image: profileImage,
-        achievements,
-        category,
-        talentType,
-        fit,
+        sport: user.primary_sport || 'Not specified',
+        location,
+        rating: user.rating || 0,
+        currentFunding: user.talent_profile?.current_funding || user.team_profile?.current_funding || 0,
+        goalFunding: user.talent_profile?.goal_funding || user.team_profile?.goal_funding || 0,
+        price: user.talent_profile?.price || 'Not specified',
+        period: user.talent_profile?.period || 'Not specified',
+        image: user.profile_image_id ? `/api/files/${user.profile_image_id}` : '/placeholder-user.jpg',
+        achievements: user.talent_profile?.achievements || user.bio || 'No achievements listed',
+        category: user.category || 'ATHLETE',
+        talentType: user.talent_type?.type_name || 'Not specified',
+        fit: user.talent_profile?.fit_type || 'Not specified',
         tags,
-        keywords,
+        keywords: [
+          user.name,
+          user.primary_sport,
+          user.category,
+          ...tags
+        ].filter(Boolean)
       }
-    })
-
-    // Apply filters
-    let filteredItems = allItems
-
-    // Filter by tab (category)
-    if (filters.activeTab === 'talents') {
-      filteredItems = filteredItems.filter(item => item.category === 'talent')
-    } else if (filters.activeTab === 'teams') {
-      filteredItems = filteredItems.filter(item => item.category === 'team')
-    } else if (filters.activeTab === 'events') {
-      filteredItems = filteredItems.filter(item => item.category === 'event')
     }
 
-    // Apply search filters
-    if (filters.searchQuery && filters.searchMode === 'search') {
-      const query = filters.searchQuery.toLowerCase()
-      filteredItems = filteredItems.filter(item =>
-        item.keywords.some(keyword => keyword.includes(query)) ||
-        item.name.toLowerCase().includes(query) ||
-        item.sport.toLowerCase().includes(query) ||
-        item.location.toLowerCase().includes(query)
-      )
+    // Categorize users based on their profiles and criteria
+    const athletes = users.filter(u => u.category === 'ATHLETE' && u.talent_profile)
+    const teams = users.filter(u => u.category === 'TEAM' && u.team_profile)
+    const events = users.filter(u => u.category === 'EVENT' && u.event_profile)
+
+    // For talents, create different categories based on rating and experience
+    const topTalentItems = athletes
+      .filter(u => (u.rating || 0) >= 4.0)
+      .map(transformUser)
+      .slice(0, 20)
+
+    const upAndComingItems = athletes
+      .filter(u => (u.years_experience || 0) <= 3 && (u.rating || 0) >= 3.0)
+      .map(transformUser)
+      .slice(0, 20)
+
+    const brandAmbassadorItems = athletes
+      .filter(u => {
+        const tags = u.user_tags?.map((ut: any) => ut.tag?.name).filter(Boolean) || []
+        return tags.some((tag: string) => 
+          tag.toLowerCase().includes('brand') || 
+          tag.toLowerCase().includes('ambassador') ||
+          tag.toLowerCase().includes('marketing')
+        )
+      })
+      .map(transformUser)
+      .slice(0, 20)
+
+    // If no specific brand ambassadors found, use high-rated athletes
+    if (brandAmbassadorItems.length === 0) {
+      brandAmbassadorItems.push(...athletes
+        .filter(u => (u.rating || 0) >= 3.5)
+        .map(transformUser)
+        .slice(0, 10))
     }
 
-    // Apply other filters
-    if (filters.selectedSport) {
-      filteredItems = filteredItems.filter(item => 
-        item.sport.toLowerCase() === filters.selectedSport.toLowerCase()
-      )
-    }
-
-    if (filters.selectedTalentType) {
-      filteredItems = filteredItems.filter(item =>
-        item.talentType.toLowerCase().replace(/\s+/g, '-') === filters.selectedTalentType
-      )
-    }
-
-    if (filters.selectedRating) {
-      const minRating = parseFloat(filters.selectedRating)
-      filteredItems = filteredItems.filter(item => item.rating >= minRating)
-    }
-
-    if (filters.selectedLocation) {
-      filteredItems = filteredItems.filter(item =>
-        item.location.toLowerCase().includes(filters.selectedLocation.toLowerCase())
-      )
-    }
-
-    // Group by fit type
-    const topTalentItems = filteredItems.filter(item => item.fit === 'top-talent')
-    const upAndComingItems = filteredItems.filter(item => item.fit === 'up-and-coming')
-    const brandAmbassadorItems = filteredItems.filter(item => item.fit === 'brand-ambassador')
-    const teamItems = filteredItems.filter(item => item.category === 'team')
-    const eventItems = filteredItems.filter(item => item.category === 'event')
+    const teamItems = teams.map(transformUser).slice(0, 20)
+    const eventItems = events.map(transformUser).slice(0, 20)
 
     return {
       topTalentItems,
       upAndComingItems,
       brandAmbassadorItems,
       teamItems,
-      eventItems,
+      eventItems
     }
   } catch (error) {
-    console.error('Error fetching discover data:', error)
-    // Return empty arrays on error
+    console.error('Error in getDiscoverData:', error)
+    throw error
+  }
+}
+
+// Helper function for AI-powered search (placeholder)
+export async function getAISearchResults(query: string): Promise<DiscoverItem[]> {
+  // This would integrate with an AI service to provide semantic search
+  // For now, fall back to regular search
+  return getDiscoverData({
+    activeTab: 'talents',
+    searchMode: 'search',
+    searchQuery: query,
+    aiQuery: query,
+    selectedTalentType: '',
+    selectedFit: '',
+    selectedSport: '',
+    selectedLeague: '',
+    selectedExperience: '',
+    selectedRating: '',
+    selectedLocation: ''
+  }).then(data => data.topTalentItems)
+}
+
+// Get filter options for the UI
+export async function getFilterOptions() {
+  try {
+    // Get unique sports
+    const { data: sportsData } = await supabaseAdmin
+      .from('users')
+      .select('primary_sport')
+      .not('primary_sport', 'is', null)
+
+    const sports = [...new Set(sportsData?.map(u => u.primary_sport).filter(Boolean))] || []
+
+    // Get unique locations
+    const { data: locationsData } = await supabaseAdmin
+      .from('locations')
+      .select('city, country')
+
+    const locations = locationsData?.map(l => `${l.city}, ${l.country}`) || []
+
+    // Get talent types
+    const { data: talentTypesData } = await supabaseAdmin
+      .from('talent_types')
+      .select('*')
+      .eq('is_active', true)
+
+    const talentTypes = talentTypesData || []
+
+    // Get tags
+    const { data: tagsData } = await supabaseAdmin
+      .from('tags')
+      .select('*')
+
+    const tags = tagsData || []
+
     return {
-      topTalentItems: [],
-      upAndComingItems: [],
-      brandAmbassadorItems: [],
-      teamItems: [],
-      eventItems: [],
+      sports: sports.sort(),
+      locations: locations.sort(),
+      talentTypes,
+      tags,
+      experienceLevels: ['0-1', '2-3', '4-5', '6-10', '10+'],
+      ratings: ['3.0+', '3.5+', '4.0+', '4.5+'],
+      budgetRanges: [
+        [0, 1000],
+        [1000, 5000],
+        [5000, 10000],
+        [10000, 25000],
+        [25000, 50000],
+        [50000, 100000]
+      ]
+    }
+  } catch (error) {
+    console.error('Error getting filter options:', error)
+    return {
+      sports: [],
+      locations: [],
+      talentTypes: [],
+      tags: [],
+      experienceLevels: [],
+      ratings: [],
+      budgetRanges: []
     }
   }
 }

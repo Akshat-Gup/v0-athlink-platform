@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '../../../auth'
-import { prisma } from '../../../lib/prisma'
+import { supabaseAdmin } from '../../../lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.email) {
+    // Get auth header
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const token = authHeader.split(' ')[1]
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+
+    if (authError || !user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -24,51 +30,49 @@ export async function POST(request: NextRequest) {
     }
 
     // Get sponsor user from database
-    const sponsor = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
+    const { data: sponsor, error: sponsorError } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('email', user.email)
+      .single()
 
-    if (!sponsor) {
+    if (sponsorError || !sponsor) {
       return NextResponse.json({ error: 'Sponsor not found' }, { status: 404 })
     }
 
     // Get the profile owner (athlete/campaign owner)
-    const profileOwner = await prisma.user.findUnique({
-      where: { id: profile_id }
-    })
+    const { data: profileOwner, error: profileError } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('id', profile_id)
+      .single()
 
-    if (!profileOwner) {
+    if (profileError || !profileOwner) {
       return NextResponse.json({ error: 'Profile owner not found' }, { status: 404 })
     }
 
-    // For now, we'll create a contribution request directly in the SponsorContribution table
-    // In a real system, you might want to create a separate RequestContribution table
-    const contributionRequest = await prisma.sponsorContribution.create({
-      data: {
+    // Create contribution request in the SponsorContribution table
+    const { data: contributionRequest, error: createError } = await supabaseAdmin
+      .from('sponsor_contributions')
+      .insert({
         sponsor_id: sponsor.id,
         recipient_id: profileOwner.id,
         amount,
         currency: 'USD',
         message: message || custom_conditions || null,
-        status: 'PENDING' // Pending approval from profile owner
-      },
-      include: {
-        sponsor: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        recipient: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    })
+        status: 'PENDING'
+      })
+      .select(`
+        *,
+        sponsor:users!sponsor_contributions_sponsor_id_fkey(id, name, email),
+        recipient:users!sponsor_contributions_recipient_id_fkey(id, name, email)
+      `)
+      .single()
+
+    if (createError) {
+      console.error('Error creating contribution request:', createError)
+      return NextResponse.json({ error: 'Failed to create contribution request' }, { status: 500 })
+    }
 
     return NextResponse.json({ 
       success: true,
@@ -84,64 +88,60 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.email) {
+    // Get auth header
+    const authHeader = request.headers.get('authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const token = authHeader.split(' ')[1]
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token)
+
+    if (authError || !user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
+    const { data: dbUser, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .eq('email', user.email)
+      .single()
 
-    if (!user) {
+    if (userError || !dbUser) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Get contribution requests sent by this user (as sponsor)
-    const sentRequests = await prisma.sponsorContribution.findMany({
-      where: {
-        sponsor_id: user.id
-      },
-      include: {
-        recipient: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      },
-      orderBy: {
-        created_at: 'desc'
-      }
-    })
+    const { data: sentRequests, error: sentError } = await supabaseAdmin
+      .from('sponsor_contributions')
+      .select(`
+        *,
+        recipient:users!sponsor_contributions_recipient_id_fkey(id, name, email)
+      `)
+      .eq('sponsor_id', dbUser.id)
+      .order('created_at', { ascending: false })
 
     // Get contribution requests received by this user (as profile owner)
-    const receivedRequests = await prisma.sponsorContribution.findMany({
-      where: {
-        recipient_id: user.id
-      },
-      include: {
-        sponsor: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      },
-      orderBy: {
-        created_at: 'desc'
-      }
-    })
+    const { data: receivedRequests, error: receivedError } = await supabaseAdmin
+      .from('sponsor_contributions')
+      .select(`
+        *,
+        sponsor:users!sponsor_contributions_sponsor_id_fkey(id, name, email)
+      `)
+      .eq('recipient_id', dbUser.id)
+      .order('created_at', { ascending: false })
+
+    if (sentError || receivedError) {
+      console.error('Error fetching contribution requests:', sentError || receivedError)
+      return NextResponse.json({ error: 'Failed to fetch contribution requests' }, { status: 500 })
+    }
 
     return NextResponse.json({ 
-      sent_requests: sentRequests,
-      received_requests: receivedRequests 
+      sent_requests: sentRequests || [],
+      received_requests: receivedRequests || []
     })
 
   } catch (error) {

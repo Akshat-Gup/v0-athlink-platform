@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '../../../auth'
-import { prisma } from '../../../lib/prisma'
+import { supabase, supabaseAdmin } from '../../../lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,173 +10,163 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0')
     const ownOnly = searchParams.get('own_only') === 'true'
 
-    const session = await auth()
-    let where: any = {}
+    let query = supabaseAdmin
+      .from('campaigns')
+      .select(`
+        *,
+        athlete:users!athlete_id(id, name, email, category, bio, rating, primary_sport, country_flag, profile_image_id),
+        perk_tiers(*),
+        sponsorship_requests(amount, status, sponsor:users!sponsor_id(name, profile_image_id))
+      `)
 
     // If requesting own campaigns only, require authentication
     if (ownOnly) {
-      if (!session?.user?.email) {
+      const authHeader = request.headers.get('Authorization')
+      if (!authHeader) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
 
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
+      const token = authHeader.replace('Bearer ', '')
+      const { data: { user }, error: authError } = await supabase.auth.getUser(token)
 
-      if (!user) {
-        return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      if (authError || !user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
 
-      where.athlete_id = user.id
+      query = query.eq('athlete_id', user.id)
     } else {
-      // Public campaigns - apply filters
-      if (status) where.status = status
-      if (athleteId) where.athlete_id = parseInt(athleteId)
+      // Apply public filters
+      if (status) {
+        query = query.eq('status', status)
+      }
+      if (athleteId) {
+        query = query.eq('athlete_id', athleteId)
+      }
     }
 
-    const campaigns = await prisma.campaign.findMany({
-      where,
-      include: {
-        athlete: {
-          select: {
-            id: true,
-            name: true,
-            primary_sport: true,
-            profile_image: true,
-            country_flag: true,
-          }
-        },
-        perk_tiers: {
-          where: { is_active: true },
-          orderBy: { amount: 'asc' }
-        },
-        sponsorship_requests: {
-          where: { status: 'ACCEPTED' },
-          select: {
-            amount: true,
-            sponsor: {
-              select: { name: true, profile_image: true }
-            }
-          }
-        },
-        _count: {
-          select: {
-            sponsorship_requests: {
-              where: { status: 'PENDING' }
-            }
-          }
-        }
-      },
-      orderBy: { created_at: 'desc' },
-      take: limit,
-      skip: offset
-    })
+    // Apply pagination
+    const { data: campaigns, error } = await query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
 
-    // Calculate remaining goal and additional metrics for each campaign
-    const campaignsWithMetrics = campaigns.map((campaign: any) => {
-      const acceptedAmount = campaign.sponsorship_requests.reduce(
-        (sum: number, req: any) => sum + req.amount, 0
-      )
+    if (error) {
+      console.error('Error fetching campaigns:', error)
+      return NextResponse.json({ error: 'Failed to fetch campaigns' }, { status: 500 })
+    }
+
+    // Calculate metrics for each campaign
+    const campaignsWithMetrics = campaigns?.map((campaign: any) => {
+      const acceptedAmount = campaign.sponsorship_requests
+        ?.filter((req: any) => req.status === 'APPROVED')
+        .reduce((sum: number, req: any) => sum + req.amount, 0) || 0
+
       const remaining_goal = Math.max(0, campaign.funding_goal - acceptedAmount)
       const progress_percentage = (acceptedAmount / campaign.funding_goal) * 100
+      const pending_requests_count = campaign.sponsorship_requests
+        ?.filter((req: any) => req.status === 'PENDING').length || 0
 
       return {
         ...campaign,
         current_funding: acceptedAmount,
         remaining_goal,
         progress_percentage: Math.round(progress_percentage * 100) / 100,
-        accepted_sponsorships: campaign.sponsorship_requests,
-        pending_requests_count: campaign._count.sponsorship_requests,
+        accepted_sponsorships: campaign.sponsorship_requests?.filter((req: any) => req.status === 'APPROVED') || [],
+        pending_requests_count,
         is_fully_funded: remaining_goal <= 0,
-        sponsors_count: campaign.sponsorship_requests.length
+        sponsors_count: campaign.sponsorship_requests?.filter((req: any) => req.status === 'APPROVED').length || 0
       }
-    })
+    }) || []
 
-    return NextResponse.json({
-      campaigns: campaignsWithMetrics,
-      total: campaigns.length
-    })
-
+    return NextResponse.json({ campaigns: campaignsWithMetrics })
   } catch (error) {
-    console.error('Error fetching campaigns:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('Error in campaigns GET:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.email) {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const body = await request.json()
     const { title, description, funding_goal, deadline, perk_tiers } = body
 
-    if (!title || !funding_goal || funding_goal <= 0) {
-      return NextResponse.json({ error: 'Title and valid funding goal are required' }, { status: 400 })
+    // Validate required fields
+    if (!title || !description || !funding_goal) {
+      return NextResponse.json({
+        error: 'Missing required fields: title, description, funding_goal'
+      }, { status: 400 })
     }
 
-    if (!perk_tiers || !Array.isArray(perk_tiers) || perk_tiers.length === 0) {
-      return NextResponse.json({ error: 'At least one perk tier is required' }, { status: 400 })
-    }
-
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    // Create campaign with perk tiers
-    const campaign = await prisma.campaign.create({
-      data: {
+    // Create campaign
+    const { data: campaign, error: campaignError } = await supabaseAdmin
+      .from('campaigns')
+      .insert({
         athlete_id: user.id,
         title,
         description,
         funding_goal: parseFloat(funding_goal),
-        deadline: deadline ? new Date(deadline) : null,
-        perk_tiers: {
-          create: perk_tiers.map((tier: any) => ({
-            tier_name: tier.tier_name,
-            amount: parseFloat(tier.amount),
-            description: tier.description,
-            deliverables: JSON.stringify(tier.deliverables || {}),
-            max_sponsors: tier.max_sponsors || null
-          }))
-        }
-      },
-      include: {
-        perk_tiers: {
-          orderBy: { amount: 'asc' }
-        },
-        athlete: {
-          select: {
-            id: true,
-            name: true,
-            primary_sport: true,
-            profile_image: true
-          }
-        }
+        deadline: deadline ? new Date(deadline).toISOString() : null,
+        status: 'OPEN'
+      })
+      .select()
+      .single()
+
+    if (campaignError) {
+      console.error('Error creating campaign:', campaignError)
+      return NextResponse.json({ error: 'Failed to create campaign' }, { status: 500 })
+    }
+
+    // Create perk tiers if provided
+    if (perk_tiers && Array.isArray(perk_tiers) && perk_tiers.length > 0) {
+      const tierInserts = perk_tiers.map(tier => ({
+        campaign_id: campaign.id,
+        tier_name: tier.tier_name,
+        amount: parseFloat(tier.amount),
+        description: tier.description,
+        deliverables: tier.deliverables,
+        max_sponsors: tier.max_sponsors ? parseInt(tier.max_sponsors) : null
+      }))
+
+      const { error: tiersError } = await supabaseAdmin
+        .from('perk_tiers')
+        .insert(tierInserts)
+
+      if (tiersError) {
+        console.error('Error creating perk tiers:', tiersError)
+        // Continue even if perk tiers fail - campaign is created
       }
-    })
+    }
 
-    return NextResponse.json({ 
-      success: true,
-      campaign 
-    }, { status: 201 })
+    // Fetch the complete campaign with relations
+    const { data: completeCampaign, error: fetchError } = await supabaseAdmin
+      .from('campaigns')
+      .select(`
+        *,
+        athlete:users!athlete_id(id, name, email, category, bio, rating, primary_sport),
+        perk_tiers(*)
+      `)
+      .eq('id', campaign.id)
+      .single()
 
+    if (fetchError) {
+      console.error('Error fetching complete campaign:', fetchError)
+      return NextResponse.json({ campaign }, { status: 201 })
+    }
+
+    return NextResponse.json({ campaign: completeCampaign }, { status: 201 })
   } catch (error) {
-    console.error('Error creating campaign:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('Error in campaigns POST:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,47 +1,69 @@
-import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
+import { supabaseAdmin } from '../lib/supabase'
+import dotenv from 'dotenv'
 
-const prisma = new PrismaClient()
+// Load environment variables
+dotenv.config()
 
 async function updateUserPasswords() {
-  console.log('🔐 Updating user passwords...')
-  
-  try {
-    // Get all users without passwords
-    const users = await prisma.user.findMany({
-      where: {
-        password: null
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true
-      }
-    })
+    console.log('🔐 Creating Supabase Auth accounts for users...')
 
-    console.log(`Found ${users.length} users without passwords`)
+    try {
+        // Get all users from our database
+        const { data: users, error } = await supabaseAdmin
+            .from('users')
+            .select('id, email, name')
 
-    // Default password for all users
-    const defaultPassword = '12345678'
-    const hashedPassword = await bcrypt.hash(defaultPassword, 10)
+        if (error) {
+            throw error
+        }
 
-    // Update each user with the hashed password
-    for (const user of users) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { password: hashedPassword }
-      })
-      console.log(`✅ Updated password for ${user.name} (${user.email})`)
+        console.log(`Found ${users?.length || 0} users to process`)
+
+        if (!users || users.length === 0) {
+            console.log('No users found.')
+            return
+        }
+
+        // Default password for all users
+        const defaultPassword = '12345678'
+
+        // Create auth accounts for each user
+        for (const user of users) {
+            try {
+                // Check if auth user already exists
+                const { data: existingAuth } = await supabaseAdmin.auth.admin.getUserById(user.id)
+
+                if (existingAuth.user) {
+                    console.log(`✅ Auth account already exists for ${user.name} (${user.email})`)
+                    continue
+                }
+
+                // Create new auth user
+                const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
+                    email: user.email,
+                    password: defaultPassword,
+                    email_confirm: true,
+                    user_metadata: {
+                        name: user.name
+                    }
+                })
+
+                if (authError) {
+                    console.error(`❌ Error creating auth account for ${user.name}:`, authError.message)
+                } else {
+                    console.log(`✅ Created auth account for ${user.name} (${user.email})`)
+                }
+            } catch (err) {
+                console.error(`❌ Error processing ${user.name}:`, err)
+            }
+        }
+
+        console.log('🎉 User auth accounts processed successfully!')
+        console.log(`📧 Users can now login with their email and password: ${defaultPassword}`)
+
+    } catch (error) {
+        console.error('❌ Error processing users:', error)
     }
-
-    console.log('🎉 All user passwords updated successfully!')
-    console.log(`📧 Users can now login with their email and password: ${defaultPassword}`)
-    
-  } catch (error) {
-    console.error('❌ Error updating passwords:', error)
-  } finally {
-    await prisma.$disconnect()
-  }
 }
 
 updateUserPasswords()

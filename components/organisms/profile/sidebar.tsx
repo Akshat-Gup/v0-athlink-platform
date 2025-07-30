@@ -5,7 +5,7 @@ import { Badge } from "@/components/atoms/badge"
 import { Card } from "@/components/molecules/card"
 import { Progress } from "@/components/atoms/progress"
 import { SidebarSocials, SidebarSponsorship } from "@/components/molecules"
-import { Session } from "next-auth"
+import { Session } from "@supabase/supabase-js"
 import { useState, useEffect } from "react"
 
 interface EventSidebarProps {

@@ -3,7 +3,7 @@
 import { DiscoverTemplate } from "@/components/templates/discover-template"
 import { useDiscoverState } from "@/hooks/use-discover-state"
 import { useDiscoverData } from "@/hooks/use-discover-data"
-import { Session } from "next-auth"
+import { Session } from "@supabase/supabase-js"
 
 interface DiscoverClientPageProps {
   session: Session | null

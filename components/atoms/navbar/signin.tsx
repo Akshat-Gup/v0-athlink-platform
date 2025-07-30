@@ -1,14 +1,14 @@
 "use client"
 
 import { Button } from "@/components/atoms";
-import { useSession, signOut } from "next-auth/react";
+import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
 
 // Landing sign-in component
 const LandingSignIn = () => {
-  const { data: session } = useSession();
+  const { user, signOut } = useAuth();
   
-  if (session) {
+  if (user) {
     return (
       <Button 
         variant="ghost" 
@@ -31,9 +31,9 @@ const LandingSignIn = () => {
 
 // Mobile sign-in component
 const MobileSignIn = () => {
-  const { data: session } = useSession();
+  const { user, signOut } = useAuth();
   
-  if (session) {
+  if (user) {
     return (
       <Button
         variant="ghost"
@@ -59,9 +59,9 @@ const MobileSignIn = () => {
 
 // Discover sign-in component
 const DiscoverSignIn = () => {
-  const { data: session } = useSession();
+  const { user, signOut } = useAuth();
   
-  if (session) {
+  if (user) {
     return (
       <Button
         variant="ghost"

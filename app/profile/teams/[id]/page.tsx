@@ -18,7 +18,7 @@ import {
 } from "@/components/molecules"
 import { use } from "react"
 import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
+import { useAuth } from "@/hooks/use-auth"
 
 interface PageProps {
   params: Promise<{
@@ -31,7 +31,7 @@ export default function TeamProfilePage({ params }: PageProps) {
   const [team, setTeam] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { data: session } = useSession()
+  const { session } = useAuth()
 
   useEffect(() => {
     async function fetchTeam() {

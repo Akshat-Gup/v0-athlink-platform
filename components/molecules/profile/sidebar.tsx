@@ -15,7 +15,7 @@ import { useAuth } from "@/hooks/use-auth"
 import { usePendingRequestsCount } from "@/hooks/use-pending-requests"
 import { useSponsorContributions } from "@/hooks/use-sponsor-contributions"
 import { sponsorshipEvents, SPONSORSHIP_EVENTS } from "@/lib/sponsorship-events"
-import { Session } from "next-auth"
+import { Session } from "@supabase/supabase-js"
 
 interface Checkpoint {
   amount: number

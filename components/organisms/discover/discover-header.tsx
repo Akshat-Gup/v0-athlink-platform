@@ -9,7 +9,7 @@ import { Heart, Menu, Search, X, Users, CalendarIcon, Edit } from "lucide-react"
 import { TalentItem } from "@/hooks/use-discover-data"
 import { DiscoverSignIn, MobileSignIn} from "@/components/atoms"
 import { handleSignOut } from "app/api/auth/actions";
-import { Session } from "next-auth"
+import { Session } from "@supabase/supabase-js"
 import { JoinRoleSelector, MobileJoinRoleSelector } from "@/components/templates"
 import { ProfileEdit } from "@/components/templates/user/profile-edit"
 import { useUserRole } from "@/hooks"
@@ -49,7 +49,7 @@ export function DiscoverHeader({
   setActiveTab,
 }: DiscoverHeaderProps) {
   const { selectedUserRole, handleRoleSelect } = useUserRole()
-  const { user } = useAuth()
+  const { user, extendedUser } = useAuth()
   const [profileData, setProfileData] = useState<any>(null)
 
   // Fetch user's profile data for editing
@@ -205,7 +205,6 @@ export function DiscoverHeader({
               )}
               {session && session?.user && (
                 <ProfileEdit 
-                  userId={user?.id}
                   talentProfile={profileData?.talent_profile}
                   teamProfile={profileData?.team_profile}
                   eventProfile={profileData?.event_profile}
@@ -218,7 +217,7 @@ export function DiscoverHeader({
                 {session && session?.user ? (
                 <>
                   <span className="text-sm font-medium px-4 text-gray-900 bg-gray-100 rounded-full border border-gray-200 mr-2 flex items-center">
-                  {session.user.name}
+                  {extendedUser?.name || user?.email}
                   </span>
                   <form action={handleSignOut}>
                   <Button
@@ -328,7 +327,6 @@ export function DiscoverHeader({
                   )}
                   {session && session?.user && (
                     <ProfileEdit 
-                      userId={user?.id}
                       talentProfile={profileData?.talent_profile}
                       teamProfile={profileData?.team_profile}
                       eventProfile={profileData?.event_profile}

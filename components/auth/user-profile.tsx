@@ -4,12 +4,11 @@ import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/atoms/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/molecules/card"
 import { Badge } from "@/components/atoms/badge"
-import { signOut } from "next-auth/react"
 import { ProfileEdit } from "../templates/user/profile-edit"
 import { useState, useEffect } from "react"
 
 export function UserProfile() {
-  const { user, profile, userRole, loading, isAuthenticated } = useAuth()
+  const { user, extendedUser, profile, loading, signOut } = useAuth()
   const [profileData, setProfileData] = useState<any>(null)
 
   useEffect(() => {
@@ -28,10 +27,10 @@ export function UserProfile() {
       }
     }
 
-    if (isAuthenticated && user) {
+    if (user && user.id) {
       fetchProfileData()
     }
-  }, [user, isAuthenticated])
+  }, [user])
 
   if (loading) {
     return (
@@ -43,7 +42,7 @@ export function UserProfile() {
     )
   }
 
-  if (!isAuthenticated || !user) {
+  if (!user) {
     return (
       <Card className="w-full max-w-md mx-auto">
         <CardContent className="text-center p-6">
@@ -57,10 +56,9 @@ export function UserProfile() {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          Welcome, {user.name}!
+          Welcome, {extendedUser?.name || user.email}!
           <div className="flex gap-2">
             <ProfileEdit 
-              userId={user.id}
               talentProfile={profileData?.talent_profile}
               teamProfile={profileData?.team_profile}
               eventProfile={profileData?.event_profile}
@@ -79,13 +77,13 @@ export function UserProfile() {
         
         <div>
           <p className="text-sm text-gray-600">Primary Sport</p>
-          <p className="font-medium">{user.primary_sport}</p>
+          <p className="font-medium">{extendedUser?.primary_sport || 'Not specified'}</p>
         </div>
 
-        {userRole && (
+        {extendedUser?.user_role && (
           <div>
             <p className="text-sm text-gray-600">Role</p>
-            <Badge variant="secondary">{userRole}</Badge>
+            <Badge variant="secondary">{extendedUser.user_role}</Badge>
           </div>
         )}
 

@@ -1,7 +1,8 @@
 "use client"
 
-import { useSession } from "next-auth/react"
-import { useState, useEffect } from "react"
+import { useContext } from "react"
+import { createContext } from "react"
+import { User, Session } from "@supabase/supabase-js"
 
 interface UserProfile {
   category: string
@@ -10,57 +11,38 @@ interface UserProfile {
   isEvent: boolean
 }
 
-interface User {
-  id: number
+interface ExtendedUser {
+  id: string
   name: string
   email: string
   user_role: string | null
   primary_sport: string
-  // Add other user fields as needed
+  category: string
+  bio: string
+  rating: number
+  years_experience: number
+  verification_status: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
 }
 
+interface AuthContextType {
+  user: User | null
+  profile: UserProfile | null
+  extendedUser: ExtendedUser | null
+  session: Session | null
+  loading: boolean
+  signOut: () => Promise<void>
+}
+
+// This context is provided by AuthProvider
+const AuthContext = createContext<AuthContextType | null>(null)
+
 export function useAuth() {
-  const { data: session, status } = useSession()
-  const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (status === "loading") return
-
-    if (status === "authenticated" && session?.user?.email) {
-      fetchUserProfile()
-    } else {
-      setUser(null)
-      setProfile(null)
-      setLoading(false)
-    }
-  }, [session, status])
-
-  const fetchUserProfile = async () => {
-    try {
-      const response = await fetch("/api/auth/user")
-      if (response.ok) {
-        const data = await response.json()
-        setUser(data.user)
-        setProfile(data.profile)
-      }
-    } catch (error) {
-      console.error("Error fetching user profile:", error)
-    } finally {
-      setLoading(false)
-    }
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
   }
-
-  return {
-    session,
-    user,
-    profile,
-    loading: loading || status === "loading",
-    isAuthenticated: !!session,
-    userRole: user?.user_role || null,
-    isAthlete: profile?.isAthlete || false,
-    isTeam: profile?.isTeam || false,
-    isEvent: profile?.isEvent || false,
-  }
+  return context
 }
