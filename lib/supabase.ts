@@ -4,30 +4,36 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(`Missing required environment variables: ${!supabaseUrl ? 'NEXT_PUBLIC_SUPABASE_URL' : ''} ${!supabaseAnonKey ? 'NEXT_PUBLIC_SUPABASE_ANON_KEY' : ''}`)
+    throw new Error(`Missing required environment variables: ${!supabaseUrl ? 'NEXT_PUBLIC_SUPABASE_URL' : ''} ${!supabaseAnonKey ? 'NEXT_PUBLIC_SUPABASE_ANON_KEY' : ''}`)
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Server-side client with service role key for admin operations
 // This should ONLY be used in API routes or server-side code
-let supabaseAdmin: any = null
+export const supabaseAdmin = (() => {
+    // Only initialize on server side
+    if (typeof window === 'undefined') {
+        const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+        if (!serviceRoleKey) {
+            throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for server-side operations')
+        }
 
-// Only initialize the admin client on the server side
-if (typeof window === 'undefined' && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  supabaseAdmin = createClient(
-    supabaseUrl,
-    process.env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
+        return createClient(
+            supabaseUrl,
+            serviceRoleKey,
+            {
+                auth: {
+                    autoRefreshToken: false,
+                    persistSession: false
+                }
+            }
+        )
     }
-  )
-}
 
-export { supabaseAdmin }
+    // Return null on client side - this should never be used in client components
+    return null as any
+})()
 
 // Types for our database tables
 export type Database = {

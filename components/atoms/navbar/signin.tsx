@@ -7,11 +7,11 @@ import Link from "next/link";
 // Landing sign-in component
 const LandingSignIn = () => {
   const { user, signOut } = useAuth();
-  
+
   if (user) {
     return (
-      <Button 
-        variant="ghost" 
+      <Button
+        variant="ghost"
         className="rounded-full text-gray-600"
         onClick={() => signOut()}
       >
@@ -19,11 +19,11 @@ const LandingSignIn = () => {
       </Button>
     );
   }
-  
+
   return (
     <Link href="/login">
       <Button variant="ghost" className="rounded-full text-gray-600">
-        Sign In 
+        Sign In
       </Button>
     </Link>
   );
@@ -32,7 +32,7 @@ const LandingSignIn = () => {
 // Mobile sign-in component
 const MobileSignIn = () => {
   const { user, signOut } = useAuth();
-  
+
   if (user) {
     return (
       <Button
@@ -44,7 +44,7 @@ const MobileSignIn = () => {
       </Button>
     );
   }
-  
+
   return (
     <Link href="/login">
       <Button
@@ -60,7 +60,7 @@ const MobileSignIn = () => {
 // Discover sign-in component
 const DiscoverSignIn = () => {
   const { user, signOut } = useAuth();
-  
+
   if (user) {
     return (
       <Button
@@ -72,7 +72,7 @@ const DiscoverSignIn = () => {
       </Button>
     );
   }
-  
+
   return (
     <Link href="/login">
       <Button

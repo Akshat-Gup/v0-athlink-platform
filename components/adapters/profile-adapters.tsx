@@ -1,6 +1,6 @@
 import { EventHeader as OriginalEventHeader } from "@/components/organisms/profile/header"
 import { EventSidebar as OriginalEventSidebar } from "@/components/organisms/profile/sidebar"
-import { DefaultSidebar as DefaultSidebar } from "@/components/organisms/profile/sidebar"   
+import { DefaultSidebar as DefaultSidebar } from "@/components/organisms/profile/sidebar"
 import { SidebarSponsorship, SidebarSocials } from "@/components/molecules/profile/sidebar"
 import { TalentHeader as OriginalTalentHeader } from "@/components/organisms/profile/header"
 import { TeamHeader as OriginalTeamsHeader } from "@/components/organisms/profile/header"
@@ -29,8 +29,8 @@ export function TalentSidebarAdapter({ profile, session }: { profile: any; sessi
           <span className="text-gray-600">of ${goal.toLocaleString()}</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-green-500 h-2 rounded-full transition-all duration-300" 
+          <div
+            className="bg-green-500 h-2 rounded-full transition-all duration-300"
             style={{ width: `${Math.min(percentage, 100)}%` }}
           />
         </div>
@@ -40,13 +40,13 @@ export function TalentSidebarAdapter({ profile, session }: { profile: any; sessi
 
   return (
     <div className="space-y-6">
-      <SidebarSponsorship 
+      <SidebarSponsorship
         currentFunding={profile.currentFunding}
         goalFunding={profile.goalFunding}
         checkpoints={profile.checkpoints}
         renderProgressBar={renderProgressBar}
-        title="Campaign Progress" 
-        subtitle="Sponsorship Checkpoints" 
+        title="Campaign Progress"
+        subtitle="Sponsorship Checkpoints"
         submitButtonText="Support Campaign"
         profileId={profile.id}
         profileType="talent"
@@ -54,8 +54,8 @@ export function TalentSidebarAdapter({ profile, session }: { profile: any; sessi
         profileOwnerId={profile.email}
         campaignData={profile.campaignData}
       />
-      
-      <SidebarSocials 
+
+      <SidebarSocials
         socials={profile.socials}
         title="Social Media"
       />
@@ -68,10 +68,10 @@ export function TeamsHeaderAdapter({ profile, onShareClick }: { profile: any; on
 }
 
 export function TeamsSidebarAdapter({ profile, session }: { profile: any; session?: Session | null }) {
-  return <DefaultSidebar 
-    item={profile} 
-    title="Sponsorship Campaign" 
-    subtitle="Sponsorship Packages" 
+  return <DefaultSidebar
+    item={profile}
+    title="Sponsorship Campaign"
+    subtitle="Sponsorship Packages"
     submitButtonText="Sponsor Team"
     profileId={profile.id}
     profileType="team"

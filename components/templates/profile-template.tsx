@@ -63,11 +63,10 @@ export function ProfileTemplate({
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center justify-center px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 min-w-0 ${
-                          activeTab === tab.id
+                        className={`flex items-center justify-center px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex-1 min-w-0 ${activeTab === tab.id
                             ? "bg-white text-gray-900 shadow-sm"
                             : "text-gray-600 hover:text-gray-900"
-                        }`}
+                          }`}
                       >
                         {/* Optionally add tab.icon here if available */}
                         <span className="hidden sm:inline ml-2">{tab.label}</span>

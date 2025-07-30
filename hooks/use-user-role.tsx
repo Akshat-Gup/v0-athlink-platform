@@ -56,17 +56,17 @@ export function useUserRole() {
 
   // Save to localStorage only for non-authenticated users
   useEffect(() => {
-    if (typeof window !== "undefined" && isLoaded && status !== "authenticated") {
+    if (typeof window !== "undefined" && isLoaded && !user) {
       if (selectedUserRole) {
         localStorage.setItem(USER_ROLE_STORAGE_KEY, selectedUserRole)
       } else {
         localStorage.removeItem(USER_ROLE_STORAGE_KEY)
       }
     }
-  }, [selectedUserRole, isLoaded, status])
+  }, [selectedUserRole, isLoaded, user])
 
   const handleRoleSelect = (role: UserRole) => {
-    if (status === "authenticated") {
+    if (user) {
       console.warn("Authenticated users should update their role through the profile settings")
       return
     }
@@ -74,7 +74,7 @@ export function useUserRole() {
   }
 
   const clearRole = () => {
-    if (status === "authenticated") {
+    if (user) {
       console.warn("Cannot clear role for authenticated users")
       return
     }
@@ -86,8 +86,8 @@ export function useUserRole() {
     handleRoleSelect,
     clearRole,
     isLoaded,
-    isAuthenticated: status === "authenticated",
-    isUsingDatabaseRole: status === "authenticated" && !!authenticatedUserRole
+    isAuthenticated: !!user,
+    isUsingDatabaseRole: !!user && !!authenticatedUserRole
   }
 }
 

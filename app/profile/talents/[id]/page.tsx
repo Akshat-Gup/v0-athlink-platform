@@ -6,17 +6,17 @@ import { TalentHeaderAdapter, TalentSidebarAdapter } from "@/components/adapters
 import MediaGallery from "@/components/organisms/profile/media-gallery"
 import { CampaignList } from "@/components/organisms/campaigns/campaign-list"
 import { CampaignCreator } from "@/components/organisms/campaigns/campaign-creator"
-import { 
-    StatsList,
-    StatsGrid,
-    StatsGraph,
-    StatsProfile,
-    StatsSponsors,
-    StatsSchedule,
-    StatsLineGraph,
-    AchievementsSection,
-    UpcomingCompetitions,
-    PastResults
+import {
+  StatsList,
+  StatsGrid,
+  StatsGraph,
+  StatsProfile,
+  StatsSponsors,
+  StatsSchedule,
+  StatsLineGraph,
+  AchievementsSection,
+  UpcomingCompetitions,
+  PastResults
 } from "@/components/molecules"
 import { use } from "react"
 import { useEffect, useState } from "react"
@@ -41,16 +41,16 @@ export default function TalentProfilePage({ params }: PageProps) {
         setLoading(true)
         console.log('Fetching talent profile for ID:', id)
         const response = await fetch(`/api/profile/talents/${id}`)
-        
+
         console.log('Response status:', response.status)
         console.log('Response ok:', response.ok)
-        
+
         if (!response.ok) {
           const errorText = await response.text()
           console.error('Error response:', errorText)
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        
+
         const data = await response.json()
         console.log('Fetched talent data:', data)
         setTalent(data)
@@ -107,21 +107,21 @@ export default function TalentProfilePage({ params }: PageProps) {
 
   const renderResultsTab = () => (
     <>
-    {talent.achievementsList && (
-      <AchievementsSection 
-        achievements={talent.achievementsList} 
-        title="Achievements" 
-      />
-    )}
-    {talent.upcomingCompetitions && <UpcomingCompetitions competitions={talent.upcomingCompetitions} title="Upcoming Competitions" />}
-    {talent.pastResults && <PastResults results={talent.pastResults} title="Past Results" />}
+      {talent.achievementsList && (
+        <AchievementsSection
+          achievements={talent.achievementsList}
+          title="Achievements"
+        />
+      )}
+      {talent.upcomingCompetitions && <UpcomingCompetitions competitions={talent.upcomingCompetitions} title="Upcoming Competitions" />}
+      {talent.pastResults && <PastResults results={talent.pastResults} title="Past Results" />}
     </>
   )
 
   const renderCampaignsTab = () => (
     <div className="space-y-6">
-      <CampaignList 
-        profileId={id} 
+      <CampaignList
+        profileId={id}
         profileType="talent"
         status="active"
         onCampaignSelect={(campaign) => {
@@ -139,7 +139,7 @@ export default function TalentProfilePage({ params }: PageProps) {
       content: renderOverviewTab()
     },
     {
-      id: "results", 
+      id: "results",
       label: "Results",
       content: renderResultsTab()
     },

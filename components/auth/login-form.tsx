@@ -64,7 +64,7 @@ export function LoginForm() {
               {error}
             </Alert>
           )}
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -78,7 +78,7 @@ export function LoginForm() {
                 disabled={isLoading}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
@@ -91,9 +91,9 @@ export function LoginForm() {
                 disabled={isLoading}
               />
             </div>
-            
-            <Button 
-              type="submit" 
+
+            <Button
+              type="submit"
               className="w-full"
               disabled={isLoading}
             >
@@ -107,7 +107,7 @@ export function LoginForm() {
               )}
             </Button>
           </form>
-          
+
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
@@ -116,9 +116,9 @@ export function LoginForm() {
               <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
             </div>
           </div>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             className="w-full"
             onClick={handleGoogleSignIn}
             disabled={isLoading}

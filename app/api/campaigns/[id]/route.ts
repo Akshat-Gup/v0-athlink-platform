@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '../../../../lib/supabase'
 
+// Helper function to get user from Authorization header
+async function getUser(request: NextRequest) {
+  const token = request.headers.get('authorization')?.replace('Bearer ', '')
+  if (!token) {
+    return null
+  }
+
+  try {
+    const { data: { user }, error } = await supabaseAdmin.auth.getUser(token)
+    return error ? null : user
+  } catch {
+    return null
+  }
+}
+
 // GET single campaign by ID
 export async function GET(
   request: NextRequest,

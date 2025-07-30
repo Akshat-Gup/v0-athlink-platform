@@ -7,7 +7,7 @@ import { Button } from "@/components/atoms/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/organisms/sheet"
 import { Heart, Menu, Search, X, Users, CalendarIcon, Edit } from "lucide-react"
 import { TalentItem } from "@/hooks/use-discover-data"
-import { DiscoverSignIn, MobileSignIn} from "@/components/atoms"
+import { DiscoverSignIn, MobileSignIn } from "@/components/atoms"
 import { handleSignOut } from "app/api/auth/actions";
 import { Session } from "@supabase/supabase-js"
 import { JoinRoleSelector, MobileJoinRoleSelector } from "@/components/templates"
@@ -102,37 +102,33 @@ export function DiscoverHeader({
             <nav className="flex items-center space-x-1 relative">
               {/* Sliding background */}
               <div
-                className={`absolute top-0 bottom-0 bg-gray-100 rounded-full transition-all duration-300 ease-in-out ${
-                  activeTab === "talents"
+                className={`absolute top-0 bottom-0 bg-gray-100 rounded-full transition-all duration-300 ease-in-out ${activeTab === "talents"
                     ? "left-0 w-[calc(33.333%-0.125rem)]"
                     : activeTab === "events"
                       ? "left-[calc(33.333%+0.125rem)] w-[calc(33.333%-0.25rem)]"
                       : "left-[calc(66.666%+0.125rem)] w-[calc(33.333%-0.125rem)]"
-                }`}
+                  }`}
               />
               <button
                 onClick={() => setActiveTab("talents")}
-                className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm transition-all duration-300 ${
-                  activeTab === "talents" ? "text-black font-medium" : "text-gray-600 hover:text-gray-900 font-medium"
-                } md:space-x-2`}
+                className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm transition-all duration-300 ${activeTab === "talents" ? "text-black font-medium" : "text-gray-600 hover:text-gray-900 font-medium"
+                  } md:space-x-2`}
               >
                 <Users className="h-4 w-4" />
                 <span className="hidden md:inline">Talents</span>
               </button>
               <button
                 onClick={() => setActiveTab("events")}
-                className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm transition-all duration-300 ${
-                  activeTab === "events" ? "text-black font-medium" : "text-gray-600 hover:text-gray-900 font-medium"
-                } md:space-x-2`}
+                className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm transition-all duration-300 ${activeTab === "events" ? "text-black font-medium" : "text-gray-600 hover:text-gray-900 font-medium"
+                  } md:space-x-2`}
               >
                 <CalendarIcon className="h-4 w-4" />
                 <span className="hidden md:inline">Events</span>
               </button>
               <button
                 onClick={() => setActiveTab("teams")}
-                className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm transition-all duration-300 ${
-                  activeTab === "teams" ? "text-black font-medium" : "text-gray-600 hover:text-gray-900 font-medium"
-                } md:space-x-2`}
+                className={`relative z-10 flex items-center space-x-2 px-4 py-2 rounded-full text-sm transition-all duration-300 ${activeTab === "teams" ? "text-black font-medium" : "text-gray-600 hover:text-gray-900 font-medium"
+                  } md:space-x-2`}
               >
                 <Users className="h-4 w-4" />
                 <span className="hidden md:inline">Teams</span>
@@ -204,7 +200,7 @@ export function DiscoverHeader({
                 </Button>
               )}
               {session && session?.user && (
-                <ProfileEdit 
+                <ProfileEdit
                   talentProfile={profileData?.talent_profile}
                   teamProfile={profileData?.team_profile}
                   eventProfile={profileData?.event_profile}
@@ -214,33 +210,33 @@ export function DiscoverHeader({
                   </Button>
                 </ProfileEdit>
               )}
-                {session && session?.user ? (
+              {session && session?.user ? (
                 <>
                   <span className="text-sm font-medium px-4 text-gray-900 bg-gray-100 rounded-full border border-gray-200 mr-2 flex items-center">
-                  {extendedUser?.name || user?.email}
+                    {extendedUser?.name || user?.email}
                   </span>
                   <form action={handleSignOut}>
-                  <Button
-                    type="submit"
-                    variant="ghost"
-                    className="text-sm font-medium px-4 text-gray-900 bg-white hover:bg-gray-50 rounded-full border border-gray-200"
-                  >
-                    Sign Out
-                  </Button>
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      className="text-sm font-medium px-4 text-gray-900 bg-white hover:bg-gray-50 rounded-full border border-gray-200"
+                    >
+                      Sign Out
+                    </Button>
                   </form>
                 </>
-                ) : (
+              ) : (
                 <Link href="/login">
                   <Button
-                  variant="ghost"
-                  className="text-sm font-medium px-4 text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg shadow-green-500/25 animate-shimmer"
+                    variant="ghost"
+                    className="text-sm font-medium px-4 text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg shadow-green-500/25 animate-shimmer"
                   >
-                  Sign In
+                    Sign In
                   </Button>
                 </Link>
-                )}
-              <JoinRoleSelector 
-                isOpen={showJoinModal} 
+              )}
+              <JoinRoleSelector
+                isOpen={showJoinModal}
                 onOpenChange={setShowJoinModal}
                 onRoleSelect={handleRoleSelect}
                 currentRole={selectedUserRole}
@@ -326,7 +322,7 @@ export function DiscoverHeader({
                     </Button>
                   )}
                   {session && session?.user && (
-                    <ProfileEdit 
+                    <ProfileEdit
                       talentProfile={profileData?.talent_profile}
                       teamProfile={profileData?.team_profile}
                       eventProfile={profileData?.event_profile}
@@ -339,7 +335,7 @@ export function DiscoverHeader({
                   )}
                   <MobileSignIn />
                   <MobileJoinRoleSelector
-                    isOpen={showJoinModal} 
+                    isOpen={showJoinModal}
                     onOpenChange={setShowJoinModal}
                     onRoleSelect={handleRoleSelect}
                     currentRole={selectedUserRole}

@@ -58,7 +58,7 @@ export function UserProfile() {
         <CardTitle className="flex items-center justify-between">
           Welcome, {extendedUser?.name || user.email}!
           <div className="flex gap-2">
-            <ProfileEdit 
+            <ProfileEdit
               talentProfile={profileData?.talent_profile}
               teamProfile={profileData?.team_profile}
               eventProfile={profileData?.event_profile}
@@ -74,7 +74,7 @@ export function UserProfile() {
           <p className="text-sm text-gray-600">Email</p>
           <p className="font-medium">{user.email}</p>
         </div>
-        
+
         <div>
           <p className="text-sm text-gray-600">Primary Sport</p>
           <p className="font-medium">{extendedUser?.primary_sport || 'Not specified'}</p>
@@ -97,7 +97,7 @@ export function UserProfile() {
             </div>
           </div>
         )}
-        
+
         <div className="pt-4 border-t">
           <p className="text-xs text-gray-500">
             🎉 Login successful! You are now authenticated and can access all features.

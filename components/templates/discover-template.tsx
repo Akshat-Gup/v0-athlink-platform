@@ -10,7 +10,7 @@ import { Session } from "@supabase/supabase-js"
 interface DiscoverTemplateProps {
   // Auth
   session: Session | null
-  
+
   // State props
   activeTab: string
   setActiveTab: (tab: string) => void
@@ -25,7 +25,7 @@ interface DiscoverTemplateProps {
   favorites: number[]
   setFavorites: (favorites: number[]) => void
   isScrolled: boolean
-  
+
   // Search/Filter props
   searchQuery: string
   setSearchQuery: (query: string) => void
@@ -51,12 +51,12 @@ interface DiscoverTemplateProps {
   setStartDate: (date: Date | undefined) => void
   endDate?: Date
   setEndDate: (date: Date | undefined) => void
-  
+
   // Data props
   allItems: TalentItem[]
   upAndComingItems: TalentItem[]
   brandAmbassadorItems: TalentItem[]
-  
+
   // Functions
   toggleFavorite: (id: number, e?: React.MouseEvent) => Promise<void>
   getLeaguesForSport: (sport: string) => string[]
@@ -233,8 +233,8 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-gray-900">
                 {searchMode === "search" && searchQuery ? `Search Results for "${searchQuery}"` :
-                 searchMode === "ai" && aiQuery ? `AI Search Results` :
-                 "Filtered Results"}
+                  searchMode === "ai" && aiQuery ? `AI Search Results` :
+                    "Filtered Results"}
               </h2>
             </div>
             <TalentGrid
@@ -269,14 +269,14 @@ export function DiscoverTemplate(props: DiscoverTemplateProps) {
                   const topTalentItems = getItemsByFit("top-talent");
                   const upAndComingItems = getItemsByFit("up-and-coming");
                   const brandAmbassadorItems = getItemsByFit("brand-ambassador");
-                  
+
                   // Combine and sort by rating for trending
                   const allFitItems = [
                     ...topTalentItems,
                     ...upAndComingItems,
                     ...brandAmbassadorItems
                   ];
-                  
+
                   // Sort by rating and take top 12 for trending
                   return allFitItems
                     .sort((a, b) => b.rating - a.rating)

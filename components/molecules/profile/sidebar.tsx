@@ -54,13 +54,13 @@ interface SidebarSponsorshipProps {
   onCampaignUpdated?: () => void // Callback to refresh campaign data
 }
 
-export function SidebarSponsorship({ 
-  currentFunding = 0, 
-  goalFunding = 0, 
-  checkpoints = [], 
-  renderProgressBar, 
-  title = "Sponsorship", 
-  subtitle = "Milestones", 
+export function SidebarSponsorship({
+  currentFunding = 0,
+  goalFunding = 0,
+  checkpoints = [],
+  renderProgressBar,
+  title = "Sponsorship",
+  subtitle = "Milestones",
   submitButtonText = "Submit",
   profileId = "",
   profileType = "talent",
@@ -77,23 +77,23 @@ export function SidebarSponsorship({
   const { count: pendingRequestsCount } = usePendingRequestsCount()
   const { getUserActiveCampaign, fetchUserCampaigns } = useCampaignData()
   const { getTotalContributionForAthlete, refreshContributions, contributions } = useSponsorContributions()
-  
+
   const isSponsor = selectedUserRole === "Sponsor"
-  
+
   // Check if the current user is the owner of this profile
   const isProfileOwner = session?.user?.email && (
-    session.user.email === profileOwnerId || 
+    session.user.email === profileOwnerId ||
     session.user.id === profileOwnerId ||
     user?.email === profileOwnerId ||
     user?.id === profileOwnerId
   )
-  
+
   // Get user's active campaign for editing (only for profile owners)
   const activeCampaign = isProfileOwner ? getUserActiveCampaign() : null
-  
+
   // Use the provided campaign data (for visitors) or the user's own campaign (for owners)
   const displayCampaign = campaignData || activeCampaign
-  
+
   // Use campaign data if available, otherwise fall back to props
   const campaignCheckpoints = displayCampaign?.perk_tiers?.map(tier => ({
     amount: tier.amount,
@@ -101,10 +101,10 @@ export function SidebarSponsorship({
     description: tier.description,
     unlocked: false // Will be determined by user contribution
   })) || []
-  
+
   const campaignGoal = displayCampaign?.funding_goal || goalFunding
   const campaignCurrent = displayCampaign?.current_funding || currentFunding
-  
+
   // Use campaign checkpoints if available, otherwise use props
   const finalCheckpoints = campaignCheckpoints.length > 0 ? campaignCheckpoints : checkpoints
 
@@ -130,19 +130,19 @@ export function SidebarSponsorship({
       sponsorshipEvents.off(SPONSORSHIP_EVENTS.REQUEST_REJECTED, handleSponsorshipUpdate)
     }
   }, [refreshContributions, onCampaignUpdated])
-  
+
   // Get user's contribution for this specific profile (use real database data)
-  const userContribution = isSponsor 
+  const userContribution = isSponsor
     ? getTotalContributionForAthlete(Number(profileOwnerId) || Number(profileId) || 1)
     : getTotalContributionForTarget(Number(profileId) || 1, profileType)
-  
+
   // Get custom perks for sponsors (approved custom sponsorship requests)
-  const customPerks = isSponsor ? contributions.filter(contribution => 
-    contribution.athlete_id === (Number(profileOwnerId) || Number(profileId) || 1) && 
-    contribution.status === 'ACCEPTED' && 
+  const customPerks = isSponsor ? contributions.filter(contribution =>
+    contribution.athlete_id === (Number(profileOwnerId) || Number(profileId) || 1) &&
+    contribution.status === 'ACCEPTED' &&
     contribution.custom_perks
   ) : []
-  
+
   // Check if this profile has campaign data
   const hasCampaignData = finalCheckpoints && finalCheckpoints.length > 0 && campaignGoal > 0
   if (!hasCampaignData && !isProfileOwner) {
@@ -163,10 +163,10 @@ export function SidebarSponsorship({
         <div className="text-center py-8 text-gray-500">
           <p className="mb-4">No campaign set up yet</p>
           <p className="text-sm text-gray-400 mb-6">Create a sponsorship campaign to attract sponsors and showcase your goals.</p>
-          
+
           {/* Campaign Creation Modal */}
           <CampaignCreation onCampaignCreated={handleCampaignUpdated}>
-            <Button 
+            <Button
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -181,7 +181,7 @@ export function SidebarSponsorship({
   return (
     <Card className="p-6 shadow-xl border-0">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
-      
+
       {/* Campaign Title and Description */}
       {displayCampaign && (
         <div className="pb-4">
@@ -191,9 +191,9 @@ export function SidebarSponsorship({
           )}
         </div>
       )}
-      
+
       {/* Enhanced Progress Bar with Sponsorship Progress Component */}
-      <SponsorshipProgress 
+      <SponsorshipProgress
         totalRequested={campaignGoal}
         currentFunding={campaignCurrent}
         yourContribution={userContribution}
@@ -207,7 +207,7 @@ export function SidebarSponsorship({
           }
         })}
       />
-      
+
       {/* Sponsorship Checkpoints */}
       <div className="mt-6 space-y-3">
         <h4 className="font-medium text-sm">{subtitle}</h4>
@@ -216,11 +216,10 @@ export function SidebarSponsorship({
           return (
             <div
               key={index}
-              className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                isUnlockedByUser 
-                  ? "bg-green-50 border-green-200" 
+              className={`p-3 rounded-lg border cursor-pointer transition-colors ${isUnlockedByUser
+                  ? "bg-green-50 border-green-200"
                   : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-              }`}
+                }`}
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="font-medium text-sm">${checkpoint.amount?.toLocaleString() || 0}</span>
@@ -234,7 +233,7 @@ export function SidebarSponsorship({
           )
         })}
       </div>
-      
+
       {/* Custom Perks Section for Sponsors */}
       {isSponsor && customPerks.length > 0 && (
         <div className="mt-6 space-y-3">
@@ -256,13 +255,13 @@ export function SidebarSponsorship({
           ))}
         </div>
       )}
-      
+
       {/* Conditional button based on user role and ownership */}
       {isProfileOwner ? (
         <div className="space-y-3">
           {/* Sponsorship Requests Dashboard Link */}
           <Link href="/sponsorship-requests">
-            <Button 
+            <Button
               className="w-full bg-purple-600 hover:bg-purple-700 text-white relative"
               variant="outline"
             >
@@ -275,8 +274,8 @@ export function SidebarSponsorship({
               )}
             </Button>
           </Link>
-          
-          <CampaignCreation 
+
+          <CampaignCreation
             editCampaign={displayCampaign ? {
               id: displayCampaign.id,
               title: displayCampaign.title,
@@ -287,21 +286,21 @@ export function SidebarSponsorship({
                 tier_name: tier.tier_name,
                 amount: tier.amount,
                 description: tier.description,
-                deliverables: typeof tier.deliverables === 'string' 
+                deliverables: typeof tier.deliverables === 'string'
                   ? (() => {
-                      try {
-                        return JSON.parse(tier.deliverables)
-                      } catch {
-                        return { custom: tier.deliverables }
-                      }
-                    })()
+                    try {
+                      return JSON.parse(tier.deliverables)
+                    } catch {
+                      return { custom: tier.deliverables }
+                    }
+                  })()
                   : tier.deliverables,
                 max_sponsors: tier.max_sponsors
               }))
             } : null}
             onCampaignCreated={handleCampaignUpdated}
           >
-            <Button 
+            <Button
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Edit className="h-4 w-4 mr-2" />
@@ -310,7 +309,7 @@ export function SidebarSponsorship({
           </CampaignCreation>
         </div>
       ) : isSponsor ? (
-        <Button 
+        <Button
           className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white"
           onClick={() => setIsSponsorshipModalOpen(true)}
         >
@@ -321,7 +320,7 @@ export function SidebarSponsorship({
           {submitButtonText} (Sponsors Only)
         </Button>
       )}
-      
+
       {/* Sponsorship Modal */}
       <SponsorshipModal
         isOpen={isSponsorshipModalOpen}
@@ -374,21 +373,21 @@ export function SidebarSponsorship({
               message: customConditions || '',
               is_custom: !!customConditions
             })
-            
-            console.log('Sponsorship request submitted:', { 
+
+            console.log('Sponsorship request submitted:', {
               campaign_id: displayCampaign.id,
               athlete_id: Number(profileOwnerId) || Number(profileId) || 1,
-              amount, 
-              selectedPerks, 
+              amount,
+              selectedPerks,
               customConditions
             })
-            
+
             // Close the modal
             setIsSponsorshipModalOpen(false)
-            
+
             // Show success message
             alert('Sponsorship request submitted! The campaign owner will review your request.')
-            
+
           } catch (error) {
             console.error('Error submitting sponsorship request:', error)
             alert(`Failed to submit sponsorship request: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -415,7 +414,7 @@ interface SidebarSocialsProps {
 
 export function SidebarSocials({ socials = {}, title = "Social Media" }: SidebarSocialsProps) {
   const hasSocials = socials && Object.values(socials).some(social => social);
-  
+
   if (!hasSocials) {
     return (
       <Card className="p-6 shadow-lg">

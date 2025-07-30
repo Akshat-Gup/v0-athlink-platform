@@ -5,12 +5,12 @@ import { ProfileTemplate } from "@/components/templates/profile-template"
 import { EventHeaderAdapter, EventSidebarAdapter } from "@/components/adapters/profile-adapters"
 import MediaGallery from "@/components/organisms/profile/media-gallery"
 import { CampaignList } from "@/components/organisms/campaigns/campaign-list"
-import { 
-    StatsList,
-    StatsGraph,
-    StatsProfile,
-    StatsSponsors,
-    StatsSchedule
+import {
+  StatsList,
+  StatsGraph,
+  StatsProfile,
+  StatsSponsors,
+  StatsSchedule
 } from "@/components/molecules"
 import { use } from "react"
 import { useEffect, useState } from "react"
@@ -34,11 +34,11 @@ export default function EventProfilePage({ params }: PageProps) {
       try {
         setLoading(true)
         const response = await fetch(`/api/profile/events/${id}`)
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        
+
         const data = await response.json()
         setEvent(data)
       } catch (err) {
@@ -83,7 +83,7 @@ export default function EventProfilePage({ params }: PageProps) {
         <h3 className="text-lg font-semibold mb-4">About the Event</h3>
         <p className="text-gray-600 text-sm sm:text-base">{event.bio}</p>
       </Card>
-      
+
       {event.eventStats && <StatsList stats={event.eventStats} title="Event Details" />}
       {event.sponsorshipStats && <StatsList stats={event.sponsorshipStats} title="Sponsorship Impact" />}
       {event.featuredParticipants && <StatsProfile title="Featured Participants" participants={event.featuredParticipants} />}
@@ -98,8 +98,8 @@ export default function EventProfilePage({ params }: PageProps) {
 
   const renderCampaignsTab = () => (
     <div className="space-y-6">
-      <CampaignList 
-        profileId={id} 
+      <CampaignList
+        profileId={id}
         profileType="event"
         status="active"
         onCampaignSelect={(campaign) => {
@@ -116,7 +116,7 @@ export default function EventProfilePage({ params }: PageProps) {
       content: renderOverviewTab()
     },
     {
-      id: "schedule", 
+      id: "schedule",
       label: "Schedule",
       content: renderScheduleTab()
     },

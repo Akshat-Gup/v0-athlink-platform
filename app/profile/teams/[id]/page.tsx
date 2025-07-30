@@ -5,16 +5,16 @@ import { ProfileTemplate } from "@/components/templates/profile-template"
 import { TeamsHeaderAdapter, TeamsSidebarAdapter } from "@/components/adapters/profile-adapters"
 import { MediaGallery } from "@/components/organisms"
 import { CampaignList } from "@/components/organisms/campaigns/campaign-list"
-import { 
-    StatsList,
-    StatsGrid,
-    StatsGraph,
-    StatsProfile,
-    StatsLineGraph,
-    TeamRoster,
-    UpcomingGames,
-    RecentResults,
-    StatsSponsors
+import {
+  StatsList,
+  StatsGrid,
+  StatsGraph,
+  StatsProfile,
+  StatsLineGraph,
+  TeamRoster,
+  UpcomingGames,
+  RecentResults,
+  StatsSponsors
 } from "@/components/molecules"
 import { use } from "react"
 import { useEffect, useState } from "react"
@@ -38,11 +38,11 @@ export default function TeamProfilePage({ params }: PageProps) {
       try {
         setLoading(true)
         const response = await fetch(`/api/profile/teams/${id}`)
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        
+
         const data = await response.json()
         setTeam(data)
       } catch (err) {
@@ -106,8 +106,8 @@ export default function TeamProfilePage({ params }: PageProps) {
 
   const renderCampaignsTab = () => (
     <div className="space-y-6">
-      <CampaignList 
-        profileId={id} 
+      <CampaignList
+        profileId={id}
         profileType="team"
         status="active"
         onCampaignSelect={(campaign) => {
@@ -124,13 +124,13 @@ export default function TeamProfilePage({ params }: PageProps) {
       content: renderOverviewTab()
     },
     {
-      id: "roster", 
+      id: "roster",
       label: "Roster",
       content: renderRosterTab()
     },
     {
       id: "results",
-      label: "Results", 
+      label: "Results",
       content: renderResultsTab()
     },
     {
