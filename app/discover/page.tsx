@@ -1,8 +1,8 @@
 import { DiscoverClientPage } from "@/app/discover/discover-client-page"
-import { auth } from "@/auth"
+import { getSession } from "@/auth"
 
 export default async function DiscoverPage() {
-  const session = await auth()
-  
+  const session = await getSession()
+
   return <DiscoverClientPage session={session} />
 }

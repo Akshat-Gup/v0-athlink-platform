@@ -1,43 +1,39 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useAuth } from "@/hooks/use-auth"
 
 export type UserRole = "Talent" | "Event Leader" | "Team Leader" | "Sponsor"
 
 const USER_ROLE_STORAGE_KEY = "athlink-user-role"
 
 export function useUserRole() {
-  const { data: session, status } = useSession()
+  const { isAuthenticated, databaseUser, loading } = useAuth()
   const [selectedUserRole, setSelectedUserRole] = useState<UserRole | null>(null)
   const [authenticatedUserRole, setAuthenticatedUserRole] = useState<UserRole | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
 
   // Fetch authenticated user's role from database
   useEffect(() => {
-    if (status === "loading") return
+    if (loading) return
 
-    if (status === "authenticated" && session?.user?.email) {
-      fetchUserRole()
+    if (isAuthenticated && databaseUser) {
+      setUserRole()
     } else {
       setAuthenticatedUserRole(null)
       loadFromLocalStorage()
     }
-  }, [session, status])
+  }, [isAuthenticated, databaseUser, loading])
 
-  const fetchUserRole = async () => {
+  const setUserRole = () => {
     try {
-      const response = await fetch("/api/auth/user")
-      if (response.ok) {
-        const data = await response.json()
-        const role = data.user?.user_role
-        if (role && isValidUserRole(role)) {
-          setAuthenticatedUserRole(role as UserRole)
-          setSelectedUserRole(role as UserRole)
-        }
+      const role = databaseUser?.user_role
+      if (role && isValidUserRole(role)) {
+        setAuthenticatedUserRole(role as UserRole)
+        setSelectedUserRole(role as UserRole)
       }
     } catch (error) {
-      console.error("Error fetching user role:", error)
+      console.error("Error setting user role:", error)
       loadFromLocalStorage()
     } finally {
       setIsLoaded(true)
@@ -56,17 +52,17 @@ export function useUserRole() {
 
   // Save to localStorage only for non-authenticated users
   useEffect(() => {
-    if (typeof window !== "undefined" && isLoaded && status !== "authenticated") {
+    if (typeof window !== "undefined" && isLoaded && !isAuthenticated) {
       if (selectedUserRole) {
         localStorage.setItem(USER_ROLE_STORAGE_KEY, selectedUserRole)
       } else {
         localStorage.removeItem(USER_ROLE_STORAGE_KEY)
       }
     }
-  }, [selectedUserRole, isLoaded, status])
+  }, [selectedUserRole, isLoaded, isAuthenticated])
 
   const handleRoleSelect = (role: UserRole) => {
-    if (status === "authenticated") {
+    if (isAuthenticated) {
       console.warn("Authenticated users should update their role through the profile settings")
       return
     }
@@ -74,7 +70,7 @@ export function useUserRole() {
   }
 
   const clearRole = () => {
-    if (status === "authenticated") {
+    if (isAuthenticated) {
       console.warn("Cannot clear role for authenticated users")
       return
     }
@@ -86,8 +82,8 @@ export function useUserRole() {
     handleRoleSelect,
     clearRole,
     isLoaded,
-    isAuthenticated: status === "authenticated",
-    isUsingDatabaseRole: status === "authenticated" && !!authenticatedUserRole
+    isAuthenticated: isAuthenticated,
+    isUsingDatabaseRole: isAuthenticated && !!authenticatedUserRole
   }
 }
 

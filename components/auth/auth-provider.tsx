@@ -1,7 +1,6 @@
 "use client"
 
-import { SessionProvider } from "next-auth/react"
-
+// Supabase auth is handled via hooks, no provider needed
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  return <SessionProvider>{children}</SessionProvider>
+  return <>{children}</>
 }

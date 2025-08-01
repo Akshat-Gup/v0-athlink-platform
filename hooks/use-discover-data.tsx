@@ -1,10 +1,11 @@
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase-client"
 
-// Type matching the TalentItem from talent-grid
+// Type matching the DiscoverItem from discover-service  
 export interface TalentItem {
-  id: number
+  id: string // Changed from number to string for Supabase UUIDs
   name: string
   sport: string
   location: string
@@ -53,10 +54,10 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     teamItems: [],
     eventItems: [],
   })
-  
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [favorites, setFavorites] = useState<Set<number>>(new Set())
+  const [favorites, setFavorites] = useState<Set<string>>(new Set())
 
   // Function to load favorites status for all items
   const loadFavoritesStatus = async (data: any) => {
@@ -68,7 +69,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         ...data.teamItems,
         ...data.eventItems,
       ]
-      
+
       const favoriteChecks = await Promise.all(
         allItems.map(async (item: TalentItem) => {
           try {
@@ -83,14 +84,14 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
           return { id: item.id, isFavorited: false }
         })
       )
-      
-      const favoritesSet = new Set<number>()
+
+      const favoritesSet = new Set<string>()
       favoriteChecks.forEach(({ id, isFavorited }) => {
         if (isFavorited) {
           favoritesSet.add(id)
         }
       })
-      
+
       setFavorites(favoritesSet)
     } catch (error) {
       console.error('Error loading favorites status:', error)
@@ -102,7 +103,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
       try {
         setLoading(true)
         setError(null)
-        
+
         // Build query parameters
         const params = new URLSearchParams({
           activeTab: filters.activeTab,
@@ -132,11 +133,11 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
-        
+
         const result = await response.json()
         console.log('API response:', result)
         setData(result)
-        
+
         // Load favorites status for all items
         await loadFavoritesStatus(result)
       } catch (err) {
@@ -197,9 +198,9 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         return []
     }
   }
-  
+
   const shouldShowSection = (fit: string): boolean => getItemsByFit(fit).length > 0
-  
+
   const getFilteredItems = (): TalentItem[] => {
     // Basic search filtering
     if (filters.searchQuery.trim()) {
@@ -212,7 +213,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     }
     return allItems
   }
-  
+
   const getLeaguesForSport = (sport: string): string[] => {
     // Mock implementation - could be enhanced with real data
     const leagues: Record<string, string[]> = {
@@ -223,8 +224,8 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     }
     return leagues[sport.toLowerCase()] || []
   }
-  
-  const toggleFavorite = async (id: number): Promise<void> => {
+
+  const toggleFavorite = async (id: string): Promise<void> => {
     try {
       // Find the item to determine its type
       const item = allItems.find(item => item.id === id)
@@ -235,21 +236,21 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
 
       // Determine profile type based on category
       let profileType: 'talent' | 'team' | 'event' = 'talent'
-      
+
       // More flexible type detection
-      if (item.category?.toLowerCase().includes('team') || 
-          teamItems.some(teamItem => teamItem.id === id)) {
+      if (item.category?.toLowerCase().includes('team') ||
+        teamItems.some(teamItem => teamItem.id === id)) {
         profileType = 'team'
-      } else if (item.category?.toLowerCase().includes('event') || 
-                eventItems.some(eventItem => eventItem.id === id)) {
+      } else if (item.category?.toLowerCase().includes('event') ||
+        eventItems.some(eventItem => eventItem.id === id)) {
         profileType = 'event'
       }
 
-      console.log('Toggle favorite for item:', { 
-        id, 
-        category: item.category, 
+      console.log('Toggle favorite for item:', {
+        id,
+        category: item.category,
         profileType,
-        item 
+        item
       })
 
       const isFavorited = favorites.has(id)
@@ -259,7 +260,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         const response = await fetch(`/api/favorites?profile_id=${id}`, {
           method: 'DELETE'
         })
-        
+
         if (response.ok) {
           console.log('Removed from favorites:', id)
           setFavorites(prev => {
@@ -283,9 +284,9 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
           profile_id: id,
           profile_type: profileType
         }
-        
+
         console.log('Adding to favorites with data:', requestBody)
-        
+
         const response = await fetch('/api/favorites', {
           method: 'POST',
           headers: {
@@ -293,7 +294,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
           },
           body: JSON.stringify(requestBody)
         })
-        
+
         if (response.ok) {
           console.log('Added to favorites:', id)
           setFavorites(prev => new Set([...prev, id]))
@@ -312,12 +313,12 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
       console.error('Error toggling favorite:', error)
     }
   }
-  
+
   // Function to check if an item is favorited
-  const isFavorited = (id: number): boolean => {
+  const isFavorited = (id: string): boolean => {
     return favorites.has(id)
   }
-  
+
   const getSportLeagues = (sport: string): string[] => getLeaguesForSport(sport)
 
   return {

@@ -1,11 +1,11 @@
 import React from "react"
 import Link from "next/link"
+import type { Session } from "@supabase/supabase-js"
 import { Button } from "@/components/atoms/button"
 import { DiscoverHeader } from "@/components/organisms/discover/discover-header"
 import { DiscoverSearchBar } from "@/components/organisms/discover/discover-search-bar"
 import { TalentGrid } from "@/components/organisms/discover/talent-grid"
 import { TalentItem } from "@/hooks/use-discover-data"
-import { Session } from "next-auth"
 
 interface DiscoverTemplateProps {
   // Auth

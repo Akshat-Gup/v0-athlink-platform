@@ -4,7 +4,6 @@ import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/atoms/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/molecules/card"
 import { Badge } from "@/components/atoms/badge"
-import { signOut } from "next-auth/react"
 import { ProfileEdit } from "../templates/user/profile-edit"
 import { useState, useEffect } from "react"
 

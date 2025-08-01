@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { signIn, getSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/atoms/button"
 import { Input } from "@/components/atoms/input"

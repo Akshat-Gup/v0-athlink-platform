@@ -3,7 +3,7 @@
 import { DiscoverTemplate } from "@/components/templates/discover-template"
 import { useDiscoverState } from "@/hooks/use-discover-state"
 import { useDiscoverData } from "@/hooks/use-discover-data"
-import { Session } from "next-auth"
+import type { Session } from "@supabase/supabase-js"
 
 interface DiscoverClientPageProps {
   session: Session | null
@@ -30,7 +30,7 @@ export function DiscoverClientPage({ session }: DiscoverClientPageProps) {
 
   // Convert the new favorites system to the format expected by the template
   const favoritesArray = data.allItems.filter(item => data.isFavorited(item.id)).map(item => item.id)
-  
+
   const handleToggleFavorite = async (id: number, e?: React.MouseEvent): Promise<void> => {
     if (e) {
       e.preventDefault()
@@ -38,7 +38,7 @@ export function DiscoverClientPage({ session }: DiscoverClientPageProps) {
     }
     await data.toggleFavorite(id)
   }
-  
+
   return (
     <DiscoverTemplate
       session={session}

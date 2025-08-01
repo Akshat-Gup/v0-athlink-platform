@@ -4,8 +4,8 @@ import { Card } from "@/components/molecules/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/organisms/dialog"
 import { QrCode } from "lucide-react"
 import { useState, ReactNode } from "react"
+import type { Session } from "@supabase/supabase-js"
 import { Tooltip, TooltipProvider } from "@/components/molecules/tooltip"
-import { Session } from "next-auth"
 
 // Generic interfaces for profile data
 export interface BaseProfile {

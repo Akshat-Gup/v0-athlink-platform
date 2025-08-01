@@ -4,6 +4,7 @@ import { Card } from "@/components/molecules/card"
 import { Instagram, Twitter, Youtube, Facebook, ExternalLink, Edit, Plus, MessageCircle } from "lucide-react"
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
+import type { Session } from "@supabase/supabase-js"
 import { SponsorshipModal } from "@/components/templates/user/sponsorship-modal"
 import { SponsorshipProgress } from "@/components/molecules/profile/sponsorship-progress"
 import { CampaignCreation } from "@/components/templates/athlete/campaign-creation"
@@ -15,7 +16,6 @@ import { useAuth } from "@/hooks/use-auth"
 import { usePendingRequestsCount } from "@/hooks/use-pending-requests"
 import { useSponsorContributions } from "@/hooks/use-sponsor-contributions"
 import { sponsorshipEvents, SPONSORSHIP_EVENTS } from "@/lib/sponsorship-events"
-import { Session } from "next-auth"
 
 interface Checkpoint {
   amount: number

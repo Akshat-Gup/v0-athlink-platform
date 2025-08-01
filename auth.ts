@@ -1,57 +1,69 @@
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import Credentials from "next-auth/providers/credentials"
-import bcrypt from "bcryptjs"
-import { prisma } from "@/lib/prisma"
- 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID || "dummy-id",
-      clientSecret: process.env.AUTH_GOOGLE_SECRET || "dummy-secret",
-    }),
-    Credentials({
-      name: "credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
+import { createServerComponentClient } from "@/lib/supabase-client"
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email as string
-          }
-        })
+// Server-side auth utilities
+export async function getUser() {
+  const supabase = await createServerComponentClient()
 
-        if (!user || !user.password) {
-          return null
-        }
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser()
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        )
+    if (error) {
+      console.error('Error getting user:', error)
+      return null
+    }
 
-        if (!isPasswordValid) {
-          return null
-        }
+    return user
+  } catch (error) {
+    console.error('Error in getUser:', error)
+    return null
+  }
+}
 
-        return {
-          id: user.id.toString(),
-          email: user.email,
-          name: user.name,
-        }
-      }
-    })
-  ],
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/login",
-  },
-})
+export async function getSession() {
+  const supabase = await createServerComponentClient()
+
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession()
+
+    if (error) {
+      console.error('Error getting session:', error)
+      return null
+    }
+
+    return session
+  } catch (error) {
+    console.error('Error in getSession:', error)
+    return null
+  }
+}
+
+// Check if user is authenticated
+export async function isAuthenticated() {
+  const session = await getSession()
+  return !!session?.user
+}
+
+// Get user with profile data
+export async function getUserWithProfile() {
+  const user = await getUser()
+  if (!user) return null
+
+  const supabase = await createServerComponentClient()
+
+  // Get user profile from users table
+  const { data: profile, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
+  if (error) {
+    console.error('Error getting user profile:', error)
+    return user
+  }
+
+  return {
+    ...user,
+    profile
+  }
+}

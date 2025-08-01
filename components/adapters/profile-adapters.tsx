@@ -4,7 +4,7 @@ import { DefaultSidebar as DefaultSidebar } from "@/components/organisms/profile
 import { SidebarSponsorship, SidebarSocials } from "@/components/molecules/profile/sidebar"
 import { TalentHeader as OriginalTalentHeader } from "@/components/organisms/profile/header"
 import { TeamHeader as OriginalTeamsHeader } from "@/components/organisms/profile/header"
-import { Session } from "next-auth"
+import type { Session } from "@supabase/supabase-js"
 
 // Adapter components to make existing components work with the generic template
 export function EventHeaderAdapter({ profile, onShareClick }: { profile: any; onShareClick: () => void }) {
