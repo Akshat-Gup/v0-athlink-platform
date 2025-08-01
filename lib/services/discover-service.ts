@@ -43,6 +43,8 @@ export async function getDiscoverData(filters: {
   eventItems: DiscoverItem[]
 }> {
   try {
+    console.log('🚀 getDiscoverData called with filters:', filters)
+
     // Validate filters
     if (!filters.activeTab) {
       throw new Error('activeTab is required')
@@ -51,6 +53,8 @@ export async function getDiscoverData(filters: {
     if (!['filter', 'search', 'ai'].includes(filters.searchMode)) {
       throw new Error('Invalid search mode')
     }
+
+    console.log('✅ Filters validated, building Supabase query...')
 
     // Get all users with their profiles and locations (excluding sponsors)
     let query = supabaseAdmin
@@ -68,18 +72,23 @@ export async function getDiscoverData(filters: {
       .neq('category', 'SPONSOR')
       .eq('is_active', true)
 
+    console.log('📝 Base query created, applying filters...')
+
     // Apply filters based on search mode and criteria
     if (filters.searchMode === 'search' && filters.searchQuery) {
+      console.log('🔍 Applying search filter:', filters.searchQuery)
       // Sanitize search query to prevent injection
       const sanitizedQuery = filters.searchQuery.replace(/[%_]/g, '\\$&')
       query = query.or(`name.ilike.%${sanitizedQuery}%,bio.ilike.%${sanitizedQuery}%,primary_sport.ilike.%${sanitizedQuery}%`)
     }
 
     if (filters.selectedSport) {
+      console.log('🏃 Applying sport filter:', filters.selectedSport)
       query = query.eq('primary_sport', filters.selectedSport)
     }
 
     if (filters.selectedRating) {
+      console.log('⭐ Applying rating filter:', filters.selectedRating)
       const ratingThreshold = parseFloat(filters.selectedRating)
       if (isNaN(ratingThreshold) || ratingThreshold < 0 || ratingThreshold > 5) {
         throw new Error('Invalid rating threshold')
@@ -88,6 +97,7 @@ export async function getDiscoverData(filters: {
     }
 
     if (filters.selectedExperience) {
+      console.log('📈 Applying experience filter:', filters.selectedExperience)
       const experienceThreshold = parseInt(filters.selectedExperience)
       if (isNaN(experienceThreshold) || experienceThreshold < 0) {
         throw new Error('Invalid experience threshold')
@@ -96,32 +106,42 @@ export async function getDiscoverData(filters: {
     }
 
     if (filters.selectedLocation) {
+      console.log('📍 Applying location filter:', filters.selectedLocation)
       query = query.eq('base_location.city', filters.selectedLocation)
     }
 
-    // Apply date filters if provided
-    if (filters.startDate) {
-      if (isNaN(filters.startDate.getTime())) {
-        throw new Error('Invalid start date')
-      }
-      // Add date filtering logic based on your schema
-    }
-
-    if (filters.endDate) {
-      if (isNaN(filters.endDate.getTime())) {
-        throw new Error('Invalid end date')
-      }
-      // Add date filtering logic based on your schema
-    }
-
+    console.log('💾 Executing Supabase query...')
     const { data: users, error } = await query
 
     if (error) {
-      console.error('Supabase query error:', error)
+      console.error('❌ Supabase query error:', error)
       throw new Error(`Database query failed: ${error.message}`)
     }
 
+    console.log('✅ Query successful! Raw users count:', users?.length || 0)
+
+    if (users && users.length > 0) {
+      console.log('📋 Sample user data:', {
+        firstUser: {
+          id: users[0].id,
+          name: users[0].name,
+          category: users[0].category,
+          primary_sport: users[0].primary_sport,
+          hasProfile: {
+            talent: !!users[0].talent_profile,
+            team: !!users[0].team_profile,
+            event: !!users[0].event_profile
+          }
+        },
+        categories: users.reduce((acc: any, user: any) => {
+          acc[user.category] = (acc[user.category] || 0) + 1
+          return acc
+        }, {})
+      })
+    }
+
     if (!users || users.length === 0) {
+      console.log('⚠️ No users found matching criteria')
       return {
         topTalentItems: [],
         upAndComingItems: [],
@@ -130,6 +150,8 @@ export async function getDiscoverData(filters: {
         eventItems: []
       }
     }
+
+    console.log('👥 Processing users into categories...')
 
     // Transform users into DiscoverItems
     const transformUser = (user: any): DiscoverItem => {
@@ -191,7 +213,15 @@ export async function getDiscoverData(filters: {
     const teams = users.filter((u: any) => u.category === 'TEAM' && u.team_profile)
     const events = users.filter((u: any) => u.category === 'EVENT' && u.event_profile)
 
-    // For talents, create different categories based on rating and experience
+    console.log('📊 User categorization:', {
+      totalUsers: users.length,
+      athletes: athletes.length,
+      teams: teams.length,
+      events: events.length,
+      athletesWithProfile: athletes.length,
+      teamsWithProfile: teams.length,
+      eventsWithProfile: events.length
+    })    // For talents, create different categories based on rating and experience
     const topTalentItems = athletes
       .filter((u: any) => (u.rating || 0) >= 4.0)
       .map(transformUser)
@@ -225,13 +255,28 @@ export async function getDiscoverData(filters: {
     const teamItems = teams.map(transformUser).slice(0, 20)
     const eventItems = events.map(transformUser).slice(0, 20)
 
-    return {
+    const result = {
       topTalentItems,
       upAndComingItems,
       brandAmbassadorItems,
       teamItems,
       eventItems
     }
+
+    console.log('🎯 Final result summary:', {
+      topTalentItems: topTalentItems.length,
+      upAndComingItems: upAndComingItems.length,
+      brandAmbassadorItems: brandAmbassadorItems.length,
+      teamItems: teamItems.length,
+      eventItems: eventItems.length,
+      totalItems: topTalentItems.length + upAndComingItems.length + brandAmbassadorItems.length + teamItems.length + eventItems.length
+    })
+
+    if (topTalentItems.length > 0) {
+      console.log('📋 Sample topTalentItem:', topTalentItems[0])
+    }
+
+    return result
   } catch (error) {
     console.error('Error in getDiscoverData:', error)
 

@@ -26,6 +26,14 @@ export const supabaseAdmin = (() => {
                 auth: {
                     autoRefreshToken: false,
                     persistSession: false
+                },
+                db: {
+                    schema: 'public'
+                },
+                global: {
+                    headers: {
+                        'apikey': serviceRoleKey
+                    }
                 }
             }
         )

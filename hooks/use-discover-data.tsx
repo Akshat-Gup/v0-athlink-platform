@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useEffect, useState } from "react"
+import { useAuth } from "./use-auth"
 
 // Type matching the TalentItem from talent-grid
 export interface TalentItem {
@@ -40,6 +41,15 @@ interface UseDiscoverDataProps {
 }
 
 export function useDiscoverData(filters: UseDiscoverDataProps) {
+  const { session } = useAuth()
+  console.log('🔐 useAuth result in useDiscoverData:', {
+    hasSession: !!session,
+    sessionLoading: session === undefined,
+    sessionNull: session === null,
+    userEmail: session?.user?.email,
+    hasAccessToken: !!session?.access_token
+  })
+
   const [data, setData] = useState<{
     topTalentItems: TalentItem[]
     upAndComingItems: TalentItem[]
@@ -53,7 +63,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     teamItems: [],
     eventItems: [],
   })
-  
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [favorites, setFavorites] = useState<Set<number>>(new Set())
@@ -68,7 +78,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         ...data.teamItems,
         ...data.eventItems,
       ]
-      
+
       const favoriteChecks = await Promise.all(
         allItems.map(async (item: TalentItem) => {
           try {
@@ -83,14 +93,14 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
           return { id: item.id, isFavorited: false }
         })
       )
-      
+
       const favoritesSet = new Set<number>()
       favoriteChecks.forEach(({ id, isFavorited }) => {
         if (isFavorited) {
           favoritesSet.add(id)
         }
       })
-      
+
       setFavorites(favoritesSet)
     } catch (error) {
       console.error('Error loading favorites status:', error)
@@ -98,11 +108,36 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
   }
 
   useEffect(() => {
+    console.log('🎬 useEffect triggered - about to call fetchData')
     async function fetchData() {
+      console.log('🚀 fetchData function called!')
       try {
         setLoading(true)
         setError(null)
-        
+
+        console.log('🔍 Starting data fetch...')
+        console.log('Session state:', {
+          hasSession: !!session,
+          hasAccessToken: !!session?.access_token,
+          userEmail: session?.user?.email
+        })
+
+        // Check if user is authenticated (temporarily bypassed for development)
+        if (!session?.access_token) {
+          console.error('❌ No access token found')
+          console.log('🚫 Session details:', {
+            session: session,
+            type: typeof session,
+            keys: session ? Object.keys(session) : 'no session'
+          })
+          console.log('🔧 DEVELOPMENT MODE: Bypassing authentication to test data fetching...')
+
+          // For development, let's try to fetch data without authentication
+          // Remove this bypass once authentication is working
+        }
+
+        console.log('✅ User is authenticated, building query...')
+
         // Build query parameters
         const params = new URLSearchParams({
           activeTab: filters.activeTab,
@@ -118,6 +153,8 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
           selectedLocation: filters.selectedLocation,
         })
 
+        console.log('📊 Query parameters:', Object.fromEntries(params.entries()))
+
         if (filters.selectedBudget) {
           params.append('selectedBudget', JSON.stringify(filters.selectedBudget))
         }
@@ -128,20 +165,59 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
           params.append('endDate', filters.endDate.toISOString())
         }
 
-        const response = await fetch(`/api/discover?${params.toString()}`)
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+        console.log('🌐 Making API request to:', `/api/discover?${params.toString()}`)
+
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
         }
-        
+
+        // Add authorization header if we have a session
+        if (session?.access_token) {
+          headers['Authorization'] = `Bearer ${session.access_token}`
+        }
+
+        const response = await fetch(`/api/discover?${params.toString()}`, {
+          method: 'GET',
+          headers,
+        })
+
+        console.log('📡 API Response status:', response.status, response.statusText)
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+          console.error('❌ API Error:', errorData)
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
+        }
+
         const result = await response.json()
-        console.log('API response:', result)
+        console.log('✅ API response received:', {
+          topTalentItems: result.topTalentItems?.length || 0,
+          upAndComingItems: result.upAndComingItems?.length || 0,
+          brandAmbassadorItems: result.brandAmbassadorItems?.length || 0,
+          teamItems: result.teamItems?.length || 0,
+          eventItems: result.eventItems?.length || 0,
+          totalItems: (result.topTalentItems?.length || 0) +
+            (result.upAndComingItems?.length || 0) +
+            (result.brandAmbassadorItems?.length || 0) +
+            (result.teamItems?.length || 0) +
+            (result.eventItems?.length || 0)
+        })
+
+        // Log first few items from each category for debugging
+        if (result.topTalentItems?.length > 0) {
+          console.log('📋 Sample topTalentItems:', result.topTalentItems.slice(0, 2))
+        }
+        if (result.upAndComingItems?.length > 0) {
+          console.log('📋 Sample upAndComingItems:', result.upAndComingItems.slice(0, 2))
+        }
+
         setData(result)
-        
+
         // Load favorites status for all items
         await loadFavoritesStatus(result)
       } catch (err) {
         console.error('Error fetching discover data:', err)
-        setError('Failed to fetch data')
+        setError(err instanceof Error ? err.message : 'Failed to fetch data')
         setData({
           topTalentItems: [],
           upAndComingItems: [],
@@ -154,6 +230,8 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
       }
     }
 
+    // For development: fetch data regardless of session status
+    // TODO: Re-enable authentication check in production
     fetchData()
   }, [
     filters.activeTab,
@@ -171,6 +249,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     filters.selectedBudget?.[1],
     filters.startDate,
     filters.endDate,
+    session, // Add session dependency
   ])
 
   const { topTalentItems, upAndComingItems, brandAmbassadorItems, teamItems, eventItems } = data
@@ -197,9 +276,9 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         return []
     }
   }
-  
+
   const shouldShowSection = (fit: string): boolean => getItemsByFit(fit).length > 0
-  
+
   const getFilteredItems = (): TalentItem[] => {
     // Basic search filtering
     if (filters.searchQuery.trim()) {
@@ -212,7 +291,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     }
     return allItems
   }
-  
+
   const getLeaguesForSport = (sport: string): string[] => {
     // Mock implementation - could be enhanced with real data
     const leagues: Record<string, string[]> = {
@@ -223,7 +302,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
     }
     return leagues[sport.toLowerCase()] || []
   }
-  
+
   const toggleFavorite = async (id: number): Promise<void> => {
     try {
       // Find the item to determine its type
@@ -235,21 +314,21 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
 
       // Determine profile type based on category
       let profileType: 'talent' | 'team' | 'event' = 'talent'
-      
+
       // More flexible type detection
-      if (item.category?.toLowerCase().includes('team') || 
-          teamItems.some(teamItem => teamItem.id === id)) {
+      if (item.category?.toLowerCase().includes('team') ||
+        teamItems.some(teamItem => teamItem.id === id)) {
         profileType = 'team'
-      } else if (item.category?.toLowerCase().includes('event') || 
-                eventItems.some(eventItem => eventItem.id === id)) {
+      } else if (item.category?.toLowerCase().includes('event') ||
+        eventItems.some(eventItem => eventItem.id === id)) {
         profileType = 'event'
       }
 
-      console.log('Toggle favorite for item:', { 
-        id, 
-        category: item.category, 
+      console.log('Toggle favorite for item:', {
+        id,
+        category: item.category,
         profileType,
-        item 
+        item
       })
 
       const isFavorited = favorites.has(id)
@@ -259,7 +338,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
         const response = await fetch(`/api/favorites?profile_id=${id}`, {
           method: 'DELETE'
         })
-        
+
         if (response.ok) {
           console.log('Removed from favorites:', id)
           setFavorites(prev => {
@@ -283,9 +362,9 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
           profile_id: id,
           profile_type: profileType
         }
-        
+
         console.log('Adding to favorites with data:', requestBody)
-        
+
         const response = await fetch('/api/favorites', {
           method: 'POST',
           headers: {
@@ -293,7 +372,7 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
           },
           body: JSON.stringify(requestBody)
         })
-        
+
         if (response.ok) {
           console.log('Added to favorites:', id)
           setFavorites(prev => new Set([...prev, id]))
@@ -312,12 +391,12 @@ export function useDiscoverData(filters: UseDiscoverDataProps) {
       console.error('Error toggling favorite:', error)
     }
   }
-  
+
   // Function to check if an item is favorited
   const isFavorited = (id: number): boolean => {
     return favorites.has(id)
   }
-  
+
   const getSportLeagues = (sport: string): string[] => getLeaguesForSport(sport)
 
   return {

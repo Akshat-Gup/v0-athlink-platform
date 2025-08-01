@@ -10,7 +10,11 @@ interface DiscoverClientPageProps {
 }
 
 export function DiscoverClientPage({ session }: DiscoverClientPageProps) {
+  console.log('🏠 DiscoverClientPage rendered')
+
   const state = useDiscoverState()
+  console.log('🎛️ Discover state:', state)
+
   const data = useDiscoverData({
     activeTab: state.activeTab,
     searchMode: state.searchMode,
@@ -26,6 +30,12 @@ export function DiscoverClientPage({ session }: DiscoverClientPageProps) {
     selectedLocation: state.selectedLocation,
     startDate: state.startDate,
     endDate: state.endDate,
+  })
+
+  console.log('📊 useDiscoverData result:', {
+    loading: data.loading,
+    error: data.error,
+    totalItems: data.allItems.length
   })
 
   // Convert the new favorites system to the format expected by the template
